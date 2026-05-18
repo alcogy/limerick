@@ -80,6 +80,13 @@ export const ja: Translations = {
 		language: '言語',
 		languageDesc: 'UIの表示言語を選択します'
 	},
+	profile: {
+		displayName: '表示名',
+		savedSuccessfully: '保存しました。',
+		changePassword: 'パスワード変更',
+		changePasswordDesc: '変更しない場合は空欄のままにしてください。',
+		currentPassword: '現在のパスワード'
+	},
 	dashboard: {
 		title: 'ダッシュボード',
 		stats: {

@@ -78,6 +78,13 @@ export const en = {
 		language: 'Language',
 		languageDesc: 'Select the display language for the UI'
 	},
+	profile: {
+		displayName: 'Display name',
+		savedSuccessfully: 'Saved successfully.',
+		changePassword: 'Change password',
+		changePasswordDesc: 'Leave blank to keep current password.',
+		currentPassword: 'Current password'
+	},
 	dashboard: {
 		title: 'Dashboard',
 		stats: {
