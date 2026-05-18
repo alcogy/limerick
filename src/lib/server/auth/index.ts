@@ -69,13 +69,23 @@ export async function getSession(event: RequestEvent) {
 	const sessionId = event.cookies.get('session');
 	if (!sessionId) return null;
 
-	const db = drizzle(event.platform!.env.DB, { schema });
-	const user = await db.query.users.findFirst({
-		where: eq(schema.users.id, sessionId)
-	});
+	try {
+		const db = drizzle(event.platform!.env.DB, { schema });
+		const user = await db.query.users.findFirst({
+			where: eq(schema.users.id, sessionId)
+		});
 
-	if (!user || !user.is_active) return null;
-	return user;
+		if (!user || !user.is_active) {
+			// Clear stale session cookie
+			event.cookies.delete('session', { path: '/' });
+			return null;
+		}
+		return user;
+	} catch {
+		// DB not yet initialized or query error — treat as unauthenticated
+		event.cookies.delete('session', { path: '/' });
+		return null;
+	}
 }
 
 export function validatePasswordStrength(password: string): string | null {

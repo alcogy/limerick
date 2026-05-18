@@ -19,6 +19,9 @@
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
+		"db:migrate:local": "wrangler d1 migrations apply limerick-db --local",
+		"db:migrate:remote": "wrangler d1 migrations apply limerick-db --remote",
+		"db:seed": "bun run scripts/seed.ts",
 		"db:studio": "drizzle-kit studio"
 	},
 	"devDependencies": {
