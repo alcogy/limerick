@@ -24,7 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.locals.user = null;
 	}
 
-	const publicPaths = ['/login', '/auth/setup-password', '/logout'];
+	const publicPaths = ['/login', '/auth/setup-password', '/logout', '/setup'];
 	const isPublic = publicPaths.some(
 		(p) => event.url.pathname === p || event.url.pathname.startsWith(p + '?')
 	);
