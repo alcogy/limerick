@@ -154,7 +154,7 @@ export const ja: Translations = {
 		closingDay: '締日',
 		paymentTerms: '支払条件',
 		notes: '備考',
-		closingDayNote: '毎月何日締め（1〜31）',
+		closingDayNote: '毎月何日締め（1〜31）。末日締めの場合は31を設定してください。',
 		emailSent: '招待メールを送信しました。',
 		activated: '有効',
 		pending: '招待中'
