@@ -2,9 +2,14 @@
 	import { browser } from '$app/environment';
 	import favicon from '$lib/assets/favicon.svg';
 	import { getTheme } from '$lib/theme.svelte';
+	import { setLocale, type Locale } from '$lib/i18n';
 	import '../app.scss';
+	import type { LayoutData } from './$types';
 
-	let { children } = $props();
+	let { children, data }: { children: any; data: LayoutData } = $props();
+
+	// Apply server-read locale immediately (eliminates language FOUC)
+	setLocale(data.locale as Locale);
 
 	$effect(() => {
 		if (browser) {
