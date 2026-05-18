@@ -13,6 +13,16 @@
 	let editItem = $state<(typeof data.products)[0] | null>(null);
 	let deleteId = $state<string | null>(null);
 	let searchValue = $state(data.search || '');
+	let newSku = $state('');
+	let generatingSku = $state(false);
+
+	async function generateSku() {
+		generatingSku = true;
+		try {
+			const res = await fetch('/api/sku', { method: 'POST' });
+			if (res.ok) { const { sku } = await res.json() as { sku: string }; newSku = sku; }
+		} finally { generatingSku = false; }
+	}
 
 	let deleteFormEl = $state<HTMLFormElement | undefined>();
 
@@ -119,7 +129,12 @@
 		<div class="form-grid">
 			<div class="field">
 				<Label for="sku" required>{t().product.sku}</Label>
-				<Input id="sku" name="sku" placeholder={t().product.skuPlaceholder} required />
+				<div class="sku-input-row">
+					<Input id="sku" name="sku" bind:value={newSku} placeholder={t().product.skuPlaceholder} required />
+					<Button type="button" variant="secondary" size="sm" onclick={generateSku} disabled={generatingSku}>
+						{generatingSku ? '…' : 'Auto'}
+					</Button>
+				</div>
 			</div>
 			<div class="field">
 				<Label for="category_id">{t().product.category}</Label>
@@ -323,6 +338,8 @@
 	}
 	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
 	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
+
+	.sku-input-row { display: flex; align-items: center; gap: var(--space-xs); }
 
 	.image-preview {
 		display: flex;
