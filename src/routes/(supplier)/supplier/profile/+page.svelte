@@ -17,30 +17,30 @@
 	<Card title={t().nav.profile}>
 		<form method="POST" use:enhance class="form">
 			{#if form?.success}
-				<div class="success-msg">Saved successfully.</div>
+				<div class="success-msg">{t().profile.savedSuccessfully}</div>
 			{/if}
 			{#if form?.error}
 				<div class="form-error">{form.error}</div>
 			{/if}
 
 			<div class="field">
-				<Label for="name" required>Display name</Label>
+				<Label for="name" required>{t().profile.displayName}</Label>
 				<Input id="name" name="name" value={data.user?.name ?? ''} required />
 			</div>
 			<div class="field">
-				<Label>Email</Label>
+				<Label>{t().auth.email}</Label>
 				<Input value={data.user?.email ?? ''} disabled />
 			</div>
 
 			<hr class="divider" />
-			<p class="section-label">Change password (leave blank to keep current)</p>
+			<p class="section-label">{t().profile.changePassword} — {t().profile.changePasswordDesc}</p>
 
 			<div class="field">
-				<Label for="current_password">Current password</Label>
+				<Label for="current_password">{t().profile.currentPassword}</Label>
 				<Input id="current_password" name="current_password" type="password" autocomplete="current-password" />
 			</div>
 			<div class="field">
-				<Label for="new_password">New password</Label>
+				<Label for="new_password">{t().auth.newPassword}</Label>
 				<Input id="new_password" name="new_password" type="password" autocomplete="new-password" />
 			</div>
 
