@@ -12,9 +12,12 @@
 	let viewInvoice = $state<(typeof data.invoices)[0] | null>(null);
 	let markPaidId = $state<string | null>(null);
 
-	$effect(() => {
-		if (form?.success) { showGenerate = false; }
-	});
+	function closeOnSuccess() {
+		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
+			await update();
+			if (result.type === 'success') { showGenerate = false; }
+		};
+	}
 
 	const INVOICE_STATUSES = ['', 'issued', 'paid', 'overdue'];
 
@@ -92,7 +95,7 @@
 
 <!-- Generate modal -->
 <Modal bind:open={showGenerate} title={t().invoice.generate} size="md">
-	<form method="POST" action="?/generate" use:enhance class="form">
+	<form method="POST" action="?/generate" use:enhance={closeOnSuccess()} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<p class="generate-desc">{t().invoice.generateDesc}</p>
 		<div class="field">

@@ -15,17 +15,15 @@
 
 	async function openPricing(group: (typeof data.groups)[0]) {
 		pricingGroup = group;
-		// Load existing prices via a fresh page load
-		const resp = await fetch(`/supplier/price-groups/${group.id}/prices`);
-		if (resp.ok) {
-			const json = await resp.json() as Record<string, number>;
-			groupPrices = Object.fromEntries(Object.entries(json).map(([k, v]) => [k, String(v)]));
-		}
+		groupPrices = {};
 	}
 
-	$effect(() => {
-		if (form?.success) { showCreate = false; editItem = null; pricingGroup = null; }
-	});
+	function closeOnSuccess() {
+		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
+			await update();
+			if (result.type === 'success') { showCreate = false; editItem = null; pricingGroup = null; }
+		};
+	}
 
 	const columns = [
 		{ key: 'name', label: t().priceGroup.name },
@@ -57,7 +55,7 @@
 
 <!-- Create modal -->
 <Modal bind:open={showCreate} title={t().priceGroup.new}>
-	<form method="POST" action="?/create" use:enhance class="form">
+	<form method="POST" action="?/create" use:enhance={closeOnSuccess()} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<div class="field">
 			<Label for="name" required>{t().priceGroup.name}</Label>
@@ -77,7 +75,7 @@
 <!-- Edit modal -->
 {#if editItem}
 	<Modal open={!!editItem} title={t().priceGroup.edit} onclose={() => (editItem = null)}>
-		<form method="POST" action="?/update" use:enhance class="form">
+		<form method="POST" action="?/update" use:enhance={closeOnSuccess()} class="form">
 			<input type="hidden" name="id" value={editItem.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<div class="field">
@@ -99,7 +97,7 @@
 <!-- Pricing modal -->
 {#if pricingGroup}
 	<Modal open={!!pricingGroup} title="{t().priceGroup.setPrices}: {pricingGroup.name}" size="lg" onclose={() => (pricingGroup = null)}>
-		<form method="POST" action="?/setPrices" use:enhance class="form">
+		<form method="POST" action="?/setPrices" use:enhance={closeOnSuccess()} class="form">
 			<input type="hidden" name="group_id" value={pricingGroup.id} />
 			<p class="pricing-help">{t().priceGroup.basePrice} — {t().priceGroup.noOverride}</p>
 			<div class="pricing-list">
