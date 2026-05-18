@@ -8,7 +8,7 @@ import { now } from '$lib/utils';
 export const load: PageServerLoad = async ({ platform }) => {
 	const db = drizzle(platform!.env.DB, { schema });
 
-	const [groups, products] = await Promise.all([
+	const [groups, products, existingPrices] = await Promise.all([
 		db
 			.select({
 				id: schema.price_groups.id,
@@ -25,10 +25,18 @@ export const load: PageServerLoad = async ({ platform }) => {
 			where: eq(schema.products.is_active, true),
 			orderBy: [asc(schema.products.name)],
 			with: { category: true }
-		})
+		}),
+		db.select().from(schema.group_prices)
 	]);
 
-	return { groups, products };
+	// Build a lookup map: groupId -> { productId -> price }
+	const priceMap: Record<string, Record<string, number>> = {};
+	for (const row of existingPrices) {
+		if (!priceMap[row.price_group_id]) priceMap[row.price_group_id] = {};
+		priceMap[row.price_group_id][row.product_id] = row.price;
+	}
+
+	return { groups, products, priceMap };
 };
 
 export const actions = {
