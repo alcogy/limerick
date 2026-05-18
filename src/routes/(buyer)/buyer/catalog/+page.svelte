@@ -64,19 +64,39 @@
 		{/if}
 	</div>
 
-	<div class="category-tabs">
-		<button
-			class="cat-tab"
-			class:active={!data.categoryFilter}
-			onclick={() => goto('/buyer/catalog')}
-		>{t().common.all}</button>
-		{#each data.categories as cat (cat.id)}
+	<div class="catalog-controls">
+		<div class="category-tabs">
 			<button
 				class="cat-tab"
-				class:active={data.categoryFilter === cat.id}
-				onclick={() => goto(`/buyer/catalog?category=${cat.id}`)}
-			>{cat.name}</button>
-		{/each}
+				class:active={!data.categoryFilter}
+				onclick={() => goto('/buyer/catalog')}
+			>{t().common.all}</button>
+			{#each data.categories as cat (cat.id)}
+				<button
+					class="cat-tab"
+					class:active={data.categoryFilter === cat.id}
+					onclick={() => {
+						const p = new URLSearchParams(window.location.search);
+						p.set('category', cat.id);
+						goto(`?${p}`);
+					}}
+				>{cat.name}</button>
+			{/each}
+		</div>
+		<select
+			class="sort-select"
+			value={data.sortBy}
+			onchange={(e) => {
+				const p = new URLSearchParams(window.location.search);
+				p.set('sort', e.currentTarget.value);
+				goto(`?${p}`);
+			}}
+		>
+			<option value="sort_order">Default order</option>
+			<option value="name_asc">Name A→Z</option>
+			<option value="price_asc">Price low→high</option>
+			<option value="price_desc">Price high→low</option>
+		</select>
 	</div>
 
 	{#if data.products.length === 0}
@@ -141,10 +161,31 @@
 	.page-title { font-size: 1.5rem; font-weight: 700; }
 	.cart-link { text-decoration: none; }
 
+	.catalog-controls {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--space-md);
+		flex-wrap: wrap;
+	}
+
 	.category-tabs {
 		display: flex;
 		gap: 2px;
 		flex-wrap: wrap;
+		flex: 1;
+	}
+
+	.sort-select {
+		height: 36px;
+		padding: 0 var(--space-md);
+		background-color: var(--color-input-bg);
+		color: var(--color-text);
+		border: 1px solid var(--color-input-border);
+		border-radius: var(--radius-md);
+		font-family: inherit;
+		font-size: 0.8125rem;
+		flex-shrink: 0;
 	}
 
 	.cat-tab {

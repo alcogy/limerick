@@ -114,6 +114,7 @@ export const ja: Translations = {
 		minOrderQty: '最低発注数',
 		stockQty: '在庫数',
 		isActive: '販売中',
+		sortOrder: '表示順',
 		image: '画像',
 		skuPlaceholder: '例: PROD-001',
 		namePlaceholder: '商品名を入力',

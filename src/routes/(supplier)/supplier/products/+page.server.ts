@@ -64,6 +64,7 @@ export const actions = {
 		const unit = data.get('unit')?.toString().trim() || 'ea';
 		const min_order_qty = parseInt(data.get('min_order_qty')?.toString() ?? '1') || 1;
 		const stock_qty = parseInt(data.get('stock_qty')?.toString() ?? '0') || 0;
+		const sort_order = parseInt(data.get('sort_order')?.toString() ?? '0') || 0;
 		const is_active = data.get('is_active') === 'true';
 
 		if (!sku || !name) return fail(400, { error: 'SKU and name are required' });
@@ -73,7 +74,7 @@ export const actions = {
 		try {
 			await db.insert(schema.products).values({
 				sku, name, description, base_price, tax_rate, unit,
-				min_order_qty, stock_qty, is_active,
+				min_order_qty, stock_qty, sort_order, is_active,
 				category_id
 			});
 		} catch {
@@ -100,6 +101,7 @@ export const actions = {
 			unit: data.get('unit')?.toString().trim() || 'ea',
 			min_order_qty: parseInt(data.get('min_order_qty')?.toString() ?? '1') || 1,
 			stock_qty: parseInt(data.get('stock_qty')?.toString() ?? '0') || 0,
+			sort_order: parseInt(data.get('sort_order')?.toString() ?? '0') || 0,
 			is_active: data.get('is_active') === 'true',
 			category_id: data.get('category_id')?.toString() || null,
 			updated_at: now()

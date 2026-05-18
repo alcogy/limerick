@@ -38,12 +38,13 @@
 	}
 
 	const columns = [
-		{ key: 'sku',       label: t().product.sku,      width: '120px' },
-		{ key: 'name',      label: t().product.name },
-		{ key: 'category',  label: t().product.category,  width: '120px' },
-		{ key: 'base_price',label: t().product.basePrice,  width: '120px' },
-		{ key: 'stock_qty', label: t().product.stockQty,   width: '80px' },
-		{ key: 'is_active', label: t().product.isActive,   width: '80px' }
+		{ key: 'sku',        label: t().product.sku,        width: '120px' },
+		{ key: 'name',       label: t().product.name },
+		{ key: 'category',   label: t().product.category,   width: '120px' },
+		{ key: 'base_price', label: t().product.basePrice,  width: '120px' },
+		{ key: 'stock_qty',  label: t().product.stockQty,   width: '80px' },
+		{ key: 'sort_order', label: t().product.sortOrder,  width: '60px' },
+		{ key: 'is_active',  label: t().product.isActive,   width: '80px' }
 	];
 </script>
 
@@ -159,6 +160,10 @@
 				<Label for="stock_qty">{t().product.stockQty}</Label>
 				<Input id="stock_qty" name="stock_qty" type="number" value="0" min="0" />
 			</div>
+			<div class="field">
+				<Label for="sort_order">{t().product.sortOrder}</Label>
+				<Input id="sort_order" name="sort_order" type="number" value="0" min="0" />
+			</div>
 			<div class="field field-checkbox">
 				<label class="checkbox-label">
 					<input type="checkbox" name="is_active" value="true" checked />
@@ -222,6 +227,10 @@
 				<div class="field">
 					<Label for="edit-stock">{t().product.stockQty}</Label>
 					<Input id="edit-stock" name="stock_qty" type="number" value={editItem.stock_qty} min="0" />
+				</div>
+				<div class="field">
+					<Label for="edit-sort">{t().product.sortOrder}</Label>
+					<Input id="edit-sort" name="sort_order" type="number" value={editItem.sort_order} min="0" />
 				</div>
 				<div class="field field-checkbox">
 					<label class="checkbox-label">
