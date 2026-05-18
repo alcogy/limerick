@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Button, Card, ConfirmDialog, Input, Label, Modal, Table } from '$lib/ui';
-	import { t } from '$lib/i18n';
+	import { Button, ConfirmDialog, Input, Label, Modal, Table } from '$lib/ui';
 	import { enhance } from '$app/forms';
+	import { t } from '$lib/i18n';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -10,16 +11,26 @@
 	let editItem = $state<(typeof data.categories)[0] | null>(null);
 	let deleteId = $state<string | null>(null);
 
-	function closeOnSuccess() {
-		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
-			await update();
-			if (result.type === 'success') { showCreate = false; editItem = null; }
-		};
-	}
+	let deleteFormEl = $state<HTMLFormElement | undefined>();
+
+	const createEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') showCreate = false;
+	};
+
+	const updateEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') editItem = null;
+	};
+
+	const deleteEnhance: SubmitFunction = () => async ({ update }) => {
+		await update();
+		deleteId = null;
+	};
 
 	const columns = [
-		{ key: 'name', label: t().category.name },
-		{ key: 'sort_order', label: t().category.sortOrder, width: '100px' },
+		{ key: 'name',          label: t().category.name },
+		{ key: 'sort_order',    label: t().category.sortOrder,    width: '100px' },
 		{ key: 'product_count', label: t().category.productCount, width: '100px' }
 	];
 </script>
@@ -38,7 +49,7 @@
 		{#snippet actions(row)}
 			<div class="row-actions">
 				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}>{t().common.edit}</Button>
-				<Button size="sm" variant="danger" onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
+				<Button size="sm" variant="danger"    onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
 			</div>
 		{/snippet}
 	</Table>
@@ -46,7 +57,7 @@
 
 <!-- Create modal -->
 <Modal bind:open={showCreate} title={t().category.new}>
-	<form method="POST" action="?/create" use:enhance={closeOnSuccess()} class="form">
+	<form method="POST" action="?/create" use:enhance={createEnhance} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<div class="field">
 			<Label for="name" required>{t().category.name}</Label>
@@ -66,7 +77,7 @@
 <!-- Edit modal -->
 {#if editItem}
 	<Modal open={!!editItem} title={t().category.edit} onclose={() => (editItem = null)}>
-		<form method="POST" action="?/update" use:enhance={closeOnSuccess()} class="form">
+		<form method="POST" action="?/update" use:enhance={updateEnhance} class="form">
 			<input type="hidden" name="id" value={editItem.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<div class="field">
@@ -85,55 +96,25 @@
 	</Modal>
 {/if}
 
-<!-- Delete confirm -->
+<!-- Hidden delete form -->
+<form method="POST" action="?/delete" use:enhance={deleteEnhance} bind:this={deleteFormEl} style="display:none">
+	<input name="id" value={deleteId ?? ''} />
+</form>
+
 <ConfirmDialog
 	open={!!deleteId}
 	title={t().category.delete}
 	message={t().category.deleteConfirm}
-	onconfirm={() => {
-		if (!deleteId) return;
-		const f = document.createElement('form');
-		f.method = 'POST';
-		f.action = '?/delete';
-		const i = document.createElement('input');
-		i.name = 'id'; i.value = deleteId!;
-		f.appendChild(i);
-		document.body.appendChild(f);
-		f.submit();
-	}}
+	onconfirm={() => deleteFormEl?.requestSubmit()}
 	oncancel={() => (deleteId = null)}
 />
 
 <style lang="scss">
-	.page {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-xl);
-	}
-
-	.page-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.page-title {
-		font-size: 1.5rem;
-		font-weight: 700;
-	}
-
-	.form {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-lg);
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-sm);
-	}
-
+	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
+	.page-header { display: flex; align-items: center; justify-content: space-between; }
+	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
+	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
 		background-color: var(--color-danger-light);
@@ -141,16 +122,6 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
-
-	.form-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: var(--space-sm);
-	}
-
-	.row-actions {
-		display: flex;
-		gap: var(--space-xs);
-		justify-content: flex-end;
-	}
+	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
 </style>
