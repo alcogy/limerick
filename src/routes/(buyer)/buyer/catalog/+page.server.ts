@@ -1,19 +1,28 @@
 import type { PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
-import { asc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 
 export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	const db = drizzle(platform!.env.DB, { schema });
 
 	const categoryFilter = url.searchParams.get('category') || '';
+	const sortBy = url.searchParams.get('sort') || 'sort_order';
+
+	const orderByMap = {
+		sort_order: [asc(schema.products.sort_order), asc(schema.products.name)],
+		name_asc:   [asc(schema.products.name)],
+		price_asc:  [asc(schema.products.base_price)],
+		price_desc: [desc(schema.products.base_price)]
+	} as const;
+	const orderBy = orderByMap[sortBy as keyof typeof orderByMap] ?? orderByMap.sort_order;
 
 	const [products, categories, buyer] = await Promise.all([
 		db.query.products.findMany({
 			where: categoryFilter
 				? eq(schema.products.category_id, categoryFilter)
 				: eq(schema.products.is_active, true),
-			orderBy: [asc(schema.products.name)],
+			orderBy,
 			with: { category: true, group_prices: true }
 		}),
 		db.select().from(schema.categories).orderBy(asc(schema.categories.sort_order)),
@@ -58,5 +67,5 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 			};
 		});
 
-	return { products: productsWithPrice, categories, categoryFilter };
+	return { products: productsWithPrice, categories, categoryFilter, sortBy };
 };

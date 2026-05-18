@@ -103,6 +103,7 @@ export const products = sqliteTable('products', {
 	min_order_qty: integer('min_order_qty').notNull().default(1),
 	stock_qty: integer('stock_qty').notNull().default(0),
 	is_active: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+	sort_order: integer('sort_order').notNull().default(0),
 	image_key: text('image_key'),
 	created_at: text('created_at')
 		.notNull()

@@ -112,6 +112,7 @@ export const en = {
 		minOrderQty: 'Min. order qty',
 		stockQty: 'Stock qty',
 		isActive: 'Active',
+		sortOrder: 'Sort order',
 		image: 'Image',
 		skuPlaceholder: 'e.g. PROD-001',
 		namePlaceholder: 'Enter product name',
