@@ -31,7 +31,7 @@
 	]);
 
 	const secondaryNavItems = $derived<NavItem[]>([
-		{ href: '/profile', label: t().nav.profile, icon: CircleUser },
+		{ href: '/supplier/profile', label: t().nav.profile, icon: CircleUser },
 		{
 			href: '/logout',
 			label: t().nav.signOut,
