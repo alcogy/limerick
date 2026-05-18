@@ -38,7 +38,10 @@
 
 	function openPricing(group: (typeof data.groups)[0]) {
 		pricingGroup = group;
-		groupPrices = {};
+		const existing = data.priceMap[group.id] ?? {};
+		groupPrices = Object.fromEntries(
+			Object.entries(existing).map(([k, v]) => [k, String(v)])
+		);
 	}
 
 	const columns = [
