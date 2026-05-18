@@ -102,6 +102,7 @@
 			<div class="field">
 				<Label for="closing_day">{t().buyer.closingDay}</Label>
 				<Input id="closing_day" name="closing_day" type="number" value="20" min="1" max="31" />
+				<p class="field-note">{t().buyer.closingDayNote}</p>
 			</div>
 		</div>
 		<div class="field">
@@ -245,6 +246,11 @@
 		font-family: inherit;
 		font-size: 0.8125rem;
 	}
+	.field-note {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
+
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
 		background-color: var(--color-danger-light);
