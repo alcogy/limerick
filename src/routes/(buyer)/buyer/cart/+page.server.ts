@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { now } from '$lib/utils';
 
@@ -55,11 +55,17 @@ export const actions = {
 			const product = productMap.get(item.id);
 			if (!product) continue;
 
+			const quantity = Math.max(1, item.qty);
+
+			// Stock check
+			if (product.stock_qty < quantity) {
+				return fail(400, { error: `Insufficient stock for "${product.name}" (available: ${product.stock_qty})` });
+			}
+
 			const groupPrice = priceGroupId
 				? product.group_prices.find((gp) => gp.price_group_id === priceGroupId)
 				: null;
 			const unit_price = groupPrice?.price ?? product.base_price;
-			const quantity = Math.max(1, item.qty);
 			const subtotal = unit_price * quantity;
 			const item_tax = Math.floor(subtotal * product.tax_rate);
 
@@ -92,6 +98,13 @@ export const actions = {
 		await db.insert(schema.order_items).values(
 			orderItems.map((item) => ({ ...item, order_id: order.id }))
 		);
+
+		// Decrement stock for each ordered product
+		for (const item of orderItems) {
+			await db.update(schema.products)
+				.set({ stock_qty: sql`stock_qty - ${item.quantity}`, updated_at: ts })
+				.where(eq(schema.products.id, item.product_id));
+		}
 
 		throw redirect(302, '/buyer/orders?placed=1');
 	}
