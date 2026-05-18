@@ -39,7 +39,8 @@ export const actions = {
 			where: eq(schema.buyers.id, locals.user!.id)
 		});
 
-		const priceGroupId = buyer?.price_group_id ?? null;
+		const priceGroupId  = buyer?.price_group_id ?? null;
+		const discountRate  = buyer?.discount_rate   ?? null;
 
 		const productMap = new Map(products.map((p) => [p.id, p]));
 
@@ -62,10 +63,15 @@ export const actions = {
 				return fail(400, { error: `Insufficient stock for "${product.name}" (available: ${product.stock_qty})` });
 			}
 
+			// Pricing priority: group_price > discount_rate > base_price
 			const groupPrice = priceGroupId
 				? product.group_prices.find((gp) => gp.price_group_id === priceGroupId)
 				: null;
-			const unit_price = groupPrice?.price ?? product.base_price;
+			const unit_price = groupPrice
+				? groupPrice.price
+				: discountRate !== null
+					? Math.floor(product.base_price * discountRate)
+					: product.base_price;
 			const subtotal = unit_price * quantity;
 			const item_tax = Math.floor(subtotal * product.tax_rate);
 

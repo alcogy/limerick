@@ -27,6 +27,7 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 				name: schema.users.name,
 				is_active: schema.users.is_active,
 				price_group_id: schema.buyers.price_group_id,
+				discount_rate: schema.buyers.discount_rate,
 				closing_day: schema.buyers.closing_day,
 				phone: schema.buyers.phone,
 				address: schema.buyers.address,
@@ -51,6 +52,8 @@ export const actions = {
 		const name = data.get('name')?.toString().trim();
 		const company_name = data.get('company_name')?.toString().trim();
 		const price_group_id = data.get('price_group_id')?.toString() || null;
+		const discount_rate_str = data.get('discount_rate')?.toString().trim();
+		const discount_rate = discount_rate_str ? parseFloat(discount_rate_str) : null;
 		const closing_day = parseInt(data.get('closing_day')?.toString() ?? '20') || 20;
 		const phone = data.get('phone')?.toString().trim() || null;
 		const address = data.get('address')?.toString().trim() || null;
@@ -59,6 +62,9 @@ export const actions = {
 
 		if (!email || !name || !company_name) {
 			return fail(400, { error: 'Email, name, and company name are required' });
+		}
+		if (discount_rate !== null && (discount_rate < 0 || discount_rate > 1)) {
+			return fail(400, { error: 'Discount rate must be between 0 and 1' });
 		}
 
 		const db = drizzle(platform!.env.DB, { schema });
@@ -72,7 +78,7 @@ export const actions = {
 			id: userId, email, name, role: 'buyer', is_active: false
 		});
 		await db.insert(schema.buyers).values({
-			id: userId, company_name, price_group_id, closing_day,
+			id: userId, company_name, price_group_id, discount_rate, closing_day,
 			phone, address, payment_terms, notes
 		});
 
@@ -90,11 +96,15 @@ export const actions = {
 		const db = drizzle(platform!.env.DB, { schema });
 		const ts = now();
 
+		const dr = data.get('discount_rate')?.toString().trim();
+		const discount_rate = dr ? parseFloat(dr) : null;
+
 		await Promise.all([
 			db.update(schema.users).set({ name, updated_at: ts }).where(eq(schema.users.id, id)),
 			db.update(schema.buyers).set({
 				company_name,
 				price_group_id: data.get('price_group_id')?.toString() || null,
+				discount_rate: discount_rate !== null && !isNaN(discount_rate) ? discount_rate : null,
 				closing_day: parseInt(data.get('closing_day')?.toString() ?? '20') || 20,
 				phone: data.get('phone')?.toString().trim() || null,
 				address: data.get('address')?.toString().trim() || null,
