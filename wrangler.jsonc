@@ -10,6 +10,13 @@
 	},
 	"workers_dev": true,
 	"preview_urls": true,
+	"r2_buckets": [
+		{
+			// Run `wrangler r2 bucket create limerick-storage` for remote deployment
+			"binding": "BUCKET",
+			"bucket_name": "limerick-storage"
+		}
+	],
 	"d1_databases": [
 		{
 			// Run `wrangler d1 create limerick-db` to get the real database_id for remote deployment

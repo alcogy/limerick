@@ -105,6 +105,11 @@
 		<div class="product-grid">
 			{#each data.products as product (product.id)}
 				<div class="product-card">
+					{#if product.image_key}
+						<div class="product-image">
+							<img src="/api/storage/{product.image_key}" alt={product.name} />
+						</div>
+					{/if}
 					<div class="product-body">
 						<div class="product-category">{product.category?.name ?? ''}</div>
 						<h3 class="product-name">{product.name}</h3>
@@ -224,6 +229,16 @@
 		transition: box-shadow var(--transition-fast);
 
 		&:hover { box-shadow: var(--shadow-md); }
+	}
+
+	.product-image {
+		width: 100%;
+		aspect-ratio: 4/3;
+		overflow: hidden;
+		background-color: var(--color-bg-sunken);
+		border-bottom: 1px solid var(--color-border-light);
+
+		img { width: 100%; height: 100%; object-fit: cover; }
 	}
 
 	.product-body {

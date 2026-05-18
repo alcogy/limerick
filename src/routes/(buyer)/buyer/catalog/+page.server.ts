@@ -61,6 +61,7 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 				unit: p.unit,
 				min_order_qty: p.min_order_qty,
 				stock_qty: p.stock_qty,
+				image_key: p.image_key,
 				category: p.category,
 				contract_price,
 				has_group_price: price_type !== 'base'
