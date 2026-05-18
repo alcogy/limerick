@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	const orders = await db.query.orders.findMany({
 		where: eq(schema.orders.buyer_id, locals.user!.id),
 		orderBy: [desc(schema.orders.ordered_at)],
-		with: { items: { with: { product: true } } }
+		with: { items: { orderBy: (i, { asc }) => [asc(i.line_no)], with: { product: true } } }
 	});
 
 	return { orders, placed };

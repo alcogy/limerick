@@ -45,9 +45,10 @@ export const actions = {
 		const productMap = new Map(products.map((p) => [p.id, p]));
 
 		const orderItems: {
-			product_id: string; sku: string; name: string;
+			product_id: string; line_no: number; sku: string; name: string;
 			unit_price: number; tax_rate: number; quantity: number; subtotal: number;
 		}[] = [];
+		let lineNo = 1;
 
 		let total_amount = 0;
 		let tax_amount = 0;
@@ -80,6 +81,7 @@ export const actions = {
 
 			orderItems.push({
 				product_id: product.id,
+				line_no: lineNo++,
 				sku: product.sku,
 				name: product.name,
 				unit_price,

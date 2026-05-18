@@ -1,6 +1,13 @@
 import { integer, primaryKey, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { relations, sql } from 'drizzle-orm';
 
+// ─── Settings ────────────────────────────────────────────────────────────────
+
+export const settings = sqliteTable('settings', {
+	key: text('key').primaryKey(),
+	value: text('value').notNull().default('')
+});
+
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 export const users = sqliteTable('users', {
@@ -181,6 +188,7 @@ export const order_items = sqliteTable('order_items', {
 	product_id: text('product_id')
 		.notNull()
 		.references(() => products.id, { onDelete: 'restrict' }),
+	line_no: integer('line_no').notNull().default(0),
 	sku: text('sku').notNull(),
 	name: text('name').notNull(),
 	unit_price: integer('unit_price').notNull(),
