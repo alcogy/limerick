@@ -10,12 +10,12 @@
 	let editItem = $state<(typeof data.categories)[0] | null>(null);
 	let deleteId = $state<string | null>(null);
 
-	$effect(() => {
-		if (form?.success) {
-			showCreate = false;
-			editItem = null;
-		}
-	});
+	function closeOnSuccess() {
+		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
+			await update();
+			if (result.type === 'success') { showCreate = false; editItem = null; }
+		};
+	}
 
 	const columns = [
 		{ key: 'name', label: t().category.name },
@@ -46,7 +46,7 @@
 
 <!-- Create modal -->
 <Modal bind:open={showCreate} title={t().category.new}>
-	<form method="POST" action="?/create" use:enhance class="form">
+	<form method="POST" action="?/create" use:enhance={closeOnSuccess()} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<div class="field">
 			<Label for="name" required>{t().category.name}</Label>
@@ -66,7 +66,7 @@
 <!-- Edit modal -->
 {#if editItem}
 	<Modal open={!!editItem} title={t().category.edit} onclose={() => (editItem = null)}>
-		<form method="POST" action="?/update" use:enhance class="form">
+		<form method="POST" action="?/update" use:enhance={closeOnSuccess()} class="form">
 			<input type="hidden" name="id" value={editItem.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<div class="field">

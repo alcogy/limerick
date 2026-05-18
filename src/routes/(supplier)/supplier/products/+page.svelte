@@ -11,11 +11,14 @@
 	let showCreate = $state(false);
 	let editItem = $state<(typeof data.products)[0] | null>(null);
 	let deleteId = $state<string | null>(null);
-	let searchValue = $state(data.search);
+	let searchValue = $state(data.search || '');
 
-	$effect(() => {
-		if (form?.success) { showCreate = false; editItem = null; }
-	});
+	function closeOnSuccess() {
+		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
+			await update();
+			if (result.type === 'success') { showCreate = false; editItem = null; }
+		};
+	}
 
 	function handleSearch() {
 		const p = new URLSearchParams();
@@ -99,7 +102,7 @@
 
 <!-- Create modal -->
 <Modal bind:open={showCreate} title={t().product.new} size="lg">
-	<form method="POST" action="?/create" use:enhance class="form">
+	<form method="POST" action="?/create" use:enhance={closeOnSuccess()} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<div class="form-grid">
 			<div class="field">
@@ -162,7 +165,7 @@
 <!-- Edit modal -->
 {#if editItem}
 	<Modal open={!!editItem} title={t().product.edit} size="lg" onclose={() => (editItem = null)}>
-		<form method="POST" action="?/update" use:enhance class="form">
+		<form method="POST" action="?/update" use:enhance={closeOnSuccess()} class="form">
 			<input type="hidden" name="id" value={editItem.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<div class="form-grid">

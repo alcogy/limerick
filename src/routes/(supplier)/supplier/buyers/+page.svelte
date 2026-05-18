@@ -12,18 +12,19 @@
 	let deleteId = $state<string | null>(null);
 	let inviteId = $state<string | null>(null);
 	let inviteUrl = $state<string | null>(null);
-	let searchValue = $state(data.search);
+	let searchValue = $state(data.search || '');
 
-	$effect(() => {
-		if (form?.success) {
-			showCreate = false;
-			editItem = null;
-			if (form.inviteUrl) {
-				inviteUrl = form.inviteUrl as string;
-				inviteId = null;
+	function closeOnSuccess() {
+		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
+			await update();
+			if (result.type === 'success') {
+				showCreate = false;
+				editItem = null;
+				const f = form as Record<string, unknown> | null;
+				if (f?.inviteUrl) { inviteUrl = f.inviteUrl as string; inviteId = null; }
 			}
-		}
-	});
+		};
+	}
 
 	const columns = [
 		{ key: 'company_name', label: t().buyer.companyName },
@@ -72,7 +73,7 @@
 
 <!-- Create modal -->
 <Modal bind:open={showCreate} title={t().buyer.new} size="lg">
-	<form method="POST" action="?/create" use:enhance class="form">
+	<form method="POST" action="?/create" use:enhance={closeOnSuccess()} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<div class="form-grid">
 			<div class="field">
@@ -129,7 +130,7 @@
 <!-- Edit modal -->
 {#if editItem}
 	<Modal open={!!editItem} title={t().buyer.edit} size="lg" onclose={() => (editItem = null)}>
-		<form method="POST" action="?/update" use:enhance class="form">
+		<form method="POST" action="?/update" use:enhance={closeOnSuccess()} class="form">
 			<input type="hidden" name="id" value={editItem.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<div class="form-grid">
