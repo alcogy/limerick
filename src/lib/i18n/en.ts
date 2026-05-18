@@ -73,6 +73,11 @@ export const en = {
 		settings: 'Settings',
 		signOut: 'Sign out'
 	},
+	settings: {
+		title: 'Settings',
+		language: 'Language',
+		languageDesc: 'Select the display language for the UI'
+	},
 	dashboard: {
 		title: 'Dashboard',
 		stats: {

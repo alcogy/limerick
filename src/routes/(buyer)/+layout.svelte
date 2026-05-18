@@ -10,6 +10,7 @@
 		ClipboardList,
 		FileText,
 		CircleUser,
+		Settings,
 		LogOut
 	} from '@lucide/svelte';
 
@@ -26,6 +27,7 @@
 
 	const secondaryNavItems = $derived<NavItem[]>([
 		{ href: '/buyer/profile', label: t().nav.profile, icon: CircleUser },
+		{ href: '/buyer/settings', label: t().nav.settings, icon: Settings },
 		{
 			href: '/logout',
 			label: t().nav.signOut,

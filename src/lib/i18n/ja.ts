@@ -75,6 +75,11 @@ export const ja: Translations = {
 		settings: '設定',
 		signOut: 'サインアウト'
 	},
+	settings: {
+		title: '設定',
+		language: '言語',
+		languageDesc: 'UIの表示言語を選択します'
+	},
 	dashboard: {
 		title: 'ダッシュボード',
 		stats: {
