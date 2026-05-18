@@ -160,6 +160,8 @@ export const en = {
 		paymentTerms: 'Payment terms',
 		notes: 'Notes',
 		closingDayNote: 'Day of month (1–31). Use 31 for end-of-month.',
+		discountRate: 'Discount rate',
+		discountRateNote: 'e.g. 0.80 = 20% off base price. Leave blank if using price group or base price.',
 		emailSent: 'Invitation email sent to buyer.',
 		activated: 'Activated',
 		pending: 'Pending activation'

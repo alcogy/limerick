@@ -11,6 +11,7 @@
 		name: string;
 		email: string;
 		price_group_id: string | null;
+		discount_rate: number | null;
 		closing_day: number;
 		phone: string | null;
 		address: string | null;
@@ -76,10 +77,18 @@
 			</select>
 		</div>
 		<div class="field">
-			<Label for="bf-cd">{t().buyer.closingDay}</Label>
-			<Input id="bf-cd" name="closing_day" type="number" value={buyer?.closing_day ?? 20} min="1" max="31" />
-			<p class="field-note">{t().buyer.closingDayNote}</p>
+			<Label for="bf-rate">{t().buyer.discountRate}</Label>
+			<Input id="bf-rate" name="discount_rate" type="number"
+				value={buyer?.discount_rate ?? ''} step="0.01" min="0" max="1"
+				placeholder="e.g. 0.80" />
+			<p class="field-note">{t().buyer.discountRateNote}</p>
 		</div>
+	</div>
+
+	<div class="field">
+		<Label for="bf-cd">{t().buyer.closingDay}</Label>
+		<Input id="bf-cd" name="closing_day" type="number" value={buyer?.closing_day ?? 20} min="1" max="31" />
+		<p class="field-note">{t().buyer.closingDayNote}</p>
 	</div>
 
 	<div class="field">

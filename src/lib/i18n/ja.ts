@@ -161,7 +161,9 @@ export const ja: Translations = {
 		closingDay: '締日',
 		paymentTerms: '支払条件',
 		notes: '備考',
-		closingDayNote: '毎月の締日	。末日締めの場合は31を設定してください。',
+		closingDayNote: '毎月の締日。末日締めの場合は31を設定してください。',
+		discountRate: '掛け率',
+		discountRateNote: '例: 0.80 = 2割引。価格グループまたは定価を使用する場合は空欄。',
 		emailSent: '招待メールを送信しました。',
 		activated: '有効',
 		pending: '招待中'

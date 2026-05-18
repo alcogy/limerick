@@ -48,6 +48,7 @@ export const buyers = sqliteTable('buyers', {
 	price_group_id: text('price_group_id').references(() => price_groups.id, {
 		onDelete: 'set null'
 	}),
+	discount_rate: real('discount_rate'),  // e.g. 0.80 = 20% off base price (null = no discount)
 	closing_day: integer('closing_day').notNull().default(20),
 	payment_terms: text('payment_terms'),
 	notes: text('notes'),

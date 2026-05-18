@@ -20,8 +20,9 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 		db.query.buyers.findFirst({ where: eq(schema.buyers.id, locals.user!.id) })
 	]);
 
-	// Resolve contract price: group_price if available, else base_price
+	// Pricing priority: group_price > discount_rate > base_price
 	const priceGroupId = buyer?.price_group_id ?? null;
+	const discountRate = buyer?.discount_rate ?? null;
 
 	const productsWithPrice = products
 		.filter((p) => p.is_active)
@@ -29,6 +30,18 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 			const groupPrice = priceGroupId
 				? p.group_prices.find((gp) => gp.price_group_id === priceGroupId)
 				: null;
+			let contract_price: number;
+			let price_type: 'group' | 'rate' | 'base';
+			if (groupPrice) {
+				contract_price = groupPrice.price;
+				price_type = 'group';
+			} else if (discountRate !== null) {
+				contract_price = Math.floor(p.base_price * discountRate);
+				price_type = 'rate';
+			} else {
+				contract_price = p.base_price;
+				price_type = 'base';
+			}
 			return {
 				id: p.id,
 				sku: p.sku,
@@ -40,8 +53,8 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 				min_order_qty: p.min_order_qty,
 				stock_qty: p.stock_qty,
 				category: p.category,
-				contract_price: groupPrice?.price ?? p.base_price,
-				has_group_price: !!groupPrice
+				contract_price,
+				has_group_price: price_type !== 'base'
 			};
 		});
 
