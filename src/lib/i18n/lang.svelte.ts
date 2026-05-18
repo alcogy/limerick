@@ -15,7 +15,11 @@ let locale: Locale = $state('en');
 
 if (browser) {
 	const saved = localStorage.getItem(STORAGE_KEY) as Locale | null;
-	if (saved === 'en' || saved === 'ja') locale = saved;
+	if (saved === 'en' || saved === 'ja') {
+		locale = saved;
+		// Sync html[lang] in case the inline script ran before hydration updated the rune
+		document.documentElement.lang = saved;
+	}
 }
 
 export function getLocale(): Locale {
