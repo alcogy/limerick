@@ -31,6 +31,8 @@ export function setLocale(l: Locale) {
 	if (browser) {
 		localStorage.setItem(STORAGE_KEY, l);
 		document.documentElement.lang = l;
+		// Also persist in cookie so the server can read it for SSR (eliminates language FOUC)
+		document.cookie = `${STORAGE_KEY}=${l}; path=/; max-age=31536000; SameSite=Lax`;
 	}
 }
 

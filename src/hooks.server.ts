@@ -24,6 +24,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.locals.user = null;
 	}
 
+	// Read locale from cookie for SSR
+	const localeCookie = event.cookies.get('limerick_lang');
+	event.locals.locale = localeCookie === 'ja' ? 'ja' : 'en';
+
 	const publicPaths = ['/login', '/auth/setup-password', '/logout', '/setup'];
 	const isPublic = publicPaths.some(
 		(p) => event.url.pathname === p || event.url.pathname.startsWith(p + '?')
