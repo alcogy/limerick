@@ -239,6 +239,36 @@
 					</label>
 				</div>
 			</div>
+			<!-- Image upload (separate from main form) -->
+			<div class="field">
+				<Label>{t().product.image}</Label>
+				{#if editItem.image_key}
+					<div class="image-preview">
+						<img src="/api/storage/{editItem.image_key}" alt={editItem.name} />
+						<Button size="sm" variant="danger" onclick={async () => {
+							await fetch(`/api/products/${editItem!.id}/image`, { method: 'DELETE' });
+							editItem = { ...editItem!, image_key: null };
+						}}>{t().common.delete}</Button>
+					</div>
+				{/if}
+				<input
+					type="file"
+					accept="image/jpeg,image/png,image/webp,image/gif"
+					class="file-input"
+					onchange={async (e) => {
+						const file = (e.currentTarget as HTMLInputElement).files?.[0];
+						if (!file) return;
+						const fd = new FormData();
+						fd.append('image', file);
+						const res = await fetch(`/api/products/${editItem!.id}/image`, { method: 'POST', body: fd });
+						if (res.ok) {
+							const { key } = await res.json() as { key: string };
+							editItem = { ...editItem!, image_key: key };
+						}
+					}}
+				/>
+			</div>
+
 			<div class="form-actions">
 				<Button type="button" variant="secondary" onclick={() => (editItem = null)}>{t().common.cancel}</Button>
 				<Button type="submit">{t().common.save}</Button>
@@ -293,4 +323,23 @@
 	}
 	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
 	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
+
+	.image-preview {
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
+
+		img {
+			width: 64px;
+			height: 64px;
+			object-fit: cover;
+			border-radius: var(--radius-md);
+			border: 1px solid var(--color-border-light);
+		}
+	}
+
+	.file-input {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+	}
 </style>
