@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 			orderBy: [desc(schema.orders.ordered_at)],
 			limit: PER_PAGE,
 			offset: (page - 1) * PER_PAGE,
-			with: { buyer: true, items: { with: { product: true } } }
+			with: { buyer: true, items: { orderBy: (i, { asc }) => [asc(i.line_no)], with: { product: true } } }
 		})
 	]);
 
