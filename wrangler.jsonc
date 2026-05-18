@@ -1,0 +1,22 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "limerick",
+	"compatibility_date": "2026-05-17",
+	"compatibility_flags": ["nodejs_als"],
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare"
+	},
+	"workers_dev": true,
+	"preview_urls": true,
+	"d1_databases": [
+		{
+			// Run `wrangler d1 create limerick-db` to get the real database_id for remote deployment
+			"binding": "DB",
+			"database_name": "limerick-db",
+			"database_id": "00000000-0000-0000-0000-000000000000",
+			"migrations_dir": "./drizzle"
+		}
+	]
+}
