@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { Button, ConfirmDialog, Input, Label, Modal, Table, Textarea } from '$lib/ui';
-	import { t } from '$lib/i18n';
 	import { enhance } from '$app/forms';
+	import { t } from '$lib/i18n';
 	import { formatCurrency } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -13,20 +14,35 @@
 	let pricingGroup = $state<(typeof data.groups)[0] | null>(null);
 	let groupPrices: Record<string, string> = $state({});
 
-	async function openPricing(group: (typeof data.groups)[0]) {
+	let deleteFormEl = $state<HTMLFormElement | undefined>();
+
+	const createEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') showCreate = false;
+	};
+
+	const updateEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') editItem = null;
+	};
+
+	const pricesEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') pricingGroup = null;
+	};
+
+	const deleteEnhance: SubmitFunction = () => async ({ update }) => {
+		await update();
+		deleteId = null;
+	};
+
+	function openPricing(group: (typeof data.groups)[0]) {
 		pricingGroup = group;
 		groupPrices = {};
 	}
 
-	function closeOnSuccess() {
-		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
-			await update();
-			if (result.type === 'success') { showCreate = false; editItem = null; pricingGroup = null; }
-		};
-	}
-
 	const columns = [
-		{ key: 'name', label: t().priceGroup.name },
+		{ key: 'name',        label: t().priceGroup.name },
 		{ key: 'description', label: t().priceGroup.description },
 		{ key: 'buyer_count', label: t().priceGroup.buyerCount, width: '80px' }
 	];
@@ -45,9 +61,9 @@
 	<Table {columns} rows={data.groups}>
 		{#snippet actions(row)}
 			<div class="row-actions">
-				<Button size="sm" variant="ghost" onclick={() => openPricing(row)}>{t().priceGroup.setPrices}</Button>
-				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}>{t().common.edit}</Button>
-				<Button size="sm" variant="danger" onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
+				<Button size="sm" variant="ghost"      onclick={() => openPricing(row)}>{t().priceGroup.setPrices}</Button>
+				<Button size="sm" variant="secondary"  onclick={() => (editItem = row)}>{t().common.edit}</Button>
+				<Button size="sm" variant="danger"     onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
 			</div>
 		{/snippet}
 	</Table>
@@ -55,7 +71,7 @@
 
 <!-- Create modal -->
 <Modal bind:open={showCreate} title={t().priceGroup.new}>
-	<form method="POST" action="?/create" use:enhance={closeOnSuccess()} class="form">
+	<form method="POST" action="?/create" use:enhance={createEnhance} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<div class="field">
 			<Label for="name" required>{t().priceGroup.name}</Label>
@@ -75,7 +91,7 @@
 <!-- Edit modal -->
 {#if editItem}
 	<Modal open={!!editItem} title={t().priceGroup.edit} onclose={() => (editItem = null)}>
-		<form method="POST" action="?/update" use:enhance={closeOnSuccess()} class="form">
+		<form method="POST" action="?/update" use:enhance={updateEnhance} class="form">
 			<input type="hidden" name="id" value={editItem.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<div class="field">
@@ -97,8 +113,9 @@
 <!-- Pricing modal -->
 {#if pricingGroup}
 	<Modal open={!!pricingGroup} title="{t().priceGroup.setPrices}: {pricingGroup.name}" size="lg" onclose={() => (pricingGroup = null)}>
-		<form method="POST" action="?/setPrices" use:enhance={closeOnSuccess()} class="form">
+		<form method="POST" action="?/setPrices" use:enhance={pricesEnhance} class="form">
 			<input type="hidden" name="group_id" value={pricingGroup.id} />
+			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<p class="pricing-help">{t().priceGroup.basePrice} — {t().priceGroup.noOverride}</p>
 			<div class="pricing-list">
 				{#each data.products as product (product.id)}
@@ -126,18 +143,16 @@
 	</Modal>
 {/if}
 
+<!-- Hidden delete form -->
+<form method="POST" action="?/delete" use:enhance={deleteEnhance} bind:this={deleteFormEl} style="display:none">
+	<input name="id" value={deleteId ?? ''} />
+</form>
+
 <ConfirmDialog
 	open={!!deleteId}
 	title={t().priceGroup.delete}
 	message={t().priceGroup.deleteConfirm}
-	onconfirm={() => {
-		if (!deleteId) return;
-		const f = document.createElement('form');
-		f.method = 'POST'; f.action = '?/delete';
-		const i = document.createElement('input');
-		i.name = 'id'; i.value = deleteId!;
-		f.appendChild(i); document.body.appendChild(f); f.submit();
-	}}
+	onconfirm={() => deleteFormEl?.requestSubmit()}
 	oncancel={() => (deleteId = null)}
 />
 
@@ -157,10 +172,7 @@
 	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
 	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
 
-	.pricing-help {
-		font-size: 0.8125rem;
-		color: var(--color-text-secondary);
-	}
+	.pricing-help { font-size: 0.8125rem; color: var(--color-text-secondary); }
 
 	.pricing-list {
 		display: flex;
@@ -178,7 +190,6 @@
 		gap: var(--space-md);
 		padding: var(--space-sm) 0;
 		border-bottom: 1px solid var(--color-border-light);
-
 		&:last-child { border-bottom: none; }
 	}
 

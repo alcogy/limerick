@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { Button, Card, ConfirmDialog, Input, Label, Modal, Pagination, SearchBar, Table, Textarea } from '$lib/ui';
-	import { t } from '$lib/i18n';
+	import { Button, ConfirmDialog, Input, Label, Modal, Pagination, SearchBar, Table, Textarea } from '$lib/ui';
 	import { enhance } from '$app/forms';
+	import { t } from '$lib/i18n';
 	import { goto } from '$app/navigation';
 	import { formatCurrency } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -13,12 +14,22 @@
 	let deleteId = $state<string | null>(null);
 	let searchValue = $state(data.search || '');
 
-	function closeOnSuccess() {
-		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
-			await update();
-			if (result.type === 'success') { showCreate = false; editItem = null; }
-		};
-	}
+	let deleteFormEl = $state<HTMLFormElement | undefined>();
+
+	const createEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') showCreate = false;
+	};
+
+	const updateEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') editItem = null;
+	};
+
+	const deleteEnhance: SubmitFunction = () => async ({ update }) => {
+		await update();
+		deleteId = null;
+	};
 
 	function handleSearch() {
 		const p = new URLSearchParams();
@@ -27,12 +38,12 @@
 	}
 
 	const columns = [
-		{ key: 'sku', label: t().product.sku, width: '120px' },
-		{ key: 'name', label: t().product.name },
-		{ key: 'category', label: t().product.category, width: '120px' },
-		{ key: 'base_price', label: t().product.basePrice, width: '120px' },
-		{ key: 'stock_qty', label: t().product.stockQty, width: '80px' },
-		{ key: 'is_active', label: t().product.isActive, width: '80px' }
+		{ key: 'sku',       label: t().product.sku,      width: '120px' },
+		{ key: 'name',      label: t().product.name },
+		{ key: 'category',  label: t().product.category,  width: '120px' },
+		{ key: 'base_price',label: t().product.basePrice,  width: '120px' },
+		{ key: 'stock_qty', label: t().product.stockQty,   width: '80px' },
+		{ key: 'is_active', label: t().product.isActive,   width: '80px' }
 	];
 </script>
 
@@ -82,7 +93,7 @@
 		{#snippet actions(row)}
 			<div class="row-actions">
 				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}>{t().common.edit}</Button>
-				<Button size="sm" variant="danger" onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
+				<Button size="sm" variant="danger"    onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
 			</div>
 		{/snippet}
 	</Table>
@@ -102,7 +113,7 @@
 
 <!-- Create modal -->
 <Modal bind:open={showCreate} title={t().product.new} size="lg">
-	<form method="POST" action="?/create" use:enhance={closeOnSuccess()} class="form">
+	<form method="POST" action="?/create" use:enhance={createEnhance} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<div class="form-grid">
 			<div class="field">
@@ -165,7 +176,7 @@
 <!-- Edit modal -->
 {#if editItem}
 	<Modal open={!!editItem} title={t().product.edit} size="lg" onclose={() => (editItem = null)}>
-		<form method="POST" action="?/update" use:enhance={closeOnSuccess()} class="form">
+		<form method="POST" action="?/update" use:enhance={updateEnhance} class="form">
 			<input type="hidden" name="id" value={editItem.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<div class="form-grid">
@@ -227,38 +238,25 @@
 	</Modal>
 {/if}
 
+<!-- Hidden delete form -->
+<form method="POST" action="?/delete" use:enhance={deleteEnhance} bind:this={deleteFormEl} style="display:none">
+	<input name="id" value={deleteId ?? ''} />
+</form>
+
 <ConfirmDialog
 	open={!!deleteId}
 	title={t().product.delete}
 	message={t().product.deleteConfirm}
-	onconfirm={() => {
-		if (!deleteId) return;
-		const f = document.createElement('form');
-		f.method = 'POST'; f.action = '?/delete';
-		const i = document.createElement('input');
-		i.name = 'id'; i.value = deleteId!;
-		f.appendChild(i); document.body.appendChild(f); f.submit();
-	}}
+	onconfirm={() => deleteFormEl?.requestSubmit()}
 	oncancel={() => (deleteId = null)}
 />
 
 <style lang="scss">
 	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-
-	.page-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
+	.page-header { display: flex; align-items: center; justify-content: space-between; }
 	.page-title { font-size: 1.5rem; font-weight: 700; }
 
-	.filters {
-		display: flex;
-		align-items: center;
-		gap: var(--space-md);
-		flex-wrap: wrap;
-	}
+	.filters { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; }
 
 	.select-filter, .select {
 		height: 36px;
@@ -284,7 +282,6 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
-
 	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
 	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
 </style>

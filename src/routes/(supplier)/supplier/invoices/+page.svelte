@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Button, ConfirmDialog, Input, Label, Modal, Pagination, Table } from '$lib/ui';
-	import { t } from '$lib/i18n';
 	import { enhance } from '$app/forms';
+	import { t } from '$lib/i18n';
 	import { goto } from '$app/navigation';
 	import { formatCurrency, formatDate } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -12,23 +13,20 @@
 	let viewInvoice = $state<(typeof data.invoices)[0] | null>(null);
 	let markPaidId = $state<string | null>(null);
 
-	function closeOnSuccess() {
-		return async ({ result, update }: { result: { type: string }; update: () => Promise<void> }) => {
-			await update();
-			if (result.type === 'success') { showGenerate = false; }
-		};
-	}
+	let markPaidFormEl = $state<HTMLFormElement | undefined>();
 
-	const INVOICE_STATUSES = ['', 'issued', 'paid', 'overdue'];
+	const generateEnhance: SubmitFunction = () => async ({ result, update }) => {
+		await update();
+		if (result.type === 'success') showGenerate = false;
+	};
 
-	const columns = [
-		{ key: 'invoice_number', label: t().invoice.invoiceNumber, width: '160px' },
-		{ key: 'buyer', label: t().invoice.buyer },
-		{ key: 'period', label: `${t().invoice.periodFrom} – ${t().invoice.periodTo}` },
-		{ key: 'total_amount', label: t().invoice.totalAmount, width: '120px' },
-		{ key: 'status', label: t().invoice.issuedAt, width: '100px' },
-		{ key: 'issued_at', label: t().invoice.issuedAt, width: '100px' }
-	];
+	const markPaidEnhance: SubmitFunction = () => async ({ update }) => {
+		await update();
+		markPaidId = null;
+		viewInvoice = null;
+	};
+
+	const INVOICE_STATUSES = ['', 'issued', 'paid', 'overdue'] as const;
 </script>
 
 <svelte:head>
@@ -52,18 +50,18 @@
 					goto(`?${p}`);
 				}}
 			>
-				{s ? t().invoice.statuses[s as keyof typeof t.invoice.statuses] : t().common.all}
+				{s ? t().invoice.statuses[s] : t().common.all}
 			</button>
 		{/each}
 	</div>
 
 	<Table columns={[
 		{ key: 'invoice_number', label: t().invoice.invoiceNumber, width: '160px' },
-		{ key: 'buyer', label: t().invoice.buyer },
-		{ key: 'period_to', label: t().invoice.periodTo, width: '120px' },
-		{ key: 'total_amount', label: t().invoice.totalAmount, width: '120px' },
-		{ key: 'status', label: t().common.status, width: '100px' },
-		{ key: 'issued_at', label: t().invoice.issuedAt, width: '120px' }
+		{ key: 'buyer',          label: t().invoice.buyer },
+		{ key: 'period_to',      label: t().invoice.periodTo,      width: '120px' },
+		{ key: 'total_amount',   label: t().invoice.totalAmount,   width: '120px' },
+		{ key: 'status',         label: t().common.status,         width: '100px' },
+		{ key: 'issued_at',      label: t().invoice.issuedAt,      width: '120px' }
 	]} rows={data.invoices} onrowclick={(row) => (viewInvoice = row)}>
 		{#snippet cell(col, row)}
 			{#if col.key === 'buyer'}
@@ -94,8 +92,8 @@
 </div>
 
 <!-- Generate modal -->
-<Modal bind:open={showGenerate} title={t().invoice.generate} size="md">
-	<form method="POST" action="?/generate" use:enhance={closeOnSuccess()} class="form">
+<Modal bind:open={showGenerate} title={t().invoice.generate}>
+	<form method="POST" action="?/generate" use:enhance={generateEnhance} class="form">
 		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 		<p class="generate-desc">{t().invoice.generateDesc}</p>
 		<div class="field">
@@ -130,7 +128,7 @@
 
 <!-- Invoice detail modal -->
 {#if viewInvoice}
-	<Modal open={!!viewInvoice} title="{t().invoice.detail}: {viewInvoice.invoice_number}" size="md" onclose={() => (viewInvoice = null)}>
+	<Modal open={!!viewInvoice} title="{t().invoice.detail}: {viewInvoice.invoice_number}" onclose={() => (viewInvoice = null)}>
 		<div class="invoice-detail">
 			<div class="detail-rows">
 				<div class="detail-row"><span class="detail-label">{t().invoice.invoiceNumber}</span><span>{viewInvoice.invoice_number}</span></div>
@@ -138,7 +136,8 @@
 				<div class="detail-row"><span class="detail-label">{t().invoice.periodFrom}</span><span>{formatDate(viewInvoice.period_from)}</span></div>
 				<div class="detail-row"><span class="detail-label">{t().invoice.periodTo}</span><span>{formatDate(viewInvoice.period_to)}</span></div>
 				<div class="detail-row"><span class="detail-label">{t().invoice.dueDate}</span><span>{formatDate(viewInvoice.due_date)}</span></div>
-				<div class="detail-row"><span class="detail-label">{t().common.status}</span>
+				<div class="detail-row">
+					<span class="detail-label">{t().common.status}</span>
 					<span class="badge badge-{viewInvoice.status}">{t().invoice.statuses[viewInvoice.status]}</span>
 				</div>
 			</div>
@@ -149,7 +148,7 @@
 			</div>
 			{#if viewInvoice.status === 'issued' || viewInvoice.status === 'overdue'}
 				<div class="invoice-actions">
-					<Button variant="primary" onclick={() => { markPaidId = viewInvoice!.id; viewInvoice = null; }}>
+					<Button variant="primary" onclick={() => { markPaidId = viewInvoice!.id; }}>
 						{t().invoice.markPaid}
 					</Button>
 				</div>
@@ -158,18 +157,16 @@
 	</Modal>
 {/if}
 
+<!-- Hidden markPaid form -->
+<form method="POST" action="?/markPaid" use:enhance={markPaidEnhance} bind:this={markPaidFormEl} style="display:none">
+	<input name="id" value={markPaidId ?? ''} />
+</form>
+
 <ConfirmDialog
 	open={!!markPaidId}
 	title={t().invoice.markPaid}
 	message={t().invoice.markPaidConfirm}
-	onconfirm={() => {
-		if (!markPaidId) return;
-		const f = document.createElement('form');
-		f.method = 'POST'; f.action = '?/markPaid';
-		const i = document.createElement('input');
-		i.name = 'id'; i.value = markPaidId!;
-		f.appendChild(i); document.body.appendChild(f); f.submit();
-	}}
+	onconfirm={() => markPaidFormEl?.requestSubmit()}
 	oncancel={() => (markPaidId = null)}
 />
 
@@ -199,12 +196,7 @@
 		cursor: pointer;
 		font-family: inherit;
 		transition: all var(--transition-fast);
-
-		&.active {
-			background-color: var(--color-bg-elevated);
-			color: var(--color-text);
-			box-shadow: var(--shadow-sm);
-		}
+		&.active { background-color: var(--color-bg-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }
 	}
 
 	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
@@ -232,11 +224,7 @@
 
 	.invoice-detail { display: flex; flex-direction: column; gap: var(--space-xl); }
 	.detail-rows { display: flex; flex-direction: column; gap: var(--space-sm); }
-	.detail-row {
-		display: flex;
-		gap: var(--space-md);
-		font-size: 0.875rem;
-	}
+	.detail-row { display: flex; gap: var(--space-md); font-size: 0.875rem; }
 	.detail-label { width: 120px; flex-shrink: 0; color: var(--color-text-secondary); }
 
 	.amount-rows {
@@ -247,11 +235,11 @@
 		background-color: var(--color-bg-sunken);
 		border-radius: var(--radius-md);
 	}
+
 	.amount-row {
 		display: flex;
 		justify-content: space-between;
 		font-size: 0.875rem;
-
 		&.total {
 			font-size: 1rem;
 			font-weight: 700;
@@ -260,5 +248,6 @@
 			margin-top: var(--space-xs);
 		}
 	}
+
 	.invoice-actions { display: flex; justify-content: flex-end; }
 </style>
