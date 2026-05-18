@@ -58,6 +58,11 @@
 				<div class="amount-row"><span>{t().invoice.taxAmount}</span><span>{formatCurrency(viewInvoice.tax_amount)}</span></div>
 				<div class="amount-row total"><span>{t().invoice.totalAmount}</span><span>{formatCurrency(viewInvoice.total_amount)}</span></div>
 			</div>
+			<div class="print-action">
+				<a href="/buyer/invoices/{viewInvoice.id}" target="_blank" class="print-link">
+					Print / PDF
+				</a>
+			</div>
 		</div>
 	</Modal>
 {/if}
@@ -138,4 +143,6 @@
 	}
 
 	.empty { font-size: 0.875rem; color: var(--color-text-tertiary); text-align: center; padding: var(--space-3xl) 0; }
+	.print-action { display: flex; justify-content: flex-end; padding-top: var(--space-sm); }
+	.print-link { font-size: 0.875rem; color: var(--color-primary); }
 </style>

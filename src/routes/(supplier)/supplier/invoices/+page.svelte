@@ -146,13 +146,16 @@
 				<div class="amount-row"><span>{t().invoice.taxAmount}</span><span>{formatCurrency(viewInvoice.tax_amount)}</span></div>
 				<div class="amount-row total"><span>{t().invoice.totalAmount}</span><span>{formatCurrency(viewInvoice.total_amount)}</span></div>
 			</div>
-			{#if viewInvoice.status === 'issued' || viewInvoice.status === 'overdue'}
-				<div class="invoice-actions">
+			<div class="invoice-actions">
+				<a href="/supplier/invoices/{viewInvoice.id}" target="_blank" class="print-link">
+					<Button variant="secondary">Print / PDF</Button>
+				</a>
+				{#if viewInvoice.status === 'issued' || viewInvoice.status === 'overdue'}
 					<Button variant="primary" onclick={() => { markPaidId = viewInvoice!.id; }}>
 						{t().invoice.markPaid}
 					</Button>
-				</div>
-			{/if}
+				{/if}
+			</div>
 		</div>
 	</Modal>
 {/if}
@@ -249,5 +252,6 @@
 		}
 	}
 
-	.invoice-actions { display: flex; justify-content: flex-end; }
+	.invoice-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+	.print-link { text-decoration: none; }
 </style>
