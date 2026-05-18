@@ -76,7 +76,17 @@ export const en = {
 	settings: {
 		title: 'Settings',
 		language: 'Language',
-		languageDesc: 'Select the display language for the UI'
+		languageDesc: 'Select the display language for the UI',
+		skuRule: 'SKU auto-numbering',
+		skuRuleDesc: 'Automatically generate sequential SKU codes for new products.',
+		skuPrefix: 'Prefix',
+		skuPrefixPlaceholder: 'e.g. PROD',
+		skuDigits: 'Digits',
+		skuDigitsNote: 'Number of digits in the sequence (e.g. 4 → 0001)',
+		skuSeq: 'Current sequence',
+		skuSeqNote: 'Next SKU will use this number + 1',
+		skuPreview: 'Preview',
+		save: 'Save'
 	},
 	profile: {
 		displayName: 'Display name',

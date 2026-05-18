@@ -78,7 +78,17 @@ export const ja: Translations = {
 	settings: {
 		title: '設定',
 		language: '言語',
-		languageDesc: 'UIの表示言語を選択します'
+		languageDesc: 'UIの表示言語を選択します',
+		skuRule: '商品コード自動連番',
+		skuRuleDesc: '新規商品登録時に商品コードを自動生成します。',
+		skuPrefix: 'プレフィックス',
+		skuPrefixPlaceholder: '例: PROD',
+		skuDigits: '桁数',
+		skuDigitsNote: '連番の桁数（例: 4 → 0001）',
+		skuSeq: '現在の連番',
+		skuSeqNote: '次回は この値 + 1 で生成されます',
+		skuPreview: 'プレビュー',
+		save: '保存'
 	},
 	profile: {
 		displayName: '表示名',
