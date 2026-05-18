@@ -1,5 +1,4 @@
-import { fail } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
@@ -17,31 +16,31 @@ export const actions = {
 		if (!locals.user) return fail(401, { error: 'Unauthorized' });
 
 		const data = await request.formData();
-		const name = data.get('name')?.toString().trim();
 		const currentPassword = data.get('current_password')?.toString();
-		const newPassword = data.get('new_password')?.toString();
+		const newPassword = data.get('new_password')?.toString() ?? '';
+		const confirmPassword = data.get('confirm_password')?.toString() ?? '';
 
-		if (!name) return fail(400, { error: 'Name is required' });
+		if (!currentPassword || !newPassword) {
+			return fail(400, { error: 'All password fields are required' });
+		}
+		if (newPassword !== confirmPassword) {
+			return fail(400, { error: 'Passwords do not match' });
+		}
+
+		const strengthErr = validatePasswordStrength(newPassword);
+		if (strengthErr) return fail(400, { error: strengthErr });
 
 		const db = drizzle(platform!.env.DB, { schema });
 		const user = await db.query.users.findFirst({ where: eq(schema.users.id, locals.user.id) });
-		if (!user) return fail(404, { error: 'User not found' });
+		if (!user || !user.password) return fail(404, { error: 'User not found' });
 
-		const updates: Partial<typeof schema.users.$inferInsert> = { name, updated_at: now() };
-
-		if (newPassword) {
-			if (!currentPassword || !user.password) {
-				return fail(400, { error: 'Current password is required' });
-			}
-			if (!(await verifyPassword(currentPassword, user.password))) {
-				return fail(400, { error: 'Current password is incorrect' });
-			}
-			const strengthErr = validatePasswordStrength(newPassword);
-			if (strengthErr) return fail(400, { error: strengthErr });
-			updates.password = await hashPassword(newPassword);
+		if (!(await verifyPassword(currentPassword, user.password))) {
+			return fail(400, { error: 'Current password is incorrect' });
 		}
 
-		await db.update(schema.users).set(updates).where(eq(schema.users.id, locals.user.id));
+		await db.update(schema.users)
+			.set({ password: await hashPassword(newPassword), updated_at: now() })
+			.where(eq(schema.users.id, locals.user.id));
 
 		return { success: true };
 	}

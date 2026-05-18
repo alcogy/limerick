@@ -15,33 +15,56 @@
 	<h1 class="page-title">{t().nav.profile}</h1>
 
 	<Card title={t().nav.profile}>
+		<div class="info-section">
+			<div class="info-row">
+				<span class="info-label">{t().auth.email}</span>
+				<span class="info-value">{data.user?.email ?? ''}</span>
+			</div>
+			<div class="info-row">
+				<span class="info-label">{t().buyer.contactName}</span>
+				<span class="info-value">{data.user?.name ?? ''}</span>
+			</div>
+		</div>
+	</Card>
+
+	<Card title={t().auth.newPassword}>
 		<form method="POST" use:enhance class="form">
 			{#if form?.success}
-				<div class="success-msg">Saved successfully.</div>
+				<div class="success-msg">{t().common.save} — OK</div>
 			{/if}
 			{#if form?.error}
 				<div class="form-error">{form.error}</div>
 			{/if}
 
 			<div class="field">
-				<Label for="name" required>Display name</Label>
-				<Input id="name" name="name" value={data.user?.name ?? ''} required />
+				<Label for="current_password">{t().auth.password}</Label>
+				<Input
+					id="current_password"
+					name="current_password"
+					type="password"
+					autocomplete="current-password"
+					required
+				/>
 			</div>
 			<div class="field">
-				<Label>Email</Label>
-				<Input value={data.user?.email ?? ''} disabled />
-			</div>
-
-			<hr class="divider" />
-			<p class="section-label">Change password (leave blank to keep current)</p>
-
-			<div class="field">
-				<Label for="current_password">Current password</Label>
-				<Input id="current_password" name="current_password" type="password" autocomplete="current-password" />
+				<Label for="new_password">{t().auth.newPassword}</Label>
+				<Input
+					id="new_password"
+					name="new_password"
+					type="password"
+					autocomplete="new-password"
+					required
+				/>
 			</div>
 			<div class="field">
-				<Label for="new_password">New password</Label>
-				<Input id="new_password" name="new_password" type="password" autocomplete="new-password" />
+				<Label for="confirm_password">{t().auth.confirmPassword}</Label>
+				<Input
+					id="confirm_password"
+					name="confirm_password"
+					type="password"
+					autocomplete="new-password"
+					required
+				/>
 			</div>
 
 			<div class="form-actions">
@@ -54,8 +77,27 @@
 <style lang="scss">
 	.page { display: flex; flex-direction: column; gap: var(--space-xl); max-width: 480px; }
 	.page-title { font-size: 1.5rem; font-weight: 700; }
+
+	.info-section { display: flex; flex-direction: column; gap: var(--space-md); }
+
+	.info-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-lg);
+		font-size: 0.875rem;
+	}
+
+	.info-label {
+		width: 100px;
+		flex-shrink: 0;
+		color: var(--color-text-secondary);
+	}
+
+	.info-value { font-weight: 500; }
+
 	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
 	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
 		background-color: var(--color-danger-light);
@@ -63,6 +105,7 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
+
 	.success-msg {
 		padding: var(--space-sm) var(--space-md);
 		background-color: var(--color-success-light);
@@ -70,7 +113,6 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
+
 	.form-actions { display: flex; justify-content: flex-end; }
-	.divider { border: none; border-top: 1px solid var(--color-border-light); }
-	.section-label { font-size: 0.8125rem; color: var(--color-text-secondary); }
 </style>

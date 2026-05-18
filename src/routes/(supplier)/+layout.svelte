@@ -13,6 +13,7 @@
 		ShoppingCart,
 		FileText,
 		CircleUser,
+		Settings,
 		LogOut
 	} from '@lucide/svelte';
 
@@ -32,6 +33,7 @@
 
 	const secondaryNavItems = $derived<NavItem[]>([
 		{ href: '/supplier/profile', label: t().nav.profile, icon: CircleUser },
+		{ href: '/supplier/settings', label: t().nav.settings, icon: Settings },
 		{
 			href: '/logout',
 			label: t().nav.signOut,
