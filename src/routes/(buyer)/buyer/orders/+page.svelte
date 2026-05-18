@@ -1,15 +1,21 @@
 <script lang="ts">
-	import { Button, Modal } from '$lib/ui';
+	import { Button, Modal, Input } from '$lib/ui';
 	import { t } from '$lib/i18n';
 	import { formatCurrency, formatDateTime } from '$lib/utils';
 	import type { PageData } from './$types';
 
+	interface ReorderItem {
+		id: string; name: string; sku: string;
+		price: number; tax_rate: number; unit: string; min_qty: number; qty: number;
+	}
+
 	let { data }: { data: PageData } = $props();
 
 	let viewOrder = $state<(typeof data.orders)[0] | null>(null);
+	let reorderItems = $state<ReorderItem[]>([]);
 
-	function reorder(order: (typeof data.orders)[0]) {
-		const cartItems = order.items.map((item) => ({
+	function openReorder(order: (typeof data.orders)[0]) {
+		reorderItems = order.items.map((item) => ({
 			id: item.product_id,
 			name: item.name,
 			sku: item.sku,
@@ -19,7 +25,10 @@
 			min_qty: item.product?.min_order_qty ?? 1,
 			qty: item.quantity
 		}));
-		localStorage.setItem('limerick_cart', JSON.stringify(cartItems));
+	}
+
+	function confirmReorder() {
+		localStorage.setItem('limerick_cart', JSON.stringify(reorderItems));
 		window.location.href = '/buyer/cart';
 	}
 </script>
@@ -60,7 +69,7 @@
 						<span class="order-total">{formatCurrency(order.total_amount + order.tax_amount)}</span>
 						<div class="order-actions">
 							<Button size="sm" variant="secondary" onclick={() => (viewOrder = order)}>{t().common.details}</Button>
-							<Button size="sm" variant="ghost" onclick={() => reorder(order)}>Reorder</Button>
+							<Button size="sm" variant="ghost" onclick={() => openReorder(order)}>Reorder</Button>
 						</div>
 					</div>
 				</div>
@@ -115,6 +124,35 @@
 					<tr class="grand"><td colspan="3" class="num">{t().order.grandTotal}</td><td class="num">{formatCurrency(viewOrder.total_amount + viewOrder.tax_amount)}</td></tr>
 				</tfoot>
 			</table>
+		</div>
+	</Modal>
+{/if}
+
+<!-- Reorder modal -->
+{#if reorderItems.length > 0}
+	<Modal open={reorderItems.length > 0} title="Reorder" size="md" onclose={() => (reorderItems = [])}>
+		<div class="reorder-content">
+			<p class="reorder-desc">Adjust quantities before adding to cart.</p>
+			<div class="reorder-list">
+				{#each reorderItems as item, i (item.id)}
+					<div class="reorder-row">
+						<div class="reorder-info">
+							<span class="reorder-name">{item.name}</span>
+							<span class="reorder-sku">{item.sku} / {item.unit}</span>
+						</div>
+						<div class="reorder-qty">
+							<button class="qty-btn" onclick={() => { if (item.qty > item.min_qty) reorderItems[i] = { ...item, qty: item.qty - item.min_qty }; }}>−</button>
+							<span class="qty-val">{item.qty}</span>
+							<button class="qty-btn" onclick={() => { reorderItems[i] = { ...item, qty: item.qty + item.min_qty }; }}>+</button>
+						</div>
+						<span class="reorder-price">{formatCurrency(item.price * item.qty)}</span>
+					</div>
+				{/each}
+			</div>
+			<div class="reorder-actions">
+				<Button variant="secondary" onclick={() => (reorderItems = [])}>{t().common.cancel}</Button>
+				<Button variant="primary" onclick={confirmReorder}>{t().cart.checkout}</Button>
+			</div>
 		</div>
 	</Modal>
 {/if}
@@ -190,4 +228,44 @@
 	}
 
 	.empty { font-size: 0.875rem; color: var(--color-text-tertiary); text-align: center; padding: var(--space-3xl) 0; }
+
+	.reorder-content { display: flex; flex-direction: column; gap: var(--space-lg); }
+	.reorder-desc { font-size: 0.8125rem; color: var(--color-text-secondary); }
+
+	.reorder-list { display: flex; flex-direction: column; gap: 0; }
+
+	.reorder-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
+		padding: var(--space-md) 0;
+		border-bottom: 1px solid var(--color-border-light);
+		&:last-child { border-bottom: none; }
+	}
+
+	.reorder-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+	.reorder-name { font-size: 0.875rem; font-weight: 500; }
+	.reorder-sku { font-size: 0.75rem; color: var(--color-text-tertiary); }
+
+	.reorder-qty {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+	}
+
+	.qty-btn {
+		width: 26px; height: 26px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		background: none;
+		color: var(--color-text);
+		font-size: 0.875rem;
+		cursor: pointer;
+		display: flex; align-items: center; justify-content: center;
+		&:hover { background-color: var(--color-hover); }
+	}
+
+	.qty-val { width: 36px; text-align: center; font-size: 0.875rem; font-weight: 600; }
+	.reorder-price { font-size: 0.875rem; font-weight: 600; white-space: nowrap; min-width: 70px; text-align: right; }
+	.reorder-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
 </style>
