@@ -13,5 +13,4 @@ export { default as ProfileEditor } from './ProfileEditor.svelte';
 export { default as AccountEditor } from './AccountEditor.svelte';
 export { default as SelectChip } from './SelectChip.svelte';
 export { default as WBSForm } from './WBSForm.svelte';
-export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export type { NavItem } from './Sidebar.svelte';
