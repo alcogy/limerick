@@ -167,7 +167,7 @@
 			</div>
 			<div class="invoice-actions">
 				<a href="/supplier/invoices/{viewInvoice.id}" target="_blank" class="print-link">
-					<Button variant="secondary">Print / PDF</Button>
+					<Button variant="secondary">{t().common.printPdf}</Button>
 				</a>
 				{#if viewInvoice.status === 'issued' || viewInvoice.status === 'overdue'}
 					<Button variant="primary" onclick={() => { markPaidId = viewInvoice!.id; }}>
