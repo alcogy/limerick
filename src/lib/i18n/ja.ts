@@ -237,6 +237,7 @@ export const ja: Translations = {
 		detail: '請求書詳細',
 		invoiceNumber: '請求書番号',
 		buyer: '得意先',
+		period: '対象期間',
 		periodFrom: '集計開始日',
 		periodTo: '集計終了日（締日）',
 		dueDate: '支払期限',

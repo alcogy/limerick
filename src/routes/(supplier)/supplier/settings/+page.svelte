@@ -100,19 +100,19 @@
 
 				<div class="setting-row border-b">
 					<div class="setting-info">
-						<div class="setting-label">{t().settings.companyAddress}</div>
+						<div class="setting-label">{t().settings.companyZip}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_address" bind:value={companyAddress} placeholder="1 Main St, Dublin" style="width:300px" />
+						<Input name="company_zip" bind:value={companyZip} placeholder="D01 F5P2" style="width:160px" />
 					</div>
 				</div>
 
 				<div class="setting-row border-b">
 					<div class="setting-info">
-						<div class="setting-label">{t().settings.companyZip}</div>
+						<div class="setting-label">{t().settings.companyAddress}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_zip" bind:value={companyZip} placeholder="D01 F5P2" style="width:160px" />
+						<Input name="company_address" bind:value={companyAddress} placeholder="1 Main St, Dublin" style="width:300px" />
 					</div>
 				</div>
 

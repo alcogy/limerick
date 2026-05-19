@@ -235,6 +235,7 @@ export const en = {
 		detail: 'Invoice detail',
 		invoiceNumber: 'Invoice #',
 		buyer: 'Buyer',
+		period: 'Billing period',
 		periodFrom: 'Period from',
 		periodTo: 'Period to',
 		dueDate: 'Due date',
