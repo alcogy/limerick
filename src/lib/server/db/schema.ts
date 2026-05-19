@@ -1,6 +1,14 @@
 import { integer, primaryKey, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { relations, sql } from 'drizzle-orm';
 
+// ─── Login Attempts ───────────────────────────────────────────────────────────
+
+export const login_attempts = sqliteTable('login_attempts', {
+	id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+	identifier: text('identifier').notNull(), // email or IP
+	attempted_at: text('attempted_at').notNull().default(sql`(datetime('now'))`)
+});
+
 // ─── Settings ────────────────────────────────────────────────────────────────
 
 export const settings = sqliteTable('settings', {
