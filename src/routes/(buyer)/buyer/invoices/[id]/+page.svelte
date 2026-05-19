@@ -30,30 +30,31 @@
 				<h1 class="inv-title">{t().invoice.invoiceNumber}: {inv.invoice_number}</h1>
 				<div class="inv-status badge badge-{inv.status}">{t().invoice.statuses[inv.status]}</div>
 			</div>
-			<div class="inv-meta">
-				<div class="meta-row"><span>{t().invoice.issuedAt}</span><span>{formatDate(inv.issued_at)}</span></div>
-				<div class="meta-row"><span>{t().invoice.dueDate}</span><span>{formatDate(inv.due_date)}</span></div>
+			<div class="inv-right">
+				{#if supplier.name}
+					<div class="supplier-block">
+						<div class="supplier-name">{supplier.name}</div>
+						{#if supplier.zip}<div class="supplier-sub">{supplier.zip}</div>{/if}
+						{#if supplier.address}<div class="supplier-sub">{supplier.address}</div>{/if}
+						{#if supplier.tel}<div class="supplier-sub">{supplier.tel}</div>{/if}
+						{#if supplier.taxNo}<div class="supplier-tax">{supplier.taxNo}</div>{/if}
+					</div>
+				{/if}
+				<div class="inv-meta">
+					<div class="meta-row"><span>{t().invoice.issuedAt}</span><span>{formatDate(inv.issued_at)}</span></div>
+					<div class="meta-row"><span>{t().invoice.dueDate}</span><span>{formatDate(inv.due_date)}</span></div>
+				</div>
 			</div>
 		</div>
 
 		<div class="inv-parties">
-			{#if supplier.name}
-				<div class="party">
-					<div class="party-label">{t().invoice.from}</div>
-					<div class="party-name">{supplier.name}</div>
-					{#if supplier.address}<div class="party-sub">{supplier.address}</div>{/if}
-					{#if supplier.zip}<div class="party-sub">{supplier.zip}</div>{/if}
-					{#if supplier.tel}<div class="party-sub">{supplier.tel}</div>{/if}
-					{#if supplier.taxNo}<div class="party-sub party-tax">{supplier.taxNo}</div>{/if}
-				</div>
-			{/if}
 			<div class="party">
 				<div class="party-label">{t().invoice.buyer}</div>
 				<div class="party-name">{inv.buyer?.company_name}</div>
 				<div class="party-sub">{inv.buyer?.user?.name}</div>
 			</div>
 			<div class="party">
-				<div class="party-label">Period</div>
+				<div class="party-label">{t().invoice.period}</div>
 				<div class="party-name">{formatDate(inv.period_from)} – {formatDate(inv.period_to)}</div>
 			</div>
 		</div>
@@ -108,7 +109,15 @@
 	.inv-title-block { display: flex; flex-direction: column; gap: var(--space-sm); }
 	.inv-title { font-size: 1.25rem; font-weight: 700; }
 	.inv-status { width: fit-content; }
-	.inv-meta { display: flex; flex-direction: column; gap: var(--space-xs); text-align: right; }
+
+	.inv-right { display: flex; flex-direction: column; gap: var(--space-md); align-items: flex-end; text-align: right; }
+
+	.supplier-block { display: flex; flex-direction: column; gap: 2px; }
+	.supplier-name { font-size: 0.9375rem; font-weight: 600; }
+	.supplier-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.supplier-tax { font-size: 0.75rem; font-family: var(--font-mono); color: var(--color-text-secondary); margin-top: 2px; }
+
+	.inv-meta { display: flex; flex-direction: column; gap: var(--space-xs); }
 	.meta-row { display: flex; gap: var(--space-lg); font-size: 0.875rem; }
 	.meta-row span:first-child { color: var(--color-text-secondary); }
 
@@ -124,7 +133,6 @@
 	.party-label { font-size: 0.75rem; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; }
 	.party-name { font-size: 0.9375rem; font-weight: 600; }
 	.party-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
-	.party-tax { font-size: 0.75rem; font-family: var(--font-mono); margin-top: 2px; }
 
 	.inv-table {
 		width: 100%;
