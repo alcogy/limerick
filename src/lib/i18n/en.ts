@@ -180,7 +180,8 @@ export const en = {
 		discountRateNote: 'e.g. 0.80 = 20% off base price. Leave blank if using price group or base price.',
 		emailSent: 'Invitation email sent to buyer.',
 		activated: 'Activated',
-		pending: 'Pending activation'
+		pending: 'Pending activation',
+		inviteExpiry: 'Invite expires'
 	},
 	order: {
 		title: 'Orders',

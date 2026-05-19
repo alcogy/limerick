@@ -182,7 +182,8 @@ export const ja: Translations = {
 		discountRateNote: '例: 0.80 = 2割引。価格グループまたは定価を使用する場合は空欄。',
 		emailSent: '招待メールを送信しました。',
 		activated: '有効',
-		pending: '招待中'
+		pending: '招待中',
+		inviteExpiry: '招待有効期限'
 	},
 	order: {
 		title: '注文履歴',

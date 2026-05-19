@@ -1,7 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
-import { asc, desc, eq, like, and, or } from 'drizzle-orm';
+import { asc, desc, eq, isNull, like, and, or } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { hashPassword, validatePasswordStrength } from '$lib/server/auth/index';
 import { writeAuditLog } from '$lib/server/audit';
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 			)]
 		: [];
 
-	const [buyerRows, priceGroups] = await Promise.all([
+	const [buyerRows, priceGroups, tokens] = await Promise.all([
 		db
 			.select({
 				id: schema.buyers.id,
@@ -40,10 +40,23 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 			.innerJoin(schema.users, eq(schema.users.id, schema.buyers.id))
 			.where(conditions.length ? and(...conditions) : undefined)
 			.orderBy(desc(schema.buyers.created_at)),
-		db.select().from(schema.price_groups).orderBy(asc(schema.price_groups.name))
+		db.select().from(schema.price_groups).orderBy(asc(schema.price_groups.name)),
+		db.select().from(schema.invitation_tokens).where(isNull(schema.invitation_tokens.used_at))
 	]);
 
-	return { buyers: buyerRows, priceGroups, search };
+	// Map latest unexpired invitation token per buyer
+	const tokenMap: Record<string, { expires_at: string; expired: boolean }> = {};
+	for (const tok of tokens) {
+		const existing = tokenMap[tok.buyer_id];
+		const expired = new Date(tok.expires_at) < new Date();
+		if (!existing || tok.expires_at > existing.expires_at) {
+			tokenMap[tok.buyer_id] = { expires_at: tok.expires_at, expired };
+		}
+	}
+
+	const buyers = buyerRows.map((b) => ({ ...b, invitation: tokenMap[b.id] ?? null }));
+
+	return { buyers, priceGroups, search };
 };
 
 export const actions = {

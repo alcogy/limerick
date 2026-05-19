@@ -2,6 +2,7 @@
 	import { Button, BuyerForm, ConfirmDialog, Modal, SearchBar, Table } from '$lib/ui';
 	import { enhance } from '$app/forms';
 	import { t } from '$lib/i18n';
+	import { formatDate } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
@@ -27,8 +28,9 @@
 		{ key: 'company_name', label: t().buyer.companyName },
 		{ key: 'name',         label: t().buyer.contactName },
 		{ key: 'email',        label: t().buyer.email },
-		{ key: 'closing_day',  label: t().buyer.closingDay, width: '80px' },
-		{ key: 'status',       label: t().common.status,    width: '100px' }
+		{ key: 'closing_day',  label: t().buyer.closingDay,   width: '80px' },
+		{ key: 'status',       label: t().common.status,      width: '100px' },
+		{ key: 'invitation',   label: t().buyer.inviteExpiry, width: '140px' }
 	];
 </script>
 
@@ -50,6 +52,17 @@
 				<span class="badge badge-{row.is_active ? 'active' : 'inactive'}">
 					{row.is_active ? t().buyer.activated : t().buyer.pending}
 				</span>
+			{:else if col.key === 'invitation'}
+				{#if row.is_active}
+					—
+				{:else if row.invitation}
+					<span class="invite-expiry" class:expired={row.invitation.expired}>
+						{formatDate(row.invitation.expires_at)}
+						{#if row.invitation.expired}<span class="expire-badge">Expired</span>{/if}
+					</span>
+				{:else}
+					<span class="no-invite">—</span>
+				{/if}
 			{:else}
 				{(row as Record<string, unknown>)[col.key] ?? ''}
 			{/if}
@@ -151,4 +164,15 @@
 		overflow: auto;
 	}
 	.invite-url { font-size: 0.75rem; word-break: break-all; }
+
+	.invite-expiry { font-size: 0.8125rem; display: flex; align-items: center; gap: var(--space-xs); }
+	.invite-expiry.expired { color: var(--color-danger); }
+	.expire-badge {
+		font-size: 0.6875rem; font-weight: 600;
+		padding: 1px 5px;
+		background-color: var(--color-danger-light);
+		color: var(--color-danger);
+		border-radius: var(--radius-sm);
+	}
+	.no-invite { color: var(--color-text-tertiary); }
 </style>
