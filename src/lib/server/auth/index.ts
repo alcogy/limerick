@@ -1,4 +1,5 @@
 import { drizzle } from 'drizzle-orm/d1';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -66,24 +67,50 @@ export async function verifyPassword(password: string, stored: string): Promise<
 	return toHex(derived) === hashHex;
 }
 
+export function generateSessionToken(): string {
+	const bytes = crypto.getRandomValues(new Uint8Array(32));
+	return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+export async function createSession(db: DrizzleD1Database<typeof schema>, userId: string): Promise<string> {
+	const token = generateSessionToken();
+	const expires_at = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+		.toISOString().replace('T', ' ').slice(0, 19);
+	await db.insert(schema.sessions).values({ id: token, user_id: userId, expires_at });
+	return token;
+}
+
+export async function deleteSession(db: DrizzleD1Database<typeof schema>, token: string): Promise<void> {
+	await db.delete(schema.sessions).where(eq(schema.sessions.id, token));
+}
+
 export async function getSession(event: RequestEvent) {
-	const sessionId = event.cookies.get('session');
-	if (!sessionId) return null;
+	const token = event.cookies.get('session');
+	if (!token) return null;
 
 	try {
 		const db = drizzle(event.platform!.env.DB, { schema });
-		const user = await db.query.users.findFirst({
-			where: eq(schema.users.id, sessionId)
+		const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+		const session = await db.query.sessions.findFirst({
+			where: eq(schema.sessions.id, token),
+			with: { user: true }
 		});
 
+		if (!session || session.expires_at < now) {
+			if (session) await db.delete(schema.sessions).where(eq(schema.sessions.id, token));
+			event.cookies.delete('session', { path: '/' });
+			return null;
+		}
+
+		const user = session.user;
 		if (!user || !user.is_active) {
-			// Clear stale session cookie
+			await db.delete(schema.sessions).where(eq(schema.sessions.id, token));
 			event.cookies.delete('session', { path: '/' });
 			return null;
 		}
 		return user;
 	} catch {
-		// DB not yet initialized or query error — treat as unauthenticated
 		event.cookies.delete('session', { path: '/' });
 		return null;
 	}

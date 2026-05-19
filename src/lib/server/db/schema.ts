@@ -1,6 +1,15 @@
 import { integer, primaryKey, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { relations, sql } from 'drizzle-orm';
 
+// ─── Sessions ─────────────────────────────────────────────────────────────────
+
+export const sessions = sqliteTable('sessions', {
+	id: text('id').primaryKey(), // random token (not user.id)
+	user_id: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+	created_at: text('created_at').notNull().default(sql`(datetime('now'))`),
+	expires_at: text('expires_at').notNull()
+});
+
 // ─── Login Attempts ───────────────────────────────────────────────────────────
 
 export const login_attempts = sqliteTable('login_attempts', {
@@ -274,8 +283,13 @@ export const audit_logs = sqliteTable('audit_logs', {
 
 // ─── Relations ────────────────────────────────────────────────────────────────
 
-export const userRelations = relations(users, ({ one }) => ({
-	buyer: one(buyers, { fields: [users.id], references: [buyers.id] })
+export const userRelations = relations(users, ({ one, many }) => ({
+	buyer: one(buyers, { fields: [users.id], references: [buyers.id] }),
+	sessions: many(sessions)
+}));
+
+export const sessionRelations = relations(sessions, ({ one }) => ({
+	user: one(users, { fields: [sessions.user_id], references: [users.id] })
 }));
 
 export const buyerRelations = relations(buyers, ({ one, many }) => ({
