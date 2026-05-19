@@ -243,6 +243,26 @@ export const invoice_orders = sqliteTable(
 	(t) => [primaryKey({ columns: [t.invoice_id, t.order_id] })]
 );
 
+// ─── Audit Logs ───────────────────────────────────────────────────────────────
+
+export const audit_logs = sqliteTable('audit_logs', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	user_id: text('user_id').references(() => users.id, { onDelete: 'set null' }),
+	action: text('action', {
+		enum: ['create', 'update', 'delete', 'login', 'logout', 'export', 'cancel']
+	}).notNull(),
+	resource_type: text('resource_type').notNull(),
+	resource_id: text('resource_id'),
+	metadata: text('metadata'),
+	ip_address: text('ip_address'),
+	user_agent: text('user_agent'),
+	created_at: text('created_at')
+		.notNull()
+		.default(sql`(datetime('now'))`)
+});
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const userRelations = relations(users, ({ one }) => ({

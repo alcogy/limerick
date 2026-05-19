@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import { and, count, desc, eq, like, or, sql } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
+import { writeAuditLog } from '$lib/server/audit';
 import { now } from '$lib/utils';
 
 const PER_PAGE = 30;
@@ -43,7 +44,7 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 };
 
 export const actions = {
-	confirm: async ({ request, platform }) => {
+	confirm: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'Invalid request' });
@@ -52,10 +53,11 @@ export const actions = {
 		const ts = now();
 		await db.update(schema.orders).set({ status: 'confirmed', confirmed_at: ts, updated_at: ts })
 			.where(and(eq(schema.orders.id, id), eq(schema.orders.status, 'pending')));
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'update', resource_type: 'order', resource_id: id, metadata: { status: 'confirmed' }, request });
 		return { success: true };
 	},
 
-	ship: async ({ request, platform }) => {
+	ship: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'Invalid request' });
@@ -64,10 +66,11 @@ export const actions = {
 		const ts = now();
 		await db.update(schema.orders).set({ status: 'shipped', shipped_at: ts, updated_at: ts })
 			.where(and(eq(schema.orders.id, id), eq(schema.orders.status, 'confirmed')));
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'update', resource_type: 'order', resource_id: id, metadata: { status: 'shipped' }, request });
 		return { success: true };
 	},
 
-	complete: async ({ request, platform }) => {
+	complete: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'Invalid request' });
@@ -76,18 +79,18 @@ export const actions = {
 		const ts = now();
 		await db.update(schema.orders).set({ status: 'completed', completed_at: ts, updated_at: ts })
 			.where(and(eq(schema.orders.id, id), eq(schema.orders.status, 'shipped')));
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'update', resource_type: 'order', resource_id: id, metadata: { status: 'completed' }, request });
 		return { success: true };
 	},
 
-	cancel: async ({ request, platform }) => {
+	cancel: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'Invalid request' });
 
 		const db = drizzle(platform!.env.DB, { schema });
 
-		// Only restore stock when cancelling from a non-cancelled, non-pending state
-		// (pending orders haven't decremented stock; confirmed/shipped/completed have)
+		// Pending orders have not yet decremented stock; confirmed/shipped/completed have
 		const order = await db.query.orders.findFirst({
 			where: eq(schema.orders.id, id),
 			with: { items: true }
@@ -112,6 +115,7 @@ export const actions = {
 			);
 		}
 
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'cancel', resource_type: 'order', resource_id: id, metadata: { previous_status: order.status }, request });
 		return { success: true };
 	}
 } satisfies Actions;
