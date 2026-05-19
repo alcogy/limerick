@@ -12,6 +12,7 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	let showCreate = $state(false);
+	let createIsActive = $state(true);
 	let editItem = $state<(typeof data.products)[0] | null>(null);
 	let deleteId = $state<string | null>(null);
 	let searchValue = $state(data.search || '');
@@ -182,11 +183,15 @@
 				<Label for="sort_order">{t().product.sortOrder}</Label>
 				<Input id="sort_order" name="sort_order" type="number" value="0" min="0" />
 			</div>
-			<div class="field field-checkbox">
-				<label class="checkbox-label">
-					<input type="checkbox" name="is_active" value="true" checked />
-					{t().product.isActive}
-				</label>
+			<div class="field">
+				<Label>{t().product.isActive}</Label>
+				<input type="hidden" name="is_active" value={createIsActive ? 'true' : 'false'} />
+				<div class="locale-buttons" style="width:fit-content">
+					<button type="button" class="locale-btn" class:active={createIsActive}
+						onclick={() => (createIsActive = true)}>{t().common.yes}</button>
+					<button type="button" class="locale-btn" class:active={!createIsActive}
+						onclick={() => (createIsActive = false)}>{t().common.no}</button>
+				</div>
 			</div>
 		</div>
 		<div class="form-actions">
@@ -250,11 +255,15 @@
 					<Label for="edit-sort">{t().product.sortOrder}</Label>
 					<Input id="edit-sort" name="sort_order" type="number" value={editItem.sort_order} min="0" />
 				</div>
-				<div class="field field-checkbox">
-					<label class="checkbox-label">
-						<input type="checkbox" name="is_active" value="true" checked={editItem.is_active} />
-						{t().product.isActive}
-					</label>
+				<div class="field">
+					<Label>{t().product.isActive}</Label>
+					<input type="hidden" name="is_active" value={editItem.is_active ? 'true' : 'false'} />
+					<div class="locale-buttons" style="width:fit-content">
+						<button type="button" class="locale-btn" class:active={editItem.is_active}
+							onclick={() => (editItem = { ...editItem!, is_active: true })}>{t().common.yes}</button>
+						<button type="button" class="locale-btn" class:active={!editItem.is_active}
+							onclick={() => (editItem = { ...editItem!, is_active: false })}>{t().common.no}</button>
+					</div>
 				</div>
 			</div>
 			<!-- Image upload -->
@@ -332,8 +341,6 @@
 	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
 	.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-md); }
 	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
-	.field-checkbox { justify-content: flex-end; }
-	.checkbox-label { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.8125rem; cursor: pointer; }
 
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
@@ -346,6 +353,21 @@
 	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
 
 	.sku-input-row { display: flex; align-items: center; gap: var(--space-xs); }
+
+	.locale-buttons {
+		display: flex; gap: 2px;
+		background-color: var(--color-bg-sunken);
+		padding: 3px; border-radius: var(--radius-md);
+	}
+	.locale-btn {
+		display: flex; align-items: center; gap: var(--space-xs);
+		padding: var(--space-xs) var(--space-lg);
+		border: none; background: none; border-radius: calc(var(--radius-md) - 2px);
+		font-size: 0.875rem; font-weight: 500; color: var(--color-text-secondary);
+		cursor: pointer; transition: all var(--transition-fast); font-family: inherit;
+		&.active { background-color: var(--color-bg-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }
+		&:hover:not(.active) { color: var(--color-text); }
+	}
 
 	.image-preview {
 		display: flex;
