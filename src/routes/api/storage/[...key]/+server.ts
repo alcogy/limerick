@@ -1,7 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, platform }) => {
+export const GET: RequestHandler = async ({ params, platform, locals }) => {
+	if (!locals.user) throw error(401, 'Unauthorized');
+
 	const obj = await platform!.env.BUCKET.get(params.key);
 	if (!obj) throw error(404, 'Not found');
 
