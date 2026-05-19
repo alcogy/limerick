@@ -269,7 +269,7 @@
 						}}>{t().common.delete}</Button>
 					</div>
 				{/if}
-				<Button size="sm" variant="secondary" onclick={() => (showUploadDialog = true)}>
+				<Button type="button" size="sm" variant="secondary" style="align-self:flex-start" onclick={() => (showUploadDialog = true)}>
 					<ImagePlus size={14} /> {editItem.image_key ? t().product.changeImage : t().product.uploadImage}
 				</Button>
 			</div>
