@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import type { RequestEvent } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 
 type CookieSerializeOptions = Parameters<RequestEvent['cookies']['set']>[2];
 
@@ -14,9 +15,9 @@ export const SESSION_COOKIE_OPTIONS: CookieSerializeOptions = {
 	path: '/',
 	httpOnly: true,
 	sameSite: 'lax',
-	secure: true,
+	secure: !dev, // Safari rejects secure cookies over http://localhost in local dev
 	maxAge: 60 * 60 * 24 * 7 // 7 days
-} as const;
+};
 
 function toHex(buffer: ArrayBuffer): string {
 	return [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, '0')).join('');
