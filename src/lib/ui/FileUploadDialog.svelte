@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { Upload } from '@lucide/svelte';
 	import { t } from '$lib/i18n';
 	import Modal from './Modal.svelte';
@@ -72,77 +71,82 @@
 		open = false;
 		oncancel?.();
 	}
+
+	async function handleSubmit() {
+		if (!uploadFile) return;
+		isUploading = true;
+		uploadError = '';
+		try {
+			const fd = new FormData();
+			fd.set('file', uploadFile, uploadFile.name);
+			const res = await fetch(action, { method: 'POST', body: fd });
+			if (!res.ok) {
+				const msg = await res.text().catch(() => '');
+				uploadError = msg || `Upload failed (${res.status})`;
+				return;
+			}
+			uploadFile = null;
+			open = false;
+			onuploaded?.();
+		} catch (err) {
+			uploadError = String(err);
+		} finally {
+			isUploading = false;
+		}
+	}
 </script>
 
 <Modal bind:open title={t().fileUpload.title} onclose={handleClose} size="sm">
-	<form
-		method="POST"
-		{action}
-		enctype="multipart/form-data"
-		use:enhance={({ formData }) => {
-			if (uploadFile) formData.set('file', uploadFile, uploadFile.name);
-			isUploading = true;
-			return async ({ result }) => {
-				isUploading = false;
-				if (result.type === 'success') {
-					uploadFile = null;
-					uploadError = '';
-					open = false;
-					onuploaded?.();
-				}
-			};
-		}}
-	>
-		<div class="upload-form">
-			<label class="file-input-label">
-				<input
-					type="file"
-					name="file"
-					class="file-input"
-					{accept}
-					onchange={handleFileChange}
-				/>
-				<div
-					class="file-drop-area"
-					class:is-dragging={isDragging}
-					ondragover={handleDragOver}
-					ondragleave={handleDragLeave}
-					ondrop={handleDrop}
-					role="button"
-					tabindex="0"
-				>
-					<Upload size={32} />
-					{#if uploadFile}
-						<span class="selected-file">{uploadFile.name}</span>
-						<span class="selected-size">{formatFileSize(uploadFile.size)}</span>
-					{:else if isDragging}
-						<span>{t().fileUpload.dragDrop}</span>
-					{:else}
-						<span>{t().fileUpload.dragDrop}</span>
-						<span class="upload-hint">
-							{t().fileUpload.hint.replace('{size}', String(maxSizeMb))}
-						</span>
-					{/if}
-				</div>
-			</label>
-			{#if uploadError}
-				<p class="upload-error">{uploadError}</p>
-			{/if}
-		</div>
-
-		<div class="modal-actions">
-			<Button type="button" variant="secondary" onclick={handleClose}>
-				{t().common.cancel}
-			</Button>
-			<Button
-				type="submit"
-				variant="primary"
-				disabled={!uploadFile || !!uploadError || isUploading}
+	<div class="upload-form">
+		<label class="file-input-label">
+			<input
+				type="file"
+				name="file"
+				class="file-input"
+				{accept}
+				onchange={handleFileChange}
+			/>
+			<div
+				class="file-drop-area"
+				class:is-dragging={isDragging}
+				ondragover={handleDragOver}
+				ondragleave={handleDragLeave}
+				ondrop={handleDrop}
+				role="button"
+				tabindex="0"
 			>
-				{isUploading ? t().fileUpload.uploading : t().fileUpload.upload}
-			</Button>
-		</div>
-	</form>
+				<Upload size={32} />
+				{#if uploadFile}
+					<span class="selected-file">{uploadFile.name}</span>
+					<span class="selected-size">{formatFileSize(uploadFile.size)}</span>
+				{:else if isDragging}
+					<span>{t().fileUpload.dragDrop}</span>
+				{:else}
+					<span>{t().fileUpload.dragDrop}</span>
+					<span class="upload-hint">
+						{t().fileUpload.hint.replace('{size}', String(maxSizeMb))}
+					</span>
+				{/if}
+			</div>
+		</label>
+		{#if uploadError}
+			<p class="upload-error">{uploadError}</p>
+		{/if}
+	</div>
+
+	<div class="modal-actions">
+		<Button type="button" variant="secondary" onclick={handleClose}>
+			{t().common.cancel}
+		</Button>
+		<Button
+			type="button"
+			variant="primary"
+			disabled={!uploadFile || !!uploadError || isUploading}
+			onclick={handleSubmit}
+		>
+			{isUploading ? t().fileUpload.uploading : t().fileUpload.upload}
+		</Button>
+	</div>
 </Modal>
 
 <style lang="scss">
