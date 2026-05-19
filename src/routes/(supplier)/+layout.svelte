@@ -12,6 +12,7 @@
 		ShoppingCart,
 		FileText,
 		CircleUser,
+		ClipboardList,
 		Settings,
 		LogOut
 	} from '@lucide/svelte';
@@ -31,8 +32,9 @@
 	]);
 
 	const secondaryNavItems = $derived<NavItem[]>([
-		{ href: '/supplier/profile', label: t().nav.profile, icon: CircleUser },
-		{ href: '/supplier/settings', label: t().nav.settings, icon: Settings },
+		{ href: '/supplier/profile',   label: t().nav.profile,   icon: CircleUser },
+		{ href: '/supplier/audit-log', label: 'Audit Log',       icon: ClipboardList },
+		{ href: '/supplier/settings',  label: t().nav.settings,  icon: Settings },
 		{
 			href: '/logout',
 			label: t().nav.signOut,
