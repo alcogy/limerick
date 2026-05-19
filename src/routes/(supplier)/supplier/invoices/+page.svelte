@@ -3,7 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { t } from '$lib/i18n';
 	import { goto } from '$app/navigation';
-	import { formatCurrency, formatDate } from '$lib/utils';
+	import { calcInvoicePeriod, formatCurrency, formatDate } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
@@ -14,6 +14,20 @@
 	let markPaidId = $state<string | null>(null);
 
 	let markPaidFormEl = $state<HTMLFormElement | undefined>();
+
+	let genPeriodFrom = $state(data.today);
+	let genPeriodTo   = $state(data.today);
+	let genDueDate    = $state(data.today);
+
+	function onBuyerChange(e: Event) {
+		const buyerId = (e.target as HTMLSelectElement).value;
+		const buyer = data.buyers.find((b) => b.id === buyerId);
+		if (!buyer) return;
+		const { period_from, period_to, due_date } = calcInvoicePeriod(buyer.closing_day);
+		genPeriodFrom = period_from;
+		genPeriodTo   = period_to;
+		genDueDate    = due_date;
+	}
 
 	const generateEnhance: SubmitFunction = () => async ({ result, update }) => {
 		await update();
@@ -98,7 +112,7 @@
 		<p class="generate-desc">{t().invoice.generateDesc}</p>
 		<div class="field">
 			<Label for="buyer_id" required>{t().invoice.buyer}</Label>
-			<select class="select" name="buyer_id" id="buyer_id" required>
+			<select class="select" name="buyer_id" id="buyer_id" required onchange={onBuyerChange}>
 				<option value="">—</option>
 				{#each data.buyers as b (b.id)}
 					<option value={b.id}>{b.company_name}</option>
@@ -108,16 +122,16 @@
 		<div class="form-grid">
 			<div class="field">
 				<Label for="period_from" required>{t().invoice.periodFrom}</Label>
-				<Input id="period_from" name="period_from" type="date" required />
+				<Input id="period_from" name="period_from" type="date" bind:value={genPeriodFrom} required />
 			</div>
 			<div class="field">
 				<Label for="period_to" required>{t().invoice.periodTo}</Label>
-				<Input id="period_to" name="period_to" type="date" value={data.today} required />
+				<Input id="period_to" name="period_to" type="date" bind:value={genPeriodTo} required />
 			</div>
 		</div>
 		<div class="field">
 			<Label for="due_date" required>{t().invoice.dueDate}</Label>
-			<Input id="due_date" name="due_date" type="date" required />
+			<Input id="due_date" name="due_date" type="date" bind:value={genDueDate} required />
 		</div>
 		<div class="form-actions">
 			<Button type="button" variant="secondary" onclick={() => (showGenerate = false)}>{t().common.cancel}</Button>
