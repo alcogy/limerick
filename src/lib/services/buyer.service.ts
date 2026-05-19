@@ -146,7 +146,9 @@ export async function createInvitationToken(ctx: ServiceCtx, buyer_id: string, o
 		}
 	}
 
-	const token = crypto.randomUUID();
+	// 256-bit cryptographically random token (vs UUID which is 122-bit with fixed format)
+	const bytes = crypto.getRandomValues(new Uint8Array(32));
+	const token = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
 	const expires_at = new Date(Date.now() + INVITATION_EXPIRY_MS).toISOString();
 	await db.insert(schema.invitation_tokens).values({ buyer_id, token, expires_at });
 
