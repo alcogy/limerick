@@ -69,7 +69,7 @@
 						<span class="order-total">{formatCurrency(order.total_amount + order.tax_amount)}</span>
 						<div class="order-actions">
 							<Button size="sm" variant="secondary" onclick={() => (viewOrder = order)}>{t().common.details}</Button>
-							<Button size="sm" variant="ghost" onclick={() => openReorder(order)}>Reorder</Button>
+							<Button size="sm" variant="ghost" onclick={() => openReorder(order)}>{t().cart.reorder}</Button>
 						</div>
 					</div>
 				</div>
@@ -130,9 +130,9 @@
 
 <!-- Reorder modal -->
 {#if reorderItems.length > 0}
-	<Modal open={reorderItems.length > 0} title="Reorder" size="md" onclose={() => (reorderItems = [])}>
+	<Modal open={reorderItems.length > 0} title={t().cart.reorder} size="md" onclose={() => (reorderItems = [])}>
 		<div class="reorder-content">
-			<p class="reorder-desc">Adjust quantities before adding to cart.</p>
+			<p class="reorder-desc">{t().cart.reorderDesc}</p>
 			<div class="reorder-list">
 				{#each reorderItems as item, i (item.id)}
 					<div class="reorder-row">
