@@ -2,6 +2,7 @@
 	import Input from './Input.svelte';
 	import Button from './Button.svelte';
 	import { Search } from '@lucide/svelte';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		value: string;
@@ -9,7 +10,8 @@
 		onsearch?: () => void;
 	}
 
-	let { value = $bindable(''), placeholder = 'Search...', onsearch }: Props = $props();
+	let { value = $bindable(''), placeholder, onsearch }: Props = $props();
+	const ph = $derived(placeholder ?? t().common.search);
 
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
@@ -19,8 +21,8 @@
 
 <form class="search-bar" onsubmit={handleSubmit}>
 	<Search size={16} />
-	<input class="input" placeholder={placeholder} bind:value  />
-	<Button type="submit" variant="secondary" size="sm">Search</Button>
+	<input class="input" placeholder={ph} bind:value />
+	<Button type="submit" variant="secondary" size="sm">{t().common.search}</Button>
 </form>
 
 <style lang="scss">
