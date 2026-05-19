@@ -1,7 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
-import { and, count, desc, eq, like, or } from 'drizzle-orm';
+import { and, count, desc, eq, like, or, sql } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { now } from '$lib/utils';
 
@@ -85,9 +85,33 @@ export const actions = {
 		if (!id) return fail(400, { error: 'Invalid request' });
 
 		const db = drizzle(platform!.env.DB, { schema });
+
+		// Only restore stock when cancelling from a non-cancelled, non-pending state
+		// (pending orders haven't decremented stock; confirmed/shipped/completed have)
+		const order = await db.query.orders.findFirst({
+			where: eq(schema.orders.id, id),
+			with: { items: true }
+		});
+		if (!order) return fail(404, { error: 'Order not found' });
+		if (order.status === 'cancelled') return fail(400, { error: 'Already cancelled' });
+
+		const stockDecremented = order.status !== 'pending';
 		const ts = now();
-		await db.update(schema.orders).set({ status: 'cancelled', cancelled_at: ts, updated_at: ts })
+
+		await db.update(schema.orders)
+			.set({ status: 'cancelled', cancelled_at: ts, updated_at: ts })
 			.where(eq(schema.orders.id, id));
+
+		if (stockDecremented && order.items.length > 0) {
+			await Promise.all(
+				order.items.map((item) =>
+					db.update(schema.products)
+						.set({ stock_qty: sql`${schema.products.stock_qty} + ${item.quantity}` })
+						.where(eq(schema.products.id, item.product_id))
+				)
+			);
+		}
+
 		return { success: true };
 	}
 } satisfies Actions;
