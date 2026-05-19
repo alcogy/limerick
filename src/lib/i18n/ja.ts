@@ -69,6 +69,7 @@ export const ja: Translations = {
 		buyers: '得意先管理',
 		priceGroups: '価格グループ',
 		orders: '注文履歴',
+		orderManagement: '受注管理',
 		invoices: '請求書',
 		catalog: '商品カタログ',
 		cart: 'カート',
@@ -197,6 +198,7 @@ export const ja: Translations = {
 	},
 	order: {
 		title: '注文履歴',
+		supplierTitle: '受注管理',
 		new: '受注を作成',
 		detail: '受注詳細',
 		orderNumber: '受注番号',

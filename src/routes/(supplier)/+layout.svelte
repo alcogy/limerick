@@ -26,7 +26,7 @@
 		{ href: '/supplier/categories', label: t().nav.categories, icon: Tag },
 		{ href: '/supplier/buyers', label: t().nav.buyers, icon: Users },
 		{ href: '/supplier/price-groups', label: t().nav.priceGroups, icon: DollarSign },
-		{ href: '/supplier/orders', label: t().nav.orders, icon: ShoppingCart },
+		{ href: '/supplier/orders', label: t().nav.orderManagement, icon: ShoppingCart },
 		{ href: '/supplier/invoices', label: t().nav.invoices, icon: FileText }
 	]);
 

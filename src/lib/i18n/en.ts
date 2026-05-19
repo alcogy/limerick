@@ -67,6 +67,7 @@ export const en = {
 		buyers: 'Buyers',
 		priceGroups: 'Price Groups',
 		orders: 'Orders',
+		orderManagement: 'Order Management',
 		invoices: 'Invoices',
 		catalog: 'Catalog',
 		cart: 'Cart',
@@ -195,6 +196,7 @@ export const en = {
 	},
 	order: {
 		title: 'Orders',
+		supplierTitle: 'Order Management',
 		new: 'New order',
 		detail: 'Order detail',
 		orderNumber: 'Order #',
