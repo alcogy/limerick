@@ -42,7 +42,9 @@
 					<div class="party-label">{t().invoice.from}</div>
 					<div class="party-name">{supplier.name}</div>
 					{#if supplier.address}<div class="party-sub">{supplier.address}</div>{/if}
+					{#if supplier.zip}<div class="party-sub">{supplier.zip}</div>{/if}
 					{#if supplier.tel}<div class="party-sub">{supplier.tel}</div>{/if}
+					{#if supplier.taxNo}<div class="party-sub party-tax">{supplier.taxNo}</div>{/if}
 				</div>
 			{/if}
 			<div class="party">
@@ -122,6 +124,7 @@
 	.party-label { font-size: 0.75rem; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; }
 	.party-name { font-size: 0.9375rem; font-weight: 600; }
 	.party-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.party-tax { font-size: 0.75rem; font-family: var(--font-mono); margin-top: 2px; }
 
 	.inv-table {
 		width: 100%;

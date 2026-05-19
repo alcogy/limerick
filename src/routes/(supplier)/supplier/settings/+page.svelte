@@ -11,7 +11,9 @@
 
 	let companyName    = $state(data.companyName);
 	let companyAddress = $state(data.companyAddress);
+	let companyZip     = $state(data.companyZip);
 	let companyTel     = $state(data.companyTel);
+	let companyTaxNo   = $state(data.companyTaxNo);
 
 	let skuPrefix = $state(data.skuPrefix);
 	let skuDigits = $state(data.skuDigits);
@@ -57,6 +59,28 @@
 	</section>
 
 	<section class="settings-section">
+		<h2><Globe size={16} /> {t().settings.language}</h2>
+		<div class="settings-card">
+			<div class="setting-row">
+				<div class="setting-info">
+					<div class="setting-label">{t().settings.language}</div>
+					<div class="setting-desc">{t().settings.languageDesc}</div>
+				</div>
+				<div class="setting-control">
+					<div class="locale-buttons">
+						{#each LOCALES as locale (locale.value)}
+							<button type="button" class="locale-btn" class:active={getLocale() === locale.value}
+								onclick={() => setLocale(locale.value as Locale)}>
+								{locale.nativeLabel}
+							</button>
+						{/each}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="settings-section">
 		<h2><Building2 size={16} /> {t().settings.companyInfo}</h2>
 		<div class="settings-card">
 			<form method="POST" action="?/saveCompany" use:enhance={saveEnhance} class="sku-form">
@@ -79,7 +103,16 @@
 						<div class="setting-label">{t().settings.companyAddress}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_address" bind:value={companyAddress} placeholder="123 Main St, City" style="width:300px" />
+						<Input name="company_address" bind:value={companyAddress} placeholder="1 Main St, Dublin" style="width:300px" />
+					</div>
+				</div>
+
+				<div class="setting-row border-b">
+					<div class="setting-info">
+						<div class="setting-label">{t().settings.companyZip}</div>
+					</div>
+					<div class="setting-control">
+						<Input name="company_zip" bind:value={companyZip} placeholder="D01 F5P2" style="width:160px" />
 					</div>
 				</div>
 
@@ -88,7 +121,17 @@
 						<div class="setting-label">{t().settings.companyTel}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_tel" bind:value={companyTel} placeholder="+1-555-0100" style="width:200px" />
+						<Input name="company_tel" bind:value={companyTel} placeholder="+353 1 234 5678" style="width:200px" />
+					</div>
+				</div>
+
+				<div class="setting-row border-b">
+					<div class="setting-info">
+						<div class="setting-label">{t().settings.companyTaxNo}</div>
+						<div class="setting-desc">{t().settings.companyTaxNoDesc}</div>
+					</div>
+					<div class="setting-control">
+						<Input name="company_tax_no" bind:value={companyTaxNo} placeholder="IE1234567T" style="width:200px" />
 					</div>
 				</div>
 
@@ -96,28 +139,6 @@
 					<Button type="submit">{t().settings.save}</Button>
 				</div>
 			</form>
-		</div>
-	</section>
-
-	<section class="settings-section">
-		<h2><Globe size={16} /> {t().settings.language}</h2>
-		<div class="settings-card">
-			<div class="setting-row">
-				<div class="setting-info">
-					<div class="setting-label">{t().settings.language}</div>
-					<div class="setting-desc">{t().settings.languageDesc}</div>
-				</div>
-				<div class="setting-control">
-					<div class="locale-buttons">
-						{#each LOCALES as locale (locale.value)}
-							<button type="button" class="locale-btn" class:active={getLocale() === locale.value}
-								onclick={() => setLocale(locale.value as Locale)}>
-								{locale.nativeLabel}
-							</button>
-						{/each}
-					</div>
-				</div>
-			</div>
 		</div>
 	</section>
 

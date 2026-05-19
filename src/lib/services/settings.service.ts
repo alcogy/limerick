@@ -11,19 +11,23 @@ export async function loadSettings(ctx: ServiceCtx) {
 		skuSeq:         map['sku_seq']         ?? '0',
 		companyName:    map['company_name']    ?? '',
 		companyAddress: map['company_address'] ?? '',
-		companyTel:     map['company_tel']     ?? ''
+		companyZip:     map['company_zip']     ?? '',
+		companyTel:     map['company_tel']     ?? '',
+		companyTaxNo:   map['company_tax_no']  ?? ''
 	};
 }
 
 export async function saveCompanyInfo(
 	ctx: ServiceCtx,
-	input: { name: string; address: string; tel: string }
+	input: { name: string; address: string; zip: string; tel: string; taxNo: string }
 ) {
 	const { db } = ctx;
 	await Promise.all([
 		upsert(db, 'company_name',    input.name),
 		upsert(db, 'company_address', input.address),
-		upsert(db, 'company_tel',     input.tel)
+		upsert(db, 'company_zip',     input.zip),
+		upsert(db, 'company_tel',     input.tel),
+		upsert(db, 'company_tax_no',  input.taxNo)
 	]);
 	return { success: true, action: 'saveCompany' };
 }
