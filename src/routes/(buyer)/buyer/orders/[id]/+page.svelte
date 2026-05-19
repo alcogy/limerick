@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/ui';
-	import { t } from '$lib/i18n';
-	import { formatDate, formatDateTime, formatCurrency } from '$lib/utils';
+	import { t, formatDateTime } from '$lib/i18n';
+	import { formatCurrency } from '$lib/utils';
 	import { Printer } from '@lucide/svelte';
 	import type { PageData } from './$types';
 

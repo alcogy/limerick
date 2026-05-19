@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Card } from '$lib/ui';
 	import { Package, Users, ShoppingCart, AlertCircle } from '@lucide/svelte';
-	import { formatDateTime, formatCurrency } from '$lib/utils';
-	import { t } from '$lib/i18n';
+	import { formatCurrency } from '$lib/utils';
+	import { t, formatDateTime } from '$lib/i18n';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
