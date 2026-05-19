@@ -7,15 +7,26 @@ import * as schema from '$lib/server/db/schema';
 export const load: PageServerLoad = async ({ params, platform }) => {
 	const db = drizzle(platform!.env.DB, { schema });
 
-	const invoice = await db.query.invoices.findFirst({
-		where: eq(schema.invoices.id, params.id),
-		with: {
-			buyer: { with: { user: true } },
-			invoice_orders: { with: { order: { with: { items: true } } } }
-		}
-	});
+	const [invoice, settingsRows] = await Promise.all([
+		db.query.invoices.findFirst({
+			where: eq(schema.invoices.id, params.id),
+			with: {
+				buyer: { with: { user: true } },
+				invoice_orders: { with: { order: { with: { items: true } } } }
+			}
+		}),
+		db.select().from(schema.settings)
+	]);
 
 	if (!invoice) throw error(404, 'Invoice not found');
 
-	return { invoice };
+	const s = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
+	return {
+		invoice,
+		supplier: {
+			name:    s['company_name']    ?? '',
+			address: s['company_address'] ?? '',
+			tel:     s['company_tel']     ?? ''
+		}
+	};
 };
