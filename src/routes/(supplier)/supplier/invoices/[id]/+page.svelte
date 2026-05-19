@@ -28,11 +28,16 @@
 	</div>
 
 	<div class="invoice-sheet">
-		<!-- ヘッダー：左＝請求書番号＋ステータス、右＝発行者情報＋発行日＋支払期限 -->
+		<!-- ヘッダー：左＝請求書番号＋ステータス＋発注者、右＝発行者＋発行日＋支払期限 -->
 		<div class="inv-header">
-			<div class="inv-title-block">
+			<div class="inv-left">
 				<h1 class="inv-title">{t().invoice.invoiceNumber}: {inv.invoice_number}</h1>
 				<div class="inv-status badge badge-{inv.status}">{t().invoice.statuses[inv.status]}</div>
+				<div class="buyer-block">
+					<div class="buyer-label">{t().invoice.buyer}</div>
+					<div class="buyer-name">{inv.buyer?.company_name}</div>
+					{#if inv.buyer?.user?.name}<div class="buyer-sub">{inv.buyer.user.name}</div>{/if}
+				</div>
 			</div>
 			<div class="inv-right">
 				{#if supplier.name}
@@ -51,17 +56,10 @@
 			</div>
 		</div>
 
-		<!-- 宛先＋対象期間 -->
-		<div class="inv-parties">
-			<div class="party">
-				<div class="party-label">{t().invoice.buyer}</div>
-				<div class="party-name">{inv.buyer?.company_name}</div>
-				<div class="party-sub">{inv.buyer?.user?.name}</div>
-			</div>
-			<div class="party">
-				<div class="party-label">{t().invoice.period}</div>
-				<div class="party-name">{formatDate(inv.period_from)} – {formatDate(inv.period_to)}</div>
-			</div>
+		<!-- 対象期間 -->
+		<div class="inv-period">
+			<span class="period-label">{t().invoice.period}:</span>
+			<span class="period-value">{formatDate(inv.period_from)} – {formatDate(inv.period_to)}</span>
 		</div>
 
 		<table class="inv-table">
@@ -111,10 +109,16 @@
 	}
 
 	/* ── Header ── */
-	.inv-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-lg); }
-	.inv-title-block { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.inv-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-xl); }
+
+	.inv-left { display: flex; flex-direction: column; gap: var(--space-md); }
 	.inv-title { font-size: 1.25rem; font-weight: 700; }
 	.inv-status { width: fit-content; }
+
+	.buyer-block { display: flex; flex-direction: column; gap: 2px; padding-top: var(--space-xs); }
+	.buyer-label { font-size: 0.6875rem; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; }
+	.buyer-name { font-size: 0.9375rem; font-weight: 600; }
+	.buyer-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
 
 	.inv-right { display: flex; flex-direction: column; gap: var(--space-md); align-items: flex-end; text-align: right; }
 
@@ -127,19 +131,18 @@
 	.meta-row { display: flex; gap: var(--space-lg); font-size: 0.875rem; }
 	.meta-row span:first-child { color: var(--color-text-secondary); }
 
-	/* ── Parties ── */
-	.inv-parties {
+	/* ── Period ── */
+	.inv-period {
 		display: flex;
-		gap: var(--space-2xl);
-		padding: var(--space-lg);
+		align-items: center;
+		gap: var(--space-sm);
+		padding: var(--space-sm) var(--space-lg);
 		background-color: var(--color-bg-sunken);
 		border-radius: var(--radius-md);
+		font-size: 0.875rem;
 	}
-
-	.party { display: flex; flex-direction: column; gap: 2px; }
-	.party-label { font-size: 0.75rem; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; }
-	.party-name { font-size: 0.9375rem; font-weight: 600; }
-	.party-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.period-label { color: var(--color-text-secondary); }
+	.period-value { font-weight: 600; }
 
 	/* ── Table ── */
 	.inv-table {
