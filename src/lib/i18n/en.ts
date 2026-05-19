@@ -253,7 +253,13 @@ export const en = {
 		contractPrice: 'Your price',
 		basePrice: 'List price',
 		minQty: 'Min. qty',
-		unit: 'per'
+		unit: 'per',
+		inCart: 'In cart',
+		search: 'Search products...',
+		sortDefault: 'Default order',
+		sortNameAsc: 'Name A→Z',
+		sortPriceAsc: 'Price: low to high',
+		sortPriceDesc: 'Price: high to low'
 	},
 	cart: {
 		title: 'Cart',

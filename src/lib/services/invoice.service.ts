@@ -66,7 +66,7 @@ export async function generateInvoice(
 	});
 
 	if (orders.length === 0) {
-		return fail(400, { error: 'No completed orders found in this period.' });
+		return fail(400, { error: 'noOrders' });
 	}
 
 	const subtotal     = orders.reduce((s, o) => s + o.total_amount, 0);
