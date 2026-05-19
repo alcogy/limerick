@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { Button, Input } from '$lib/ui';
 	import { enhance } from '$app/forms';
-	import { Building2, Globe, Hash, Moon, Monitor, Palette, Sun } from '@lucide/svelte';
+	import { Building2, Globe, Hash, ImageIcon, Moon, Monitor, Palette, Sun } from '@lucide/svelte';
 	import { t, getLocale, setLocale, LOCALES, type Locale } from '$lib/i18n';
 	import { getTheme, setTheme } from '$lib/theme.svelte';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	let catalogShowImages = $state(data.catalogShowImages);
 
 	let companyName    = $state(data.companyName);
 	let companyAddress = $state(data.companyAddress);
@@ -53,6 +55,40 @@
 							<Monitor size={14} /> {t().settings.themeSystem}
 						</button>
 					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="settings-section">
+		<h2><ImageIcon size={16} /> {t().settings.catalogImages}</h2>
+		<div class="settings-card">
+			<div class="setting-row">
+				<div class="setting-info">
+					<div class="setting-label">{t().settings.catalogImages}</div>
+					<div class="setting-desc">{t().settings.catalogImagesDesc}</div>
+				</div>
+				<div class="setting-control">
+					<form method="POST" action="?/saveCatalog" use:enhance={saveEnhance}>
+						<div class="locale-buttons">
+							<button
+								type="submit"
+								name="catalog_show_images"
+								value="1"
+								class="locale-btn"
+								class:active={catalogShowImages}
+								onclick={() => (catalogShowImages = true)}
+							>{t().common.yes}</button>
+							<button
+								type="submit"
+								name="catalog_show_images"
+								value="0"
+								class="locale-btn"
+								class:active={!catalogShowImages}
+								onclick={() => (catalogShowImages = false)}
+							>{t().common.no}</button>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>

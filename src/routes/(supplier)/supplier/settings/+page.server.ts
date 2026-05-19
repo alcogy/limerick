@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from './$types';
 import { makeCtx } from '$lib/services';
-import { loadSettings, saveCompanyInfo, saveSkuRules } from '$lib/services/settings.service';
+import { loadSettings, saveCatalogSettings, saveCompanyInfo, saveSkuRules } from '$lib/services/settings.service';
 
 export const load: PageServerLoad = async ({ platform, locals }) => {
 	return loadSettings(makeCtx(platform!, locals));
@@ -15,6 +15,13 @@ export const actions = {
 			zip:     data.get('company_zip')?.toString().trim()     ?? '',
 			tel:     data.get('company_tel')?.toString().trim()     ?? '',
 			taxNo:   data.get('company_tax_no')?.toString().trim()  ?? ''
+		});
+	},
+
+	saveCatalog: async ({ request, platform, locals }) => {
+		const data = await request.formData();
+		return saveCatalogSettings(makeCtx(platform!, locals, request), {
+			showImages: data.get('catalog_show_images') === '1'
 		});
 	},
 
