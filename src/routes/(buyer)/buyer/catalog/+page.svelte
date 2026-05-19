@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/ui';
+	import { Button, Pagination } from '$lib/ui';
 	import { t } from '$lib/i18n';
 	import { goto } from '$app/navigation';
 	import { formatCurrency, calcTaxIncluded } from '$lib/utils';
@@ -51,6 +51,7 @@
 		const p = new URLSearchParams(window.location.search);
 		if (searchValue) p.set('search', searchValue);
 		else p.delete('search');
+		p.delete('page');
 		goto(`?${p}`);
 	}
 </script>
@@ -76,7 +77,7 @@
 			<button
 				class="cat-tab"
 				class:active={!data.categoryFilter}
-				onclick={() => goto('/buyer/catalog')}
+				onclick={() => { const p = new URLSearchParams(window.location.search); p.delete('category'); p.delete('page'); goto(`?${p}`); }}
 			>{t().common.all}</button>
 			{#each data.categories as cat (cat.id)}
 				<button
@@ -85,6 +86,7 @@
 					onclick={() => {
 						const p = new URLSearchParams(window.location.search);
 						p.set('category', cat.id);
+						p.delete('page');
 						goto(`?${p}`);
 					}}
 				>{cat.name}</button>
@@ -109,6 +111,7 @@
 				onchange={(e) => {
 					const p = new URLSearchParams(window.location.search);
 					p.set('sort', e.currentTarget.value);
+					p.delete('page');
 					goto(`?${p}`);
 				}}
 			>
@@ -125,7 +128,7 @@
 	{:else}
 		<div class="product-grid">
 			{#each data.products as product (product.id)}
-				<div class="product-card">
+				<div class="product-card" id="product-{product.id}">
 					{#if product.image_key}
 						<div class="product-image">
 							<img src="/api/storage/{product.image_key}" alt={product.name} />
@@ -172,6 +175,18 @@
 				</div>
 			{/each}
 		</div>
+
+		<Pagination
+			currentPage={data.page}
+			totalPages={data.totalPages}
+			totalItems={data.total}
+			itemsPerPage={50}
+			onpagechange={(p) => {
+				const params = new URLSearchParams(window.location.search);
+				params.set('page', String(p));
+				goto(`?${params}`);
+			}}
+		/>
 	{/if}
 </div>
 
