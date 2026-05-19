@@ -26,8 +26,7 @@
 	function updateQty(id: string, delta: number) {
 		const item = cart.find((c) => c.id === id);
 		if (!item) return;
-		const newQty = Math.max(item.min_qty, item.qty + delta);
-		item.qty = newQty;
+		item.qty = Math.max(item.min_qty, item.qty + delta);
 		cart = [...cart];
 		saveCart();
 	}
@@ -70,9 +69,9 @@
 						</div>
 						<div class="item-price">{formatCurrency(item.price)} / {item.unit}</div>
 						<div class="qty-control">
-							<button class="qty-btn" onclick={() => updateQty(item.id, -item.min_qty)}>−</button>
+							<button class="qty-btn" onclick={() => updateQty(item.id, -1)} disabled={item.qty <= item.min_qty}>−</button>
 							<span class="qty-value">{item.qty}</span>
-							<button class="qty-btn" onclick={() => updateQty(item.id, item.min_qty)}>+</button>
+							<button class="qty-btn" onclick={() => updateQty(item.id, 1)}>+</button>
 						</div>
 						<div class="item-subtotal">{formatCurrency(item.price * item.qty)}</div>
 						<button class="remove-btn" onclick={() => removeItem(item.id)} aria-label="Remove">✕</button>
@@ -188,7 +187,8 @@
 		align-items: center;
 		justify-content: center;
 
-		&:hover { background-color: var(--color-hover); }
+		&:hover:not(:disabled) { background-color: var(--color-hover); }
+		&:disabled { opacity: 0.35; cursor: not-allowed; }
 	}
 
 	.qty-value { width: 40px; text-align: center; font-size: 0.875rem; font-weight: 600; }

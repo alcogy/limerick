@@ -108,7 +108,11 @@
 <!-- Generate modal -->
 <Modal bind:open={showGenerate} title={t().invoice.generate}>
 	<form method="POST" action="?/generate" use:enhance={generateEnhance} class="form">
-		{#if form?.error}<div class="form-error">{form.error}</div>{/if}
+		{#if form?.error}
+			<div class="form-error">
+				{form.error === 'noOrders' ? t().invoice.noOrders : form.error}
+			</div>
+		{/if}
 		<p class="generate-desc">{t().invoice.generateDesc}</p>
 		<div class="field">
 			<Label for="buyer_id" required>{t().invoice.buyer}</Label>

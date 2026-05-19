@@ -255,7 +255,13 @@ export const ja: Translations = {
 		contractPrice: '契約価格',
 		basePrice: '定価',
 		minQty: '最低発注',
-		unit: '/'
+		unit: '/',
+		inCart: 'カート内',
+		search: '商品を検索...',
+		sortDefault: '標準順',
+		sortNameAsc: '名前順',
+		sortPriceAsc: '価格が低い順',
+		sortPriceDesc: '価格が高い順'
 	},
 	cart: {
 		title: 'カート',

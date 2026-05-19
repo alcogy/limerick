@@ -7,7 +7,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Cart stored in localStorage
 	interface CartItem { id: string; name: string; sku: string; price: number; tax_rate: number; unit: string; min_qty: number; qty: number }
 
 	function readCart(): CartItem[] {
@@ -19,6 +18,7 @@
 	}
 
 	let cart: CartItem[] = $state(readCart());
+	let searchValue = $state(data.search || '');
 
 	function saveCart() {
 		localStorage.setItem('limerick_cart', JSON.stringify(cart));
@@ -27,7 +27,7 @@
 	function addToCart(product: (typeof data.products)[0]) {
 		const existing = cart.find((c) => c.id === product.id);
 		if (existing) {
-			existing.qty += product.min_order_qty;
+			existing.qty += 1;
 		} else {
 			cart = [...cart, {
 				id: product.id,
@@ -45,6 +45,13 @@
 
 	function cartCount(id: string) {
 		return cart.find((c) => c.id === id)?.qty ?? 0;
+	}
+
+	function submitSearch() {
+		const p = new URLSearchParams(window.location.search);
+		if (searchValue) p.set('search', searchValue);
+		else p.delete('search');
+		goto(`?${p}`);
 	}
 </script>
 
@@ -83,20 +90,34 @@
 				>{cat.name}</button>
 			{/each}
 		</div>
-		<select
-			class="sort-select"
-			value={data.sortBy}
-			onchange={(e) => {
-				const p = new URLSearchParams(window.location.search);
-				p.set('sort', e.currentTarget.value);
-				goto(`?${p}`);
-			}}
-		>
-			<option value="sort_order">Default order</option>
-			<option value="name_asc">Name A→Z</option>
-			<option value="price_asc">Price low→high</option>
-			<option value="price_desc">Price high→low</option>
-		</select>
+		<div class="controls-right">
+			<div class="search-box">
+				<input
+					class="search-input"
+					type="search"
+					placeholder={t().catalog.search}
+					bind:value={searchValue}
+					onkeydown={(e) => e.key === 'Enter' && submitSearch()}
+				/>
+				<button class="search-btn" onclick={submitSearch} aria-label="Search">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+				</button>
+			</div>
+			<select
+				class="sort-select"
+				value={data.sortBy}
+				onchange={(e) => {
+					const p = new URLSearchParams(window.location.search);
+					p.set('sort', e.currentTarget.value);
+					goto(`?${p}`);
+				}}
+			>
+				<option value="sort_order">{t().catalog.sortDefault}</option>
+				<option value="name_asc">{t().catalog.sortNameAsc}</option>
+				<option value="price_asc">{t().catalog.sortPriceAsc}</option>
+				<option value="price_desc">{t().catalog.sortPriceDesc}</option>
+			</select>
+		</div>
 	</div>
 
 	{#if data.products.length === 0}
@@ -141,9 +162,9 @@
 							<Button variant="secondary" disabled>{t().catalog.outOfStock}</Button>
 						{:else}
 							<div class="add-to-cart">
-								{#if cartCount(product.id) > 0}
-									<span class="in-cart">In cart: {cartCount(product.id)}</span>
-								{/if}
+								<span class="in-cart" class:has-items={cartCount(product.id) > 0}>
+									{t().catalog.inCart}: {cartCount(product.id)}
+								</span>
 								<Button onclick={() => addToCart(product)}>{t().catalog.addToCart}</Button>
 							</div>
 						{/if}
@@ -179,6 +200,50 @@
 		gap: 2px;
 		flex-wrap: wrap;
 		flex: 1;
+	}
+
+	.controls-right {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		flex-shrink: 0;
+	}
+
+	.search-box {
+		display: flex;
+		align-items: center;
+		height: 36px;
+		border: 1px solid var(--color-input-border);
+		border-radius: var(--radius-md);
+		background-color: var(--color-input-bg);
+		overflow: hidden;
+	}
+
+	.search-input {
+		flex: 1;
+		height: 100%;
+		padding: 0 var(--space-md);
+		border: none;
+		background: transparent;
+		color: var(--color-text);
+		font-family: inherit;
+		font-size: 0.8125rem;
+		width: 180px;
+		&:focus { outline: none; }
+		&::-webkit-search-cancel-button { cursor: pointer; }
+	}
+
+	.search-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 100%;
+		border: none;
+		background: none;
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		&:hover { color: var(--color-text); }
 	}
 
 	.sort-select {
@@ -294,7 +359,12 @@
 		gap: var(--space-sm);
 	}
 
-	.in-cart { font-size: 0.75rem; color: var(--color-success); font-weight: 500; }
+	.in-cart {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--color-text-tertiary);
+		&.has-items { color: var(--color-success); }
+	}
 
 	.empty { font-size: 0.875rem; color: var(--color-text-tertiary); text-align: center; padding: var(--space-3xl) 0; }
 </style>
