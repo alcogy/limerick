@@ -23,7 +23,7 @@
 	<div class="page-header no-print">
 		<a href="/supplier/invoices" class="back-link">← {t().invoice.title}</a>
 		<Button onclick={() => window.print()}>
-			<Printer size={15} /> Print / PDF
+			<Printer size={15} /> {t().common.printPdf}
 		</Button>
 	</div>
 

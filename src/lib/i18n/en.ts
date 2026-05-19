@@ -22,6 +22,7 @@ export const en = {
 		optional: 'Optional',
 		actions: 'Actions',
 		view: 'View',
+		printPdf: 'Print / PDF',
 		details: 'Details',
 		settings: 'Settings',
 		all: 'All',

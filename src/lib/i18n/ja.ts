@@ -24,6 +24,7 @@ export const ja: Translations = {
 		optional: '任意',
 		actions: '操作',
 		view: '表示',
+		printPdf: '印刷 / PDF',
 		details: '詳細',
 		settings: '設定',
 		all: 'すべて',
