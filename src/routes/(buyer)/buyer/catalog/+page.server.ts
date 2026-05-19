@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 		name_asc:   [asc(schema.products.name)],
 		price_asc:  [asc(schema.products.base_price)],
 		price_desc: [desc(schema.products.base_price)]
-	} as const;
+	};
 	const orderBy = orderByMap[sortBy as keyof typeof orderByMap] ?? orderByMap.sort_order;
 
 	const [products, categories, buyer] = await Promise.all([
