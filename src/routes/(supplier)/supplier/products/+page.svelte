@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { Button, ConfirmDialog, Input, Label, Modal, Pagination, SearchBar, Table, Textarea } from '$lib/ui';
+	import { Button, ConfirmDialog, FileUploadDialog, Input, Label, Modal, Pagination, SearchBar, Table, Textarea } from '$lib/ui';
 	import { enhance } from '$app/forms';
 	import { t } from '$lib/i18n';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { formatCurrency } from '$lib/utils';
 	import { PAGE_SIZE_LIST } from '$lib/constants';
+	import { ImagePlus } from '@lucide/svelte';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
@@ -25,6 +26,7 @@
 		} finally { generatingSku = false; }
 	}
 
+	let showUploadDialog = $state(false);
 	let deleteFormEl = $state<HTMLFormElement | undefined>();
 
 	const createEnhance: SubmitFunction = () => async ({ result, update }) => {
@@ -255,7 +257,7 @@
 					</label>
 				</div>
 			</div>
-			<!-- Image upload (separate from main form) -->
+			<!-- Image upload -->
 			<div class="field">
 				<Label>{t().product.image}</Label>
 				{#if editItem.image_key}
@@ -267,22 +269,9 @@
 						}}>{t().common.delete}</Button>
 					</div>
 				{/if}
-				<input
-					type="file"
-					accept="image/jpeg,image/png,image/webp,image/gif"
-					class="file-input"
-					onchange={async (e) => {
-						const file = (e.currentTarget as HTMLInputElement).files?.[0];
-						if (!file) return;
-						const fd = new FormData();
-						fd.append('image', file);
-						const res = await fetch(`/api/products/${editItem!.id}/image`, { method: 'POST', body: fd });
-						if (res.ok) {
-							const { key } = await res.json() as { key: string };
-							editItem = { ...editItem!, image_key: key };
-						}
-					}}
-				/>
+				<Button size="sm" variant="secondary" onclick={() => (showUploadDialog = true)}>
+					<ImagePlus size={14} /> {editItem.image_key ? t().product.changeImage : t().product.uploadImage}
+				</Button>
 			</div>
 
 			<div class="form-actions">
@@ -305,6 +294,22 @@
 	onconfirm={() => deleteFormEl?.requestSubmit()}
 	oncancel={() => (deleteId = null)}
 />
+
+<!-- Image upload dialog -->
+{#if editItem}
+	<FileUploadDialog
+		bind:open={showUploadDialog}
+		action="/api/products/{editItem.id}/image"
+		accept="image/jpeg,image/png,image/webp,image/gif"
+		maxSizeMb={5}
+		onuploaded={async () => {
+			await invalidateAll();
+			const updated = data.products.find((p) => p.id === editItem?.id);
+			if (updated) editItem = { ...editItem!, image_key: updated.image_key };
+		}}
+		oncancel={() => (showUploadDialog = false)}
+	/>
+{/if}
 
 <style lang="scss">
 	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
@@ -356,8 +361,4 @@
 		}
 	}
 
-	.file-input {
-		font-size: 0.8125rem;
-		color: var(--color-text-secondary);
-	}
 </style>

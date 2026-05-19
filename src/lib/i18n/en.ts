@@ -140,6 +140,8 @@ export const en = {
 		isActive: 'Active',
 		sortOrder: 'Sort order',
 		image: 'Image',
+		uploadImage: 'Upload image',
+		changeImage: 'Change image',
 		skuPlaceholder: 'e.g. PROD-001',
 		namePlaceholder: 'Enter product name',
 		priceNote: 'Tax-exclusive price in JPY'
@@ -288,6 +290,14 @@ export const en = {
 		reorderDesc: 'Adjust quantities before adding to cart.',
 		reorderPriceNote: 'Prices and minimum quantities reflect current values and may differ from your original order.',
 		printOrder: 'Print order'
+	},
+	fileUpload: {
+		title: 'Upload image',
+		dragDrop: 'Click or drag & drop',
+		hint: 'Max {size} MB · JPEG, PNG, WebP, GIF',
+		uploading: 'Uploading...',
+		upload: 'Upload',
+		errorSize: 'File size must be {size} MB or less'
 	},
 	errors: {
 		required: 'This field is required',

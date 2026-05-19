@@ -142,6 +142,8 @@ export const ja: Translations = {
 		isActive: '販売中',
 		sortOrder: '表示順',
 		image: '画像',
+		uploadImage: '画像をアップロード',
+		changeImage: '画像を変更',
 		skuPlaceholder: '例: PROD-001',
 		namePlaceholder: '商品名を入力',
 		priceNote: '税抜価格（円）'
@@ -290,6 +292,14 @@ export const ja: Translations = {
 		reorderDesc: 'カートに追加する前に数量を確認・変更してください。',
 		reorderPriceNote: '価格・最低発注数は現在の設定が反映されており、注文時から変更されている場合があります。',
 		printOrder: '注文書を印刷'
+	},
+	fileUpload: {
+		title: '画像をアップロード',
+		dragDrop: 'クリックまたはドラッグ＆ドロップ',
+		hint: '最大 {size} MB · JPEG、PNG、WebP、GIF',
+		uploading: 'アップロード中...',
+		upload: 'アップロード',
+		errorSize: 'ファイルサイズは {size} MB 以下にしてください'
 	},
 	errors: {
 		required: 'この項目は必須です',

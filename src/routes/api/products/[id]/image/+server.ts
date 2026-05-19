@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ params, request, platform, locals }
 	if (!locals.user || locals.user.role !== 'supplier') throw error(403, 'Forbidden');
 
 	const formData = await request.formData();
-	const file = formData.get('image') as File | null;
+	const file = (formData.get('file') ?? formData.get('image')) as File | null;
 
 	if (!file || file.size === 0) throw error(400, 'No image provided');
 	if (!ALLOWED_TYPES.includes(file.type)) throw error(400, 'Invalid file type. Use JPEG, PNG, WebP, or GIF.');
