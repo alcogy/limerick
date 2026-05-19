@@ -77,6 +77,12 @@ export const ja: Translations = {
 	},
 	settings: {
 		title: '設定',
+		appearance: '外観',
+		theme: 'テーマ',
+		themeDesc: 'ライト・ダーク、またはシステム設定に従います。',
+		themeLight: 'ライト',
+		themeDark: 'ダーク',
+		themeSystem: 'システム',
 		language: '言語',
 		languageDesc: 'UIの表示言語を選択します',
 		companyInfo: '会社情報',

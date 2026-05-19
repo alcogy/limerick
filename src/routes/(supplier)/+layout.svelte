@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Sidebar, ConfirmDialog } from '$lib/ui';
 	import type { NavItem } from '$lib/ui';
-	import { getTheme, setTheme } from '$lib/theme.svelte';
 	import { t } from '$lib/i18n';
 	import type { LayoutData } from './$types';
 	import {
@@ -47,8 +46,6 @@
 	<Sidebar
 		{primaryNavItems}
 		{secondaryNavItems}
-		theme={getTheme()}
-		onthemechange={setTheme}
 	>
 		{#snippet logo()}
 			<span class="logo-text">{t().app.name}</span>
