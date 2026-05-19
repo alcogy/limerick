@@ -14,4 +14,5 @@ export { default as AccountEditor } from './AccountEditor.svelte';
 export { default as SelectChip } from './SelectChip.svelte';
 export { default as BuyerForm } from './BuyerForm.svelte';
 export { default as WBSForm } from './WBSForm.svelte';
+export { default as FileUploadDialog } from './FileUploadDialog.svelte';
 export type { NavItem } from './Sidebar.svelte';
