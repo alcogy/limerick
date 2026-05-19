@@ -214,6 +214,9 @@ export const en = {
 		completeAction: 'Mark this order as completed?',
 		cancelAction: 'Cancel this order?',
 		exportCsv: 'Export CSV',
+		printTitle: 'Purchase Order',
+		orderedBy: 'Ordered by',
+		to: 'To',
 		statuses: {
 			pending: 'Pending',
 			confirmed: 'Confirmed',
@@ -277,7 +280,9 @@ export const en = {
 		orderPlaced: 'Order placed successfully.',
 		confirmCheckout: 'Place this order?',
 		reorder: 'Reorder',
-		reorderDesc: 'Adjust quantities before adding to cart.'
+		reorderDesc: 'Adjust quantities before adding to cart.',
+		reorderPriceNote: 'Prices and minimum quantities reflect current values and may differ from your original order.',
+		printOrder: 'Print order'
 	},
 	errors: {
 		required: 'This field is required',

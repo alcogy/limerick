@@ -216,6 +216,9 @@ export const ja: Translations = {
 		completeAction: 'この受注を完了にしますか？',
 		cancelAction: 'この受注をキャンセルしますか？',
 		exportCsv: 'CSV出力',
+		printTitle: '注文書',
+		orderedBy: '発注者',
+		to: '宛先',
 		statuses: {
 			pending: '受注済み',
 			confirmed: '確認済み',
@@ -279,7 +282,9 @@ export const ja: Translations = {
 		orderPlaced: '発注が完了しました。',
 		confirmCheckout: 'この内容で発注しますか？',
 		reorder: '再発注',
-		reorderDesc: 'カートに追加する前に数量を確認・変更してください。'
+		reorderDesc: 'カートに追加する前に数量を確認・変更してください。',
+		reorderPriceNote: '価格・最低発注数は現在の設定が反映されており、注文時から変更されている場合があります。',
+		printOrder: '注文書を印刷'
 	},
 	errors: {
 		required: 'この項目は必須です',
