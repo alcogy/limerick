@@ -1,15 +1,36 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
-import { eq } from 'drizzle-orm';
+import { and, count, eq, gte } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { now } from '$lib/utils';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+const UPLOAD_LIMIT = 30;          // max uploads per hour per user
+const UPLOAD_WINDOW_MS = 60 * 60 * 1000;
 
 export const POST: RequestHandler = async ({ params, request, platform, locals }) => {
 	if (!locals.user || locals.user.role !== 'supplier') throw error(403, 'Forbidden');
+
+	const db = drizzle(platform!.env.DB, { schema });
+	const windowStart = new Date(Date.now() - UPLOAD_WINDOW_MS)
+		.toISOString().replace('T', ' ').slice(0, 19);
+
+	const [[uploadCount]] = await Promise.all([
+		db.select({ count: count() })
+			.from(schema.login_attempts)
+			.where(and(
+				eq(schema.login_attempts.identifier, `upload:${locals.user.id}`),
+				gte(schema.login_attempts.attempted_at, windowStart)
+			))
+	]);
+	if ((uploadCount?.count ?? 0) >= UPLOAD_LIMIT) {
+		throw error(429, 'Upload rate limit exceeded. Try again later.');
+	}
+	await db.insert(schema.login_attempts).values({
+		identifier: `upload:${locals.user.id}`
+	});
 
 	const formData = await request.formData();
 	const file = (formData.get('file') ?? formData.get('image')) as File | null;
@@ -24,8 +45,6 @@ export const POST: RequestHandler = async ({ params, request, platform, locals }
 	await platform!.env.BUCKET.put(key, await file.arrayBuffer(), {
 		httpMetadata: { contentType: file.type }
 	});
-
-	const db = drizzle(platform!.env.DB, { schema });
 
 	// Delete old image if exists
 	const existing = await db.query.products.findFirst({ where: eq(schema.products.id, params.id) });
