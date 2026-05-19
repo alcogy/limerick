@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import { asc, count, desc, eq, and, gte, lte, sql } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
+import { writeAuditLog } from '$lib/server/audit';
 import { now, todayISO } from '$lib/utils';
 
 export const load: PageServerLoad = async ({ platform, url }) => {
@@ -43,7 +44,7 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 };
 
 export const actions = {
-	generate: async ({ request, platform }) => {
+	generate: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const buyer_id = data.get('buyer_id')?.toString();
 		const period_from = data.get('period_from')?.toString();
@@ -93,10 +94,11 @@ export const actions = {
 			orders.map((o) => ({ invoice_id: invoice.id, order_id: o.id }))
 		);
 
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'create', resource_type: 'invoice', resource_id: invoice.id, metadata: { buyer_id, period_from, period_to }, request });
 		return { success: true };
 	},
 
-	markPaid: async ({ request, platform }) => {
+	markPaid: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'Invalid request' });
@@ -106,6 +108,7 @@ export const actions = {
 		await db.update(schema.invoices)
 			.set({ status: 'paid', paid_at: ts, updated_at: ts })
 			.where(eq(schema.invoices.id, id));
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'update', resource_type: 'invoice', resource_id: id, metadata: { status: 'paid' }, request });
 		return { success: true };
 	}
 } satisfies Actions;

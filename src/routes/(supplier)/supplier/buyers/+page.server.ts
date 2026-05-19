@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { asc, desc, eq, like, and, or } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { hashPassword, validatePasswordStrength } from '$lib/server/auth/index';
+import { writeAuditLog } from '$lib/server/audit';
 import { now } from '$lib/utils';
 
 export const load: PageServerLoad = async ({ platform, url }) => {
@@ -46,7 +47,7 @@ export const load: PageServerLoad = async ({ platform, url }) => {
 };
 
 export const actions = {
-	create: async ({ request, platform }) => {
+	create: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const email = data.get('email')?.toString().trim().toLowerCase();
 		const name = data.get('name')?.toString().trim();
@@ -82,10 +83,11 @@ export const actions = {
 			phone, address, payment_terms, notes
 		});
 
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'create', resource_type: 'buyer', resource_id: userId, request });
 		return { success: true };
 	},
 
-	update: async ({ request, platform }) => {
+	update: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		const name = data.get('name')?.toString().trim();
@@ -114,16 +116,18 @@ export const actions = {
 			}).where(eq(schema.buyers.id, id))
 		]);
 
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'update', resource_type: 'buyer', resource_id: id, request });
 		return { success: true };
 	},
 
-	delete: async ({ request, platform }) => {
+	delete: async ({ request, platform, locals }) => {
 		const data = await request.formData();
 		const id = data.get('id')?.toString();
 		if (!id) return fail(400, { error: 'Invalid request' });
 
 		const db = drizzle(platform!.env.DB, { schema });
 		await db.delete(schema.users).where(eq(schema.users.id, id));
+		await writeAuditLog({ db: platform!.env.DB, user_id: locals.user?.id ?? null, action: 'delete', resource_type: 'buyer', resource_id: id, request });
 		return { success: true };
 	},
 
