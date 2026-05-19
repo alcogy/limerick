@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
 import { eq, gte, count } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
-import { verifyPassword, SESSION_COOKIE_OPTIONS } from '$lib/server/auth/index';
+import { verifyPassword, createSession, SESSION_COOKIE_OPTIONS } from '$lib/server/auth/index';
 import type { Actions, PageServerLoad } from './$types';
 
 const MAX_ATTEMPTS = 10;
@@ -60,7 +60,8 @@ export const actions = {
 		await db.delete(schema.login_attempts)
 			.where(eq(schema.login_attempts.identifier, email));
 
-		cookies.set('session', user.id, SESSION_COOKIE_OPTIONS);
+		const token = await createSession(db, user.id);
+		cookies.set('session', token, SESSION_COOKIE_OPTIONS);
 
 		if (user.role === 'supplier') throw redirect(302, '/supplier/dashboard');
 		throw redirect(302, '/buyer/catalog');
