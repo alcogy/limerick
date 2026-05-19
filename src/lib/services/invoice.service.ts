@@ -136,7 +136,9 @@ export async function getInvoiceWithSupplierInfo(
 		supplier: {
 			name:    s['company_name']    ?? '',
 			address: s['company_address'] ?? '',
-			tel:     s['company_tel']     ?? ''
+			zip:     s['company_zip']     ?? '',
+			tel:     s['company_tel']     ?? '',
+			taxNo:   s['company_tax_no']  ?? ''
 		}
 	};
 }

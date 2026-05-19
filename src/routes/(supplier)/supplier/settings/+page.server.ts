@@ -12,7 +12,9 @@ export const actions = {
 		return saveCompanyInfo(makeCtx(platform!, locals, request), {
 			name:    data.get('company_name')?.toString().trim()    ?? '',
 			address: data.get('company_address')?.toString().trim() ?? '',
-			tel:     data.get('company_tel')?.toString().trim()     ?? ''
+			zip:     data.get('company_zip')?.toString().trim()     ?? '',
+			tel:     data.get('company_tel')?.toString().trim()     ?? '',
+			taxNo:   data.get('company_tax_no')?.toString().trim()  ?? ''
 		});
 	},
 
