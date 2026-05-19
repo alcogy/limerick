@@ -53,12 +53,12 @@
 </script>
 
 <svelte:head>
-	<title>{t().order.title} — {t().app.name}</title>
+	<title>{t().order.supplierTitle} — {t().app.name}</title>
 </svelte:head>
 
 <div class="page">
 	<div class="page-header">
-		<h1 class="page-title">{t().order.title}</h1>
+		<h1 class="page-title">{t().order.supplierTitle}</h1>
 		<a href="/supplier/orders/export" class="export-link">
 			<Button variant="secondary">{t().order.exportCsv}</Button>
 		</a>
