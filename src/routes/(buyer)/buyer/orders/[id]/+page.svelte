@@ -24,36 +24,36 @@
 	</div>
 
 	<div class="order-sheet">
-		<div class="sheet-header">
-			<div class="title-block">
-				<h1 class="sheet-title">{t().order.printTitle}</h1>
+		<!-- ヘッダー：左＝注文書タイトル＋ステータス＋発注者、右＝宛先＋発注日 -->
+		<div class="inv-header">
+			<div class="inv-left">
+				<h1 class="inv-title">{t().order.printTitle}</h1>
 				<div class="order-id-label">#{order.id.slice(0, 8).toUpperCase()}</div>
 				<div class="badge badge-{order.status}">{t().order.statuses[order.status]}</div>
-			</div>
-			<div class="sheet-meta">
-				<div class="meta-row"><span>{t().order.orderedAt}</span><span>{formatDateTime(order.ordered_at)}</span></div>
-			</div>
-		</div>
-
-		<div class="parties">
-			{#if supplier.name}
-				<div class="party">
-					<div class="party-label">{t().order.to}</div>
-					<div class="party-name">{supplier.name}</div>
-					{#if supplier.address}<div class="party-sub">{supplier.address}</div>{/if}
-					{#if supplier.zip}<div class="party-sub">{supplier.zip}</div>{/if}
-					{#if supplier.tel}<div class="party-sub">{supplier.tel}</div>{/if}
-					{#if supplier.taxNo}<div class="party-sub party-tax">{supplier.taxNo}</div>{/if}
+				<div class="buyer-block">
+					<div class="buyer-name">{order.buyer?.company_name}</div>
+					{#if order.buyer?.user?.name}<div class="buyer-sub">{order.buyer.user.name}</div>{/if}
+					{#if order.buyer?.zip}<div class="buyer-sub">{order.buyer.zip}</div>{/if}
+					{#if order.buyer?.address}<div class="buyer-sub">{order.buyer.address}</div>{/if}
 				</div>
-			{/if}
-			<div class="party">
-				<div class="party-label">{t().order.orderedBy}</div>
-				<div class="party-name">{order.buyer?.company_name}</div>
-				<div class="party-sub">{order.buyer?.user?.name}</div>
+			</div>
+			<div class="inv-right">
+				{#if supplier.name}
+					<div class="supplier-block">
+						<div class="supplier-name">{supplier.name}</div>
+						{#if supplier.zip}<div class="supplier-sub">{supplier.zip}</div>{/if}
+						{#if supplier.address}<div class="supplier-sub">{supplier.address}</div>{/if}
+						{#if supplier.tel}<div class="supplier-sub">{supplier.tel}</div>{/if}
+						{#if supplier.taxNo}<div class="supplier-tax">{supplier.taxNo}</div>{/if}
+					</div>
+				{/if}
+				<div class="inv-meta">
+					<div class="meta-row"><span>{t().order.orderedAt}</span><span>{formatDateTime(order.ordered_at)}</span></div>
+				</div>
 			</div>
 		</div>
 
-		<table class="items-table">
+		<table class="inv-table">
 			<thead>
 				<tr>
 					<th>{t().product.sku}</th>
@@ -108,30 +108,30 @@
 		gap: var(--space-xl);
 	}
 
-	.sheet-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-lg); }
-	.title-block { display: flex; flex-direction: column; gap: var(--space-sm); }
-	.sheet-title { font-size: 1.25rem; font-weight: 700; }
+	/* ── Header ── */
+	.inv-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-xl); }
+
+	.inv-left { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.inv-title { font-size: 1.25rem; font-weight: 700; }
 	.order-id-label { font-size: 0.8125rem; color: var(--color-text-tertiary); font-family: var(--font-mono); }
 
-	.sheet-meta { display: flex; flex-direction: column; gap: var(--space-xs); text-align: right; }
+	.buyer-block { display: flex; flex-direction: column; gap: 2px; padding-top: var(--space-xs); }
+	.buyer-name { font-size: 0.9375rem; font-weight: 600; }
+	.buyer-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
+
+	.inv-right { display: flex; flex-direction: column; gap: var(--space-md); align-items: flex-end; text-align: right; }
+
+	.supplier-block { display: flex; flex-direction: column; gap: 2px; }
+	.supplier-name { font-size: 0.9375rem; font-weight: 600; }
+	.supplier-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.supplier-tax { font-size: 0.75rem; font-family: var(--font-mono); color: var(--color-text-secondary); margin-top: 2px; }
+
+	.inv-meta { display: flex; flex-direction: column; gap: var(--space-xs); }
 	.meta-row { display: flex; gap: var(--space-lg); font-size: 0.875rem; }
 	.meta-row span:first-child { color: var(--color-text-secondary); }
 
-	.parties {
-		display: flex;
-		gap: var(--space-2xl);
-		padding: var(--space-lg);
-		background-color: var(--color-bg-sunken);
-		border-radius: var(--radius-md);
-	}
-
-	.party { display: flex; flex-direction: column; gap: 2px; }
-	.party-label { font-size: 0.75rem; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; }
-	.party-name { font-size: 0.9375rem; font-weight: 600; }
-	.party-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
-	.party-tax { font-size: 0.75rem; font-family: var(--font-mono); margin-top: 2px; }
-
-	.items-table {
+	/* ── Table ── */
+	.inv-table {
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 0.875rem;
@@ -149,6 +149,7 @@
 		.grand-row td { font-size: 1rem; font-weight: 700; border-top: 2px solid var(--color-border); }
 	}
 
+	/* ── Notes ── */
 	.notes-section {
 		padding: var(--space-lg);
 		background-color: var(--color-bg-sunken);
