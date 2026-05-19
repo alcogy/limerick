@@ -5,6 +5,7 @@ import { writeAuditLog } from '$lib/server/audit';
 import { now } from '$lib/utils';
 import { INVITATION_EXPIRY_MS } from '$lib/constants';
 import type { ServiceCtx } from './index';
+import { requireSupplier } from './index';
 
 export async function listBuyers(ctx: ServiceCtx, opts: { search: string }) {
 	const { db } = ctx;
@@ -59,7 +60,7 @@ export async function listBuyers(ctx: ServiceCtx, opts: { search: string }) {
 }
 
 export async function createBuyer(
-	ctx: ServiceCtx,
+	ctx: ServiceCtx, // supplier only
 	input: {
 		email: string;
 		name: string;
@@ -74,6 +75,7 @@ export async function createBuyer(
 		notes: string | null;
 	}
 ) {
+	requireSupplier(ctx);
 	const { db, env, user, request } = ctx;
 	const { email, name, company_name } = input;
 
@@ -96,7 +98,7 @@ export async function createBuyer(
 }
 
 export async function updateBuyer(
-	ctx: ServiceCtx,
+	ctx: ServiceCtx, // supplier only
 	id: string,
 	input: {
 		name: string;
@@ -111,6 +113,7 @@ export async function updateBuyer(
 		notes: string | null;
 	}
 ) {
+	requireSupplier(ctx);
 	const { db, env, user, request } = ctx;
 	if (!id || !input.name || !input.company_name) return fail(400, { error: 'Invalid request' });
 
@@ -125,6 +128,7 @@ export async function updateBuyer(
 }
 
 export async function deleteBuyer(ctx: ServiceCtx, id: string) {
+	requireSupplier(ctx);
 	const { db, env, user, request } = ctx;
 	if (!id) return fail(400, { error: 'Invalid request' });
 

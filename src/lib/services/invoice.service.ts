@@ -4,6 +4,7 @@ import * as schema from '$lib/server/db/schema';
 import { writeAuditLog } from '$lib/server/audit';
 import { now, todayISO } from '$lib/utils';
 import type { ServiceCtx } from './index';
+import { requireSupplier } from './index';
 import type { InvoiceStatus } from '$lib/types';
 import { INVOICE_NUMBER_DIGITS, INVOICE_NUMBER_PREFIX, PAGE_SIZE_LIST } from '$lib/constants';
 
@@ -47,6 +48,7 @@ export async function generateInvoice(
 	ctx: ServiceCtx,
 	input: { buyer_id: string; period_from: string; period_to: string; due_date: string }
 ) {
+	requireSupplier(ctx);
 	const { db, env, user, request } = ctx;
 	const { buyer_id, period_from, period_to, due_date } = input;
 
@@ -93,6 +95,7 @@ export async function generateInvoice(
 }
 
 export async function markInvoicePaid(ctx: ServiceCtx, id: string) {
+	requireSupplier(ctx);
 	const { db, env, user, request } = ctx;
 	if (!id) return fail(400, { error: 'Invalid request' });
 
