@@ -30,7 +30,6 @@
 				<h1 class="inv-title">{t().invoice.invoiceNumber}: {inv.invoice_number}</h1>
 				<div class="inv-status badge badge-{inv.status}">{t().invoice.statuses[inv.status]}</div>
 				<div class="buyer-block">
-					<div class="buyer-label">{t().invoice.buyer}</div>
 					<div class="buyer-name">{inv.buyer?.company_name}</div>
 					{#if inv.buyer?.user?.name}<div class="buyer-sub">{inv.buyer.user.name}</div>{/if}
 				</div>
