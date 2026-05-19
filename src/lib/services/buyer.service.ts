@@ -29,6 +29,7 @@ export async function listBuyers(ctx: ServiceCtx, opts: { search: string }) {
 				discount_rate:  schema.buyers.discount_rate,
 				closing_day:    schema.buyers.closing_day,
 				phone:          schema.buyers.phone,
+				zip:            schema.buyers.zip,
 				address:        schema.buyers.address,
 				payment_terms:  schema.buyers.payment_terms,
 				notes:          schema.buyers.notes,
@@ -67,6 +68,7 @@ export async function createBuyer(
 		discount_rate: number | null;
 		closing_day: number;
 		phone: string | null;
+		zip: string | null;
 		address: string | null;
 		payment_terms: string | null;
 		notes: string | null;
@@ -103,6 +105,7 @@ export async function updateBuyer(
 		discount_rate: number | null;
 		closing_day: number;
 		phone: string | null;
+		zip: string | null;
 		address: string | null;
 		payment_terms: string | null;
 		notes: string | null;

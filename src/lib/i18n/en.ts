@@ -181,6 +181,7 @@ export const en = {
 		contactName: 'Contact name',
 		email: 'Email address',
 		phone: 'Phone',
+		zip: 'Postcode / Eircode',
 		address: 'Address',
 		priceGroup: 'Price group',
 		closingDay: 'Closing day',

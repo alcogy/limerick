@@ -32,6 +32,8 @@
 				<div class="buyer-block">
 					<div class="buyer-name">{inv.buyer?.company_name}</div>
 					{#if inv.buyer?.user?.name}<div class="buyer-sub">{inv.buyer.user.name}</div>{/if}
+					{#if inv.buyer?.zip}<div class="buyer-sub">{inv.buyer.zip}</div>{/if}
+					{#if inv.buyer?.address}<div class="buyer-sub">{inv.buyer.address}</div>{/if}
 				</div>
 			</div>
 			<div class="inv-right">
