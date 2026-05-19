@@ -130,9 +130,13 @@
 		<div class="product-grid">
 			{#each data.products as product (product.id)}
 				<div class="product-card" id="product-{product.id}">
-					{#if product.image_key}
+					{#if data.showImages}
 						<div class="product-image">
-							<img src="/api/storage/{product.image_key}" alt={product.name} />
+							{#if product.image_key}
+								<img src="/api/storage/{product.image_key}" alt={product.name} />
+							{:else}
+								<div class="no-image">{t().catalog.noImage}</div>
+							{/if}
 						</div>
 					{/if}
 					<div class="product-body">
@@ -320,6 +324,17 @@
 		border-bottom: 1px solid var(--color-border-light);
 
 		img { width: 100%; height: 100%; object-fit: cover; }
+	}
+
+	.no-image {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+		letter-spacing: 0.03em;
 	}
 
 	.product-body {

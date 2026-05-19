@@ -9,11 +9,12 @@ export async function loadSettings(ctx: ServiceCtx) {
 		skuPrefix:      map['sku_prefix']      ?? 'PROD',
 		skuDigits:      map['sku_digits']      ?? '4',
 		skuSeq:         map['sku_seq']         ?? '0',
-		companyName:    map['company_name']    ?? '',
-		companyAddress: map['company_address'] ?? '',
-		companyZip:     map['company_zip']     ?? '',
-		companyTel:     map['company_tel']     ?? '',
-		companyTaxNo:   map['company_tax_no']  ?? ''
+		companyName:       map['company_name']        ?? '',
+		companyAddress:    map['company_address']     ?? '',
+		companyZip:        map['company_zip']         ?? '',
+		companyTel:        map['company_tel']         ?? '',
+		companyTaxNo:      map['company_tax_no']      ?? '',
+		catalogShowImages: map['catalog_show_images'] !== '0'  // default: true
 	};
 }
 
@@ -30,6 +31,15 @@ export async function saveCompanyInfo(
 		upsert(db, 'company_tax_no',  input.taxNo)
 	]);
 	return { success: true, action: 'saveCompany' };
+}
+
+export async function saveCatalogSettings(
+	ctx: ServiceCtx,
+	input: { showImages: boolean }
+) {
+	const { db } = ctx;
+	await upsert(db, 'catalog_show_images', input.showImages ? '1' : '0');
+	return { success: true, action: 'saveCatalog' };
 }
 
 export async function saveSkuRules(

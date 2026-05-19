@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	)!);
 	const where = and(...conditions);
 
-	const [[countResult], products, categories, buyer] = await Promise.all([
+	const [[countResult], products, categories, buyer, settingsRows] = await Promise.all([
 		db.select({ count: count() }).from(schema.products).where(where),
 		db.query.products.findMany({
 			where,
@@ -38,7 +38,8 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 			with: { category: true, group_prices: true }
 		}),
 		db.select().from(schema.categories).orderBy(asc(schema.categories.sort_order)),
-		db.query.buyers.findFirst({ where: eq(schema.buyers.id, locals.user!.id) })
+		db.query.buyers.findFirst({ where: eq(schema.buyers.id, locals.user!.id) }),
+		db.select().from(schema.settings)
 	]);
 
 	const total      = countResult?.count ?? 0;
@@ -81,5 +82,8 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 		};
 	});
 
-	return { products: productsWithPrice, categories, categoryFilter, sortBy, search, page, total, totalPages };
+	const settingsMap = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
+	const showImages = settingsMap['catalog_show_images'] !== '0';
+
+	return { products: productsWithPrice, categories, categoryFilter, sortBy, search, page, total, totalPages, showImages };
 };
