@@ -180,7 +180,7 @@
 			currentPage={data.page}
 			totalPages={data.totalPages}
 			totalItems={data.total}
-			itemsPerPage={50}
+			itemsPerPage={10}
 			onpagechange={(p) => {
 				const params = new URLSearchParams(window.location.search);
 				params.set('page', String(p));

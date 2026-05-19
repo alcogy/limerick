@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { and, asc, count, desc, eq, like, or } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 
-const PER_PAGE = 50;
+const PER_PAGE = 10;
 
 export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	const db = drizzle(platform!.env.DB, { schema });
