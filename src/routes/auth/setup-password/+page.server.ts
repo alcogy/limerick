@@ -3,6 +3,8 @@ import { drizzle } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { hashPassword, validatePasswordStrength } from '$lib/server/auth/index';
+import { parseFormData } from '$lib/utils/form';
+import { setupPasswordSchema } from '$lib/schemas';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url, platform }) => {
@@ -29,12 +31,10 @@ export const load: PageServerLoad = async ({ url, platform }) => {
 
 export const actions = {
 	default: async ({ request, platform }) => {
-		const data = await request.formData();
-		const token = data.get('token')?.toString();
-		const password = data.get('password')?.toString() ?? '';
-		const confirm = data.get('confirm')?.toString() ?? '';
+		const form = parseFormData(await request.formData(), setupPasswordSchema);
+		if (!form.ok) return form.fail;
+		const { token, password, confirm } = form.data;
 
-		if (!token) return fail(400, { error: 'Invalid request' });
 		if (password !== confirm) return fail(400, { error: 'Passwords do not match' });
 
 		const strengthError = validatePasswordStrength(password);
@@ -52,12 +52,11 @@ export const actions = {
 		}
 
 		const hashed = await hashPassword(password);
-		const userId = invitation.buyer_id;
 
 		await db
 			.update(schema.users)
 			.set({ password: hashed, is_active: true, updated_at: now })
-			.where(eq(schema.users.id, userId));
+			.where(eq(schema.users.id, invitation.buyer_id));
 
 		await db
 			.update(schema.invitation_tokens)

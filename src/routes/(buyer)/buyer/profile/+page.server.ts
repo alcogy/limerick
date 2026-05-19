@@ -5,6 +5,8 @@ import { eq } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { hashPassword, verifyPassword, validatePasswordStrength } from '$lib/server/auth/index';
 import { now } from '$lib/utils';
+import { parseFormData } from '$lib/utils/form';
+import { changePasswordSchema } from '$lib/schemas';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) throw redirect(302, '/login');
@@ -15,31 +17,28 @@ export const actions = {
 	default: async ({ request, platform, locals }) => {
 		if (!locals.user) return fail(401, { error: 'Unauthorized' });
 
-		const data = await request.formData();
-		const currentPassword = data.get('current_password')?.toString();
-		const newPassword = data.get('new_password')?.toString() ?? '';
-		const confirmPassword = data.get('confirm_password')?.toString() ?? '';
+		const form = parseFormData(await request.formData(), changePasswordSchema);
+		if (!form.ok) return form.fail;
+		const { current_password, new_password, confirm_password } = form.data;
 
-		if (!currentPassword || !newPassword) {
-			return fail(400, { error: 'All password fields are required' });
-		}
-		if (newPassword !== confirmPassword) {
+		if (new_password !== confirm_password) {
 			return fail(400, { error: 'Passwords do not match' });
 		}
 
-		const strengthErr = validatePasswordStrength(newPassword);
+		const strengthErr = validatePasswordStrength(new_password);
 		if (strengthErr) return fail(400, { error: strengthErr });
 
 		const db = drizzle(platform!.env.DB, { schema });
 		const user = await db.query.users.findFirst({ where: eq(schema.users.id, locals.user.id) });
 		if (!user || !user.password) return fail(404, { error: 'User not found' });
 
-		if (!(await verifyPassword(currentPassword, user.password))) {
+		if (!(await verifyPassword(current_password, user.password))) {
 			return fail(400, { error: 'Current password is incorrect' });
 		}
 
-		await db.update(schema.users)
-			.set({ password: await hashPassword(newPassword), updated_at: now() })
+		await db
+			.update(schema.users)
+			.set({ password: await hashPassword(new_password), updated_at: now() })
 			.where(eq(schema.users.id, locals.user.id));
 
 		return { success: true };
