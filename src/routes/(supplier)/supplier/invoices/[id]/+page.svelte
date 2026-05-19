@@ -7,7 +7,8 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const inv = $derived(data.invoice);
+	const inv      = $derived(data.invoice);
+	const supplier = $derived(data.supplier);
 
 	const allItems = $derived(
 		inv.invoice_orders.flatMap((io) => io.order?.items ?? [])
@@ -39,6 +40,14 @@
 		</div>
 
 		<div class="inv-parties">
+			{#if supplier.name}
+				<div class="party">
+					<div class="party-label">{t().invoice.from}</div>
+					<div class="party-name">{supplier.name}</div>
+					{#if supplier.address}<div class="party-sub">{supplier.address}</div>{/if}
+					{#if supplier.tel}<div class="party-sub">{supplier.tel}</div>{/if}
+				</div>
+			{/if}
 			<div class="party">
 				<div class="party-label">{t().invoice.buyer}</div>
 				<div class="party-name">{inv.buyer?.company_name}</div>

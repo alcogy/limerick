@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { Button, Input } from '$lib/ui';
 	import { enhance } from '$app/forms';
-	import { Globe, Hash } from '@lucide/svelte';
+	import { Building2, Globe, Hash } from '@lucide/svelte';
 	import { t, getLocale, setLocale, LOCALES, type Locale } from '$lib/i18n';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	let companyName    = $state(data.companyName);
+	let companyAddress = $state(data.companyAddress);
+	let companyTel     = $state(data.companyTel);
 
 	let skuPrefix = $state(data.skuPrefix);
 	let skuDigits = $state(data.skuDigits);
@@ -25,6 +29,49 @@
 
 <div class="page">
 	<h1 class="page-title">{t().settings.title}</h1>
+
+	<section class="settings-section">
+		<h2><Building2 size={16} /> {t().settings.companyInfo}</h2>
+		<div class="settings-card">
+			<form method="POST" action="?/saveCompany" use:enhance={saveEnhance} class="sku-form">
+				{#if form?.success && form?.action === 'saveCompany'}
+					<div class="save-ok">Saved.</div>
+				{/if}
+				<p class="sku-desc">{t().settings.companyInfoDesc}</p>
+
+				<div class="setting-row border-b">
+					<div class="setting-info">
+						<div class="setting-label">{t().settings.companyName}</div>
+					</div>
+					<div class="setting-control">
+						<Input name="company_name" bind:value={companyName} placeholder="Acme Corp." style="width:240px" />
+					</div>
+				</div>
+
+				<div class="setting-row border-b">
+					<div class="setting-info">
+						<div class="setting-label">{t().settings.companyAddress}</div>
+					</div>
+					<div class="setting-control">
+						<Input name="company_address" bind:value={companyAddress} placeholder="123 Main St, City" style="width:300px" />
+					</div>
+				</div>
+
+				<div class="setting-row border-b">
+					<div class="setting-info">
+						<div class="setting-label">{t().settings.companyTel}</div>
+					</div>
+					<div class="setting-control">
+						<Input name="company_tel" bind:value={companyTel} placeholder="+1-555-0100" style="width:200px" />
+					</div>
+				</div>
+
+				<div class="save-row">
+					<Button type="submit">{t().settings.save}</Button>
+				</div>
+			</form>
+		</div>
+	</section>
 
 	<section class="settings-section">
 		<h2><Globe size={16} /> {t().settings.language}</h2>
@@ -52,7 +99,7 @@
 		<h2><Hash size={16} /> {t().settings.skuRule}</h2>
 		<div class="settings-card">
 			<form method="POST" action="?/saveSku" use:enhance={saveEnhance} class="sku-form">
-				{#if form?.success}
+				{#if form?.success && form?.action === 'saveSku'}
 					<div class="save-ok">Saved.</div>
 				{/if}
 				<p class="sku-desc">{t().settings.skuRuleDesc}</p>
