@@ -4,6 +4,7 @@ import * as schema from '$lib/server/db/schema';
 import { writeAuditLog } from '$lib/server/audit';
 import { now } from '$lib/utils';
 import type { ServiceCtx } from './index';
+import { requireSupplier } from './index';
 import type { OrderStatus } from '$lib/types';
 import { PAGE_SIZE_LIST } from '$lib/constants';
 
@@ -45,6 +46,7 @@ export async function advanceOrderStatus(
 	to: OrderStatus,
 	timestampField: 'confirmed_at' | 'shipped_at' | 'completed_at'
 ) {
+	requireSupplier(ctx);
 	const { db, env, user, request } = ctx;
 	if (!id) return fail(400, { error: 'Invalid request' });
 
@@ -58,6 +60,7 @@ export async function advanceOrderStatus(
 }
 
 export async function cancelOrder(ctx: ServiceCtx, id: string) {
+	requireSupplier(ctx);
 	const { db, env, user, request } = ctx;
 	if (!id) return fail(400, { error: 'Invalid request' });
 

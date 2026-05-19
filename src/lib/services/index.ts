@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
 import type { DrizzleD1Database } from 'drizzle-orm/d1';
 import * as schema from '$lib/server/db/schema';
@@ -22,4 +23,12 @@ export function makeCtx(
 		user: locals.user,
 		request
 	};
+}
+
+export function requireSupplier(ctx: ServiceCtx): void {
+	if (!ctx.user || ctx.user.role !== 'supplier') throw error(403, 'Forbidden');
+}
+
+export function requireBuyer(ctx: ServiceCtx): void {
+	if (!ctx.user || ctx.user.role !== 'buyer') throw error(403, 'Forbidden');
 }
