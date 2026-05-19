@@ -3,6 +3,7 @@ import { asc, desc, eq, isNull, like, and, or } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { writeAuditLog } from '$lib/server/audit';
 import { now } from '$lib/utils';
+import { INVITATION_EXPIRY_MS } from '$lib/constants';
 import type { ServiceCtx } from './index';
 
 export async function listBuyers(ctx: ServiceCtx, opts: { search: string }) {
@@ -143,7 +144,7 @@ export async function createInvitationToken(ctx: ServiceCtx, buyer_id: string, o
 	}
 
 	const token = crypto.randomUUID();
-	const expires_at = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+	const expires_at = new Date(Date.now() + INVITATION_EXPIRY_MS).toISOString();
 	await db.insert(schema.invitation_tokens).values({ buyer_id, token, expires_at });
 
 	const inviteUrl = `${origin}/auth/setup-password?token=${token}`;

@@ -5,8 +5,7 @@ import { writeAuditLog } from '$lib/server/audit';
 import { now, todayISO } from '$lib/utils';
 import type { ServiceCtx } from './index';
 import type { InvoiceStatus } from '$lib/types';
-
-const PER_PAGE = 30;
+import { INVOICE_NUMBER_DIGITS, INVOICE_NUMBER_PREFIX, PAGE_SIZE_LIST } from '$lib/constants';
 
 export async function listInvoices(
 	ctx: ServiceCtx,
@@ -24,8 +23,8 @@ export async function listInvoices(
 		db.query.invoices.findMany({
 			where,
 			orderBy: [desc(schema.invoices.issued_at)],
-			limit: PER_PAGE,
-			offset: (page - 1) * PER_PAGE,
+			limit: PAGE_SIZE_LIST,
+			offset: (page - 1) * PAGE_SIZE_LIST,
 			with: { buyer: true }
 		}),
 		db.query.buyers.findMany({
@@ -39,7 +38,7 @@ export async function listInvoices(
 		buyers,
 		total: countResult?.count ?? 0,
 		page,
-		totalPages: Math.ceil((countResult?.count ?? 0) / PER_PAGE),
+		totalPages: Math.ceil((countResult?.count ?? 0) / PAGE_SIZE_LIST),
 		today: todayISO()
 	};
 }
@@ -77,7 +76,7 @@ export async function generateInvoice(
 	const [[countRow]] = await Promise.all([
 		db.select({ count: count() }).from(schema.invoices)
 	]);
-	const invoice_number = `INV-${year}-${String((countRow?.count ?? 0) + 1).padStart(4, '0')}`;
+	const invoice_number = `${INVOICE_NUMBER_PREFIX}-${year}-${String((countRow?.count ?? 0) + 1).padStart(INVOICE_NUMBER_DIGITS, '0')}`;
 
 	const ts = now();
 	const [invoice] = await db.insert(schema.invoices).values({
