@@ -277,7 +277,9 @@ export const ja: Translations = {
 		notes: '備考',
 		notesPlaceholder: 'サプライヤーへの備考（任意）',
 		orderPlaced: '発注が完了しました。',
-		confirmCheckout: 'この内容で発注しますか？'
+		confirmCheckout: 'この内容で発注しますか？',
+		reorder: '再発注',
+		reorderDesc: 'カートに追加する前に数量を確認・変更してください。'
 	},
 	errors: {
 		required: 'この項目は必須です',

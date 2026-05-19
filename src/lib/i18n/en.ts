@@ -275,7 +275,9 @@ export const en = {
 		notes: 'Order notes',
 		notesPlaceholder: 'Optional notes for the supplier',
 		orderPlaced: 'Order placed successfully.',
-		confirmCheckout: 'Place this order?'
+		confirmCheckout: 'Place this order?',
+		reorder: 'Reorder',
+		reorderDesc: 'Adjust quantities before adding to cart.'
 	},
 	errors: {
 		required: 'This field is required',
