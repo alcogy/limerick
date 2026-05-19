@@ -263,7 +263,7 @@
 				{#if editItem.image_key}
 					<div class="image-preview">
 						<img src="/api/storage/{editItem.image_key}" alt={editItem.name} />
-						<Button size="sm" variant="danger" onclick={async () => {
+						<Button type="button" size="sm" variant="danger" onclick={async () => {
 							await fetch(`/api/products/${editItem!.id}/image`, { method: 'DELETE' });
 							editItem = { ...editItem!, image_key: null };
 						}}>{t().common.delete}</Button>
