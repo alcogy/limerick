@@ -2,6 +2,7 @@
 	import { Button, Pagination } from '$lib/ui';
 	import { t } from '$lib/i18n';
 	import { goto } from '$app/navigation';
+	import { PAGE_SIZE_CATALOG } from '$lib/constants';
 	import { formatCurrency, calcTaxIncluded } from '$lib/utils';
 	import type { PageData } from './$types';
 
@@ -180,7 +181,7 @@
 			currentPage={data.page}
 			totalPages={data.totalPages}
 			totalItems={data.total}
-			itemsPerPage={10}
+			itemsPerPage={PAGE_SIZE_CATALOG}
 			onpagechange={(p) => {
 				const params = new URLSearchParams(window.location.search);
 				params.set('page', String(p));

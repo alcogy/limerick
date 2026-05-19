@@ -2,8 +2,7 @@ import type { PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import { and, asc, count, desc, eq, like, or } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
-
-const PER_PAGE = 10;
+import { PAGE_SIZE_CATALOG } from '$lib/constants';
 
 export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	const db = drizzle(platform!.env.DB, { schema });
@@ -34,8 +33,8 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 		db.query.products.findMany({
 			where,
 			orderBy,
-			limit: PER_PAGE,
-			offset: (page - 1) * PER_PAGE,
+			limit: PAGE_SIZE_CATALOG,
+			offset: (page - 1) * PAGE_SIZE_CATALOG,
 			with: { category: true, group_prices: true }
 		}),
 		db.select().from(schema.categories).orderBy(asc(schema.categories.sort_order)),
@@ -43,7 +42,7 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	]);
 
 	const total      = countResult?.count ?? 0;
-	const totalPages = Math.ceil(total / PER_PAGE);
+	const totalPages = Math.ceil(total / PAGE_SIZE_CATALOG);
 
 	// Pricing priority: group_price > discount_rate > base_price
 	const priceGroupId = buyer?.price_group_id ?? null;

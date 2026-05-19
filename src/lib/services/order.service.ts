@@ -5,8 +5,7 @@ import { writeAuditLog } from '$lib/server/audit';
 import { now } from '$lib/utils';
 import type { ServiceCtx } from './index';
 import type { OrderStatus } from '$lib/types';
-
-const PER_PAGE = 30;
+import { PAGE_SIZE_LIST } from '$lib/constants';
 
 export async function listOrders(
 	ctx: ServiceCtx,
@@ -25,8 +24,8 @@ export async function listOrders(
 		db.query.orders.findMany({
 			where,
 			orderBy: [desc(schema.orders.ordered_at)],
-			limit: PER_PAGE,
-			offset: (page - 1) * PER_PAGE,
+			limit: PAGE_SIZE_LIST,
+			offset: (page - 1) * PAGE_SIZE_LIST,
 			with: { buyer: true, items: { orderBy: (i, { asc }) => [asc(i.line_no)], with: { product: true } } }
 		})
 	]);
@@ -35,7 +34,7 @@ export async function listOrders(
 		orders,
 		total: countResult?.count ?? 0,
 		page,
-		totalPages: Math.ceil((countResult?.count ?? 0) / PER_PAGE)
+		totalPages: Math.ceil((countResult?.count ?? 0) / PAGE_SIZE_LIST)
 	};
 }
 

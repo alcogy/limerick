@@ -4,6 +4,7 @@
 	import { t } from '$lib/i18n';
 	import { goto } from '$app/navigation';
 	import { formatCurrency } from '$lib/utils';
+	import { PAGE_SIZE_LIST } from '$lib/constants';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
@@ -113,7 +114,7 @@
 		currentPage={data.page}
 		totalPages={data.totalPages}
 		totalItems={data.total}
-		itemsPerPage={30}
+		itemsPerPage={PAGE_SIZE_LIST}
 		onpagechange={(p) => {
 			const params = new URLSearchParams(window.location.search);
 			params.set('page', String(p));
