@@ -39,3 +39,27 @@ export function setLocale(l: Locale) {
 export function t() {
 	return locale === 'ja' ? ja : en;
 }
+
+export function formatDate(dateString: string | null | undefined): string {
+	if (!dateString) return '—';
+	const d = new Date(dateString);
+	if (locale === 'ja') {
+		return d.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+	}
+	return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+export function formatDateTime(dateString: string | null | undefined): string {
+	if (!dateString) return '—';
+	const d = new Date(dateString);
+	if (locale === 'ja') {
+		return d.toLocaleString('ja-JP', {
+			year: 'numeric', month: 'long', day: 'numeric',
+			hour: '2-digit', minute: '2-digit'
+		});
+	}
+	return d.toLocaleString('en-US', {
+		year: 'numeric', month: 'short', day: 'numeric',
+		hour: '2-digit', minute: '2-digit'
+	});
+}

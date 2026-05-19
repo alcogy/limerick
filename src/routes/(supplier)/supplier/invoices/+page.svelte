@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Button, ConfirmDialog, Input, Label, Modal, Pagination, Table } from '$lib/ui';
 	import { enhance } from '$app/forms';
-	import { t } from '$lib/i18n';
+	import { t, formatDate } from '$lib/i18n';
 	import { goto } from '$app/navigation';
-	import { calcInvoicePeriod, formatCurrency, formatDate } from '$lib/utils';
+	import { calcInvoicePeriod, formatCurrency } from '$lib/utils';
 	import { PAGE_SIZE_LIST } from '$lib/constants';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';

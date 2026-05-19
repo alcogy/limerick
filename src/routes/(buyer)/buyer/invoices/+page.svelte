@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { t } from '$lib/i18n';
-	import { formatCurrency, formatDate } from '$lib/utils';
+	import { t, formatDate } from '$lib/i18n';
+	import { formatCurrency } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 
