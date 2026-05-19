@@ -56,6 +56,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('X-Frame-Options', 'DENY');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+	response.headers.set('Content-Security-Policy', [
+		"default-src 'self'",
+		"script-src 'self' 'unsafe-inline'", // required for SvelteKit hydration + inline theme/lang scripts
+		"style-src 'self' 'unsafe-inline'",  // required for Svelte scoped styles
+		"img-src 'self' data: blob:",
+		"connect-src 'self'",
+		"font-src 'self'",
+		"object-src 'none'",
+		"base-uri 'self'",
+		"form-action 'self'",
+		"frame-ancestors 'none'"
+	].join('; '));
 
 	return response;
 };
