@@ -1,32 +1,10 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { drizzle } from 'drizzle-orm/d1';
-import { eq } from 'drizzle-orm';
-import * as schema from '$lib/server/db/schema';
+import { makeCtx } from '$lib/services';
+import { getInvoiceWithSupplierInfo } from '$lib/services/invoice.service';
 
-export const load: PageServerLoad = async ({ params, platform }) => {
-	const db = drizzle(platform!.env.DB, { schema });
-
-	const [invoice, settingsRows] = await Promise.all([
-		db.query.invoices.findFirst({
-			where: eq(schema.invoices.id, params.id),
-			with: {
-				buyer: { with: { user: true } },
-				invoice_orders: { with: { order: { with: { items: true } } } }
-			}
-		}),
-		db.select().from(schema.settings)
-	]);
-
-	if (!invoice) throw error(404, 'Invoice not found');
-
-	const s = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
-	return {
-		invoice,
-		supplier: {
-			name:    s['company_name']    ?? '',
-			address: s['company_address'] ?? '',
-			tel:     s['company_tel']     ?? ''
-		}
-	};
+export const load: PageServerLoad = async ({ params, platform, locals }) => {
+	const result = await getInvoiceWithSupplierInfo(makeCtx(platform!, locals), params.id);
+	if (!result) throw error(404, 'Invoice not found');
+	return result;
 };
