@@ -15,16 +15,20 @@
 	let reorderItems = $state<ReorderItem[]>([]);
 
 	function openReorder(order: (typeof data.orders)[0]) {
-		reorderItems = order.items.map((item) => ({
-			id: item.product_id,
-			name: item.name,
-			sku: item.sku,
-			price: item.unit_price,
-			tax_rate: item.tax_rate,
-			unit: item.product?.unit ?? 'ea',
-			min_qty: item.product?.min_order_qty ?? 1,
-			qty: item.quantity
-		}));
+		// Use current product data (price, tax_rate, min_qty) when available;
+		// fall back to order-time snapshot only if product was deleted.
+		reorderItems = order.items
+			.filter((item) => item.product?.is_active)
+			.map((item) => ({
+				id: item.product_id,
+				name: item.product?.name ?? item.name,
+				sku: item.product?.sku ?? item.sku,
+				price: item.product?.base_price ?? item.unit_price,
+				tax_rate: item.product?.tax_rate ?? item.tax_rate,
+				unit: item.product?.unit ?? 'ea',
+				min_qty: item.product?.min_order_qty ?? 1,
+				qty: Math.max(item.product?.min_order_qty ?? 1, item.quantity)
+			}));
 	}
 
 	function confirmReorder() {
@@ -69,6 +73,9 @@
 						<span class="order-total">{formatCurrency(order.total_amount + order.tax_amount)}</span>
 						<div class="order-actions">
 							<Button size="sm" variant="secondary" onclick={() => (viewOrder = order)}>{t().common.details}</Button>
+							<a href="/buyer/orders/{order.id}" target="_blank" class="print-link">
+								<Button size="sm" variant="ghost">{t().cart.printOrder}</Button>
+							</a>
 							<Button size="sm" variant="ghost" onclick={() => openReorder(order)}>{t().cart.reorder}</Button>
 						</div>
 					</div>
@@ -133,17 +140,20 @@
 	<Modal open={reorderItems.length > 0} title={t().cart.reorder} size="md" onclose={() => (reorderItems = [])}>
 		<div class="reorder-content">
 			<p class="reorder-desc">{t().cart.reorderDesc}</p>
+			<p class="reorder-price-note">{t().cart.reorderPriceNote}</p>
 			<div class="reorder-list">
 				{#each reorderItems as item, i (item.id)}
 					<div class="reorder-row">
 						<div class="reorder-info">
 							<span class="reorder-name">{item.name}</span>
-							<span class="reorder-sku">{item.sku} / {item.unit}</span>
+							<span class="reorder-sku">{item.sku} / {item.unit} — {formatCurrency(item.price)}</span>
 						</div>
 						<div class="reorder-qty">
-							<button class="qty-btn" onclick={() => { if (item.qty > item.min_qty) reorderItems[i] = { ...item, qty: item.qty - item.min_qty }; }}>−</button>
+							<button class="qty-btn" disabled={item.qty <= item.min_qty}
+								onclick={() => { reorderItems[i] = { ...item, qty: item.qty - 1 }; }}>−</button>
 							<span class="qty-val">{item.qty}</span>
-							<button class="qty-btn" onclick={() => { reorderItems[i] = { ...item, qty: item.qty + item.min_qty }; }}>+</button>
+							<button class="qty-btn"
+								onclick={() => { reorderItems[i] = { ...item, qty: item.qty + 1 }; }}>+</button>
 						</div>
 						<span class="reorder-price">{formatCurrency(item.price * item.qty)}</span>
 					</div>
@@ -203,7 +213,8 @@
 
 	.order-footer { display: flex; align-items: center; justify-content: space-between; }
 	.order-total { font-size: 1rem; font-weight: 700; }
-	.order-actions { display: flex; gap: var(--space-sm); }
+	.order-actions { display: flex; gap: var(--space-xs); }
+	.print-link { text-decoration: none; }
 
 	.order-detail { display: flex; flex-direction: column; gap: var(--space-xl); }
 	.detail-rows { display: flex; flex-direction: column; gap: var(--space-sm); }
@@ -229,8 +240,15 @@
 
 	.empty { font-size: 0.875rem; color: var(--color-text-tertiary); text-align: center; padding: var(--space-3xl) 0; }
 
-	.reorder-content { display: flex; flex-direction: column; gap: var(--space-lg); }
+	.reorder-content { display: flex; flex-direction: column; gap: var(--space-md); }
 	.reorder-desc { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.reorder-price-note {
+		font-size: 0.75rem;
+		color: var(--color-warning, #b45309);
+		background-color: var(--color-warning-light, #fef3c7);
+		border-radius: var(--radius-sm);
+		padding: var(--space-sm) var(--space-md);
+	}
 
 	.reorder-list { display: flex; flex-direction: column; gap: 0; }
 
@@ -262,7 +280,8 @@
 		font-size: 0.875rem;
 		cursor: pointer;
 		display: flex; align-items: center; justify-content: center;
-		&:hover { background-color: var(--color-hover); }
+		&:hover:not(:disabled) { background-color: var(--color-hover); }
+		&:disabled { opacity: 0.35; cursor: not-allowed; }
 	}
 
 	.qty-val { width: 36px; text-align: center; font-size: 0.875rem; font-weight: 600; }
