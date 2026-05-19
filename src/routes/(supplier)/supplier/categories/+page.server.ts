@@ -3,7 +3,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import { asc, count, eq } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
-import { now } from '$lib/utils';
+import { parseFormData } from '$lib/utils/form';
+import { categoryCreateSchema, categoryUpdateSchema, categoryDeleteSchema } from '$lib/schemas';
 
 export const load: PageServerLoad = async ({ platform }) => {
 	const db = drizzle(platform!.env.DB, { schema });
@@ -26,11 +27,9 @@ export const load: PageServerLoad = async ({ platform }) => {
 
 export const actions = {
 	create: async ({ request, platform }) => {
-		const data = await request.formData();
-		const name = data.get('name')?.toString().trim();
-		const sort_order = parseInt(data.get('sort_order')?.toString() ?? '0') || 0;
-
-		if (!name) return fail(400, { error: 'Name is required' });
+		const form = parseFormData(await request.formData(), categoryCreateSchema);
+		if (!form.ok) return form.fail;
+		const { name, sort_order } = form.data;
 
 		const db = drizzle(platform!.env.DB, { schema });
 		await db.insert(schema.categories).values({ name, sort_order });
@@ -38,12 +37,9 @@ export const actions = {
 	},
 
 	update: async ({ request, platform }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
-		const name = data.get('name')?.toString().trim();
-		const sort_order = parseInt(data.get('sort_order')?.toString() ?? '0') || 0;
-
-		if (!id || !name) return fail(400, { error: 'Invalid request' });
+		const form = parseFormData(await request.formData(), categoryUpdateSchema);
+		if (!form.ok) return form.fail;
+		const { id, name, sort_order } = form.data;
 
 		const db = drizzle(platform!.env.DB, { schema });
 		await db.update(schema.categories).set({ name, sort_order }).where(eq(schema.categories.id, id));
@@ -51,12 +47,11 @@ export const actions = {
 	},
 
 	delete: async ({ request, platform }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
-		if (!id) return fail(400, { error: 'Invalid request' });
+		const form = parseFormData(await request.formData(), categoryDeleteSchema);
+		if (!form.ok) return form.fail;
 
 		const db = drizzle(platform!.env.DB, { schema });
-		await db.delete(schema.categories).where(eq(schema.categories.id, id));
+		await db.delete(schema.categories).where(eq(schema.categories.id, form.data.id));
 		return { success: true };
 	}
 } satisfies Actions;

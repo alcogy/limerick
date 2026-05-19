@@ -4,6 +4,8 @@ import { drizzle } from 'drizzle-orm/d1';
 import { eq, sql } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { now } from '$lib/utils';
+import { parseFormData } from '$lib/utils/form';
+import { checkoutSchema } from '$lib/schemas';
 
 export const load: PageServerLoad = async () => {
 	return {};
@@ -11,25 +13,12 @@ export const load: PageServerLoad = async () => {
 
 export const actions = {
 	checkout: async ({ request, platform, locals }) => {
-		const data = await request.formData();
-		const notes = data.get('notes')?.toString().trim() || null;
-		const itemsJson = data.get('items')?.toString();
-
-		if (!itemsJson) return fail(400, { error: 'Cart is empty' });
-
-		let items: { id: string; qty: number; price: number; tax_rate: number; name: string; sku: string }[];
-		try {
-			items = JSON.parse(itemsJson);
-		} catch {
-			return fail(400, { error: 'Invalid cart data' });
-		}
-
-		if (!items.length) return fail(400, { error: 'Cart is empty' });
+		const form = parseFormData(await request.formData(), checkoutSchema);
+		if (!form.ok) return form.fail;
+		const { notes, items } = form.data;
 
 		const db = drizzle(platform!.env.DB, { schema });
 
-		// Verify products still exist and get latest prices
-		const productIds = items.map((i) => i.id);
 		const products = await db.query.products.findMany({
 			where: eq(schema.products.is_active, true),
 			with: { group_prices: true }
@@ -39,17 +28,21 @@ export const actions = {
 			where: eq(schema.buyers.id, locals.user!.id)
 		});
 
-		const priceGroupId  = buyer?.price_group_id ?? null;
-		const discountRate  = buyer?.discount_rate   ?? null;
-
+		const priceGroupId = buyer?.price_group_id ?? null;
+		const discountRate = buyer?.discount_rate ?? null;
 		const productMap = new Map(products.map((p) => [p.id, p]));
 
 		const orderItems: {
-			product_id: string; line_no: number; sku: string; name: string;
-			unit_price: number; tax_rate: number; quantity: number; subtotal: number;
+			product_id: string;
+			line_no: number;
+			sku: string;
+			name: string;
+			unit_price: number;
+			tax_rate: number;
+			quantity: number;
+			subtotal: number;
 		}[] = [];
 		let lineNo = 1;
-
 		let total_amount = 0;
 		let tax_amount = 0;
 
@@ -59,12 +52,12 @@ export const actions = {
 
 			const quantity = Math.max(1, item.qty);
 
-			// Stock check
 			if (product.stock_qty < quantity) {
-				return fail(400, { error: `Insufficient stock for "${product.name}" (available: ${product.stock_qty})` });
+				return fail(400, {
+					error: `Insufficient stock for "${product.name}" (available: ${product.stock_qty})`
+				});
 			}
 
-			// Pricing priority: group_price > discount_rate > base_price
 			const groupPrice = priceGroupId
 				? product.group_prices.find((gp) => gp.price_group_id === priceGroupId)
 				: null;
@@ -94,22 +87,25 @@ export const actions = {
 		if (!orderItems.length) return fail(400, { error: 'No valid products in cart' });
 
 		const ts = now();
-		const [order] = await db.insert(schema.orders).values({
-			buyer_id: locals.user!.id,
-			status: 'pending',
-			total_amount,
-			tax_amount,
-			notes,
-			ordered_at: ts
-		}).returning();
+		const [order] = await db
+			.insert(schema.orders)
+			.values({
+				buyer_id: locals.user!.id,
+				status: 'pending',
+				total_amount,
+				tax_amount,
+				notes,
+				ordered_at: ts
+			})
+			.returning();
 
 		await db.insert(schema.order_items).values(
 			orderItems.map((item) => ({ ...item, order_id: order.id }))
 		);
 
-		// Decrement stock for each ordered product
 		for (const item of orderItems) {
-			await db.update(schema.products)
+			await db
+				.update(schema.products)
 				.set({ stock_qty: sql`stock_qty - ${item.quantity}`, updated_at: ts })
 				.where(eq(schema.products.id, item.product_id));
 		}

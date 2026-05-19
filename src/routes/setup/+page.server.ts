@@ -3,6 +3,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '$lib/server/db/schema';
 import { hashPassword, validatePasswordStrength } from '$lib/server/auth/index';
+import { parseFormData } from '$lib/utils/form';
+import { setupAccountSchema } from '$lib/schemas';
 
 export const load: PageServerLoad = async ({ platform, locals }) => {
 	if (locals.user) throw redirect(302, '/supplier/dashboard');
@@ -20,13 +22,10 @@ export const actions = {
 		const existing = await db.select().from(schema.users).limit(1);
 		if (existing.length > 0) return fail(403, { error: 'Setup already completed.' });
 
-		const data = await request.formData();
-		const name    = data.get('name')?.toString().trim();
-		const email   = data.get('email')?.toString().trim().toLowerCase();
-		const password = data.get('password')?.toString() ?? '';
-		const confirm  = data.get('confirm')?.toString() ?? '';
+		const form = parseFormData(await request.formData(), setupAccountSchema);
+		if (!form.ok) return form.fail;
+		const { name, email, password, confirm } = form.data;
 
-		if (!name || !email || !password) return fail(400, { error: 'All fields are required.' });
 		if (password !== confirm) return fail(400, { error: 'Passwords do not match.' });
 
 		const strengthErr = validatePasswordStrength(password);

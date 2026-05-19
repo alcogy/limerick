@@ -4,6 +4,13 @@ import { drizzle } from 'drizzle-orm/d1';
 import { asc, count, eq } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { now } from '$lib/utils';
+import { parseFormData } from '$lib/utils/form';
+import {
+	priceGroupCreateSchema,
+	priceGroupUpdateSchema,
+	priceGroupDeleteSchema,
+	setPricesGroupSchema
+} from '$lib/schemas';
 
 export const load: PageServerLoad = async ({ platform }) => {
 	const db = drizzle(platform!.env.DB, { schema });
@@ -29,7 +36,6 @@ export const load: PageServerLoad = async ({ platform }) => {
 		db.select().from(schema.group_prices)
 	]);
 
-	// Build a lookup map: groupId -> { productId -> price }
 	const priceMap: Record<string, Record<string, number>> = {};
 	for (const row of existingPrices) {
 		if (!priceMap[row.price_group_id]) priceMap[row.price_group_id] = {};
@@ -41,11 +47,9 @@ export const load: PageServerLoad = async ({ platform }) => {
 
 export const actions = {
 	create: async ({ request, platform }) => {
-		const data = await request.formData();
-		const name = data.get('name')?.toString().trim();
-		const description = data.get('description')?.toString().trim() || null;
-
-		if (!name) return fail(400, { error: 'Name is required' });
+		const form = parseFormData(await request.formData(), priceGroupCreateSchema);
+		if (!form.ok) return form.fail;
+		const { name, description } = form.data;
 
 		const db = drizzle(platform!.env.DB, { schema });
 		await db.insert(schema.price_groups).values({ name, description });
@@ -53,42 +57,41 @@ export const actions = {
 	},
 
 	update: async ({ request, platform }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
-		const name = data.get('name')?.toString().trim();
-		const description = data.get('description')?.toString().trim() || null;
-
-		if (!id || !name) return fail(400, { error: 'Invalid request' });
+		const form = parseFormData(await request.formData(), priceGroupUpdateSchema);
+		if (!form.ok) return form.fail;
+		const { id, name, description } = form.data;
 
 		const db = drizzle(platform!.env.DB, { schema });
-		await db.update(schema.price_groups).set({ name, description, updated_at: now() })
+		await db
+			.update(schema.price_groups)
+			.set({ name, description, updated_at: now() })
 			.where(eq(schema.price_groups.id, id));
 		return { success: true };
 	},
 
 	delete: async ({ request, platform }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
-		if (!id) return fail(400, { error: 'Invalid request' });
+		const form = parseFormData(await request.formData(), priceGroupDeleteSchema);
+		if (!form.ok) return form.fail;
 
 		const db = drizzle(platform!.env.DB, { schema });
-		await db.delete(schema.price_groups).where(eq(schema.price_groups.id, id));
+		await db.delete(schema.price_groups).where(eq(schema.price_groups.id, form.data.id));
 		return { success: true };
 	},
 
 	setPrices: async ({ request, platform }) => {
-		const data = await request.formData();
-		const group_id = data.get('group_id')?.toString();
-		if (!group_id) return fail(400, { error: 'Invalid request' });
+		const formData = await request.formData();
+		const form = parseFormData(formData, setPricesGroupSchema);
+		if (!form.ok) return form.fail;
+		const { group_id } = form.data;
 
 		const db = drizzle(platform!.env.DB, { schema });
 
-		// Delete existing overrides for this group, then re-insert non-empty ones
-		await db.delete(schema.group_prices)
+		await db
+			.delete(schema.group_prices)
 			.where(eq(schema.group_prices.price_group_id, group_id));
 
 		const entries: { price_group_id: string; product_id: string; price: number }[] = [];
-		for (const [key, value] of data.entries()) {
+		for (const [key, value] of formData.entries()) {
 			if (!key.startsWith('price_')) continue;
 			const product_id = key.slice(6);
 			const price = parseInt(value.toString());
