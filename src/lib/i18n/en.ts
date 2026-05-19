@@ -75,6 +75,12 @@ export const en = {
 	},
 	settings: {
 		title: 'Settings',
+		appearance: 'Appearance',
+		theme: 'Theme',
+		themeDesc: 'Choose light, dark, or follow your system preference.',
+		themeLight: 'Light',
+		themeDark: 'Dark',
+		themeSystem: 'System',
 		language: 'Language',
 		languageDesc: 'Select the display language for the UI',
 		companyInfo: 'Company info',

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { Globe } from '@lucide/svelte';
+	import { Globe, Moon, Monitor, Palette, Sun } from '@lucide/svelte';
 	import { t, getLocale, setLocale, LOCALES, type Locale } from '$lib/i18n';
+	import { getTheme, setTheme } from '$lib/theme.svelte';
 </script>
 
 <svelte:head>
@@ -9,6 +10,31 @@
 
 <div class="page">
 	<h1 class="page-title">{t().settings.title}</h1>
+
+	<section class="settings-section">
+		<h2><Palette size={16} /> {t().settings.appearance}</h2>
+		<div class="settings-card">
+			<div class="setting-row">
+				<div class="setting-info">
+					<div class="setting-label">{t().settings.theme}</div>
+					<div class="setting-desc">{t().settings.themeDesc}</div>
+				</div>
+				<div class="setting-control">
+					<div class="locale-buttons">
+						<button type="button" class="locale-btn" class:active={getTheme() === 'light'} onclick={() => setTheme('light')}>
+							<Sun size={14} /> {t().settings.themeLight}
+						</button>
+						<button type="button" class="locale-btn" class:active={getTheme() === 'dark'} onclick={() => setTheme('dark')}>
+							<Moon size={14} /> {t().settings.themeDark}
+						</button>
+						<button type="button" class="locale-btn" class:active={getTheme() === 'system'} onclick={() => setTheme('system')}>
+							<Monitor size={14} /> {t().settings.themeSystem}
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
 	<section class="settings-section">
 		<h2><Globe size={16} /> {t().settings.language}</h2>
@@ -86,6 +112,7 @@
 	.locale-btn {
 		display: flex;
 		align-items: center;
+		gap: var(--space-xs);
 		padding: var(--space-xs) var(--space-xl);
 		border: none;
 		background: none;
