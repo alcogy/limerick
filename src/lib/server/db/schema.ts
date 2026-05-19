@@ -51,6 +51,7 @@ export const buyers = sqliteTable('buyers', {
 		.references(() => users.id, { onDelete: 'cascade' }),
 	company_name: text('company_name').notNull(),
 	phone: text('phone'),
+	zip: text('zip'),
 	address: text('address'),
 	price_group_id: text('price_group_id').references(() => price_groups.id, {
 		onDelete: 'set null'

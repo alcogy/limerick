@@ -31,9 +31,10 @@ export const actions = {
 		const payment_terms  = data.get('payment_terms')?.toString().trim()  || null;
 		const notes          = data.get('notes')?.toString().trim()          || null;
 
+		const zip = data.get('zip')?.toString().trim() || null;
 		return createBuyer(makeCtx(platform!, locals, request), {
 			email, name, company_name, price_group_id, discount_rate,
-			closing_day, phone, address, payment_terms, notes
+			closing_day, phone, zip, address, payment_terms, notes
 		});
 	},
 
@@ -52,6 +53,7 @@ export const actions = {
 			discount_rate:   discount_rate !== null && !isNaN(discount_rate) ? discount_rate : null,
 			closing_day:     parseInt(data.get('closing_day')?.toString() ?? '20') || 20,
 			phone:           data.get('phone')?.toString().trim()         || null,
+			zip:             data.get('zip')?.toString().trim()           || null,
 			address:         data.get('address')?.toString().trim()       || null,
 			payment_terms:   data.get('payment_terms')?.toString().trim() || null,
 			notes:           data.get('notes')?.toString().trim()         || null

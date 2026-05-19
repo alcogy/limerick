@@ -183,6 +183,7 @@ export const ja: Translations = {
 		contactName: '担当者名',
 		email: 'メールアドレス',
 		phone: '電話番号',
+		zip: '郵便番号',
 		address: '住所',
 		priceGroup: '価格グループ',
 		closingDay: '締日',

@@ -14,6 +14,7 @@
 		discount_rate: number | null;
 		closing_day: number;
 		phone: string | null;
+		zip: string | null;
 		address: string | null;
 		payment_terms: string | null;
 		notes: string | null;
@@ -94,6 +95,11 @@
 	<div class="field">
 		<Label for="bf-phone">{t().buyer.phone}</Label>
 		<Input id="bf-phone" name="phone" type="tel" value={buyer?.phone ?? ''} />
+	</div>
+
+	<div class="field">
+		<Label for="bf-zip">{t().buyer.zip}</Label>
+		<Input id="bf-zip" name="zip" value={buyer?.zip ?? ''} placeholder="D01 F5P2" style="width:160px" />
 	</div>
 
 	<div class="field">
