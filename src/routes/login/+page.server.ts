@@ -5,6 +5,7 @@ import * as schema from '$lib/server/db/schema';
 import { verifyPassword, createSession, SESSION_COOKIE_OPTIONS } from '$lib/server/auth/index';
 import { parseFormData } from '$lib/utils/form';
 import { loginSchema } from '$lib/schemas';
+import { sendAdminAlertFromEnv } from '$lib/services/email.service';
 import type { Actions, PageServerLoad } from './$types';
 
 const MAX_ATTEMPTS = 10;
@@ -38,6 +39,12 @@ export const actions = {
 				.where(eq(schema.login_attempts.identifier, email))
 		]);
 		if ((attemptCount?.count ?? 0) >= MAX_ATTEMPTS) {
+			sendAdminAlertFromEnv(platform!.env, {
+				subject: 'Login rate limit reached',
+				severity: 'warning',
+				summary: `Too many failed login attempts for ${email}.`,
+				details: { Email: email, 'Attempts (window)': String(attemptCount?.count ?? 0) }
+			});
 			return fail(429, { error: `Too many login attempts. Please wait ${WINDOW_MINUTES} minutes.` });
 		}
 
