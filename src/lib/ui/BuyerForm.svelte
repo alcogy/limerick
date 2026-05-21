@@ -59,12 +59,8 @@
 	</div>
 
 	<div class="field">
-		<Label for="bf-email" required={!isEdit}>{t().buyer.email}</Label>
-		{#if isEdit}
-			<Input id="bf-email" value={buyer!.email} disabled />
-		{:else}
-			<Input id="bf-email" name="email" type="email" required />
-		{/if}
+		<Label for="bf-email" required>{t().buyer.email}</Label>
+		<Input id="bf-email" name="email" type="email" value={buyer?.email ?? ''} required />
 	</div>
 
 	<div class="form-grid">

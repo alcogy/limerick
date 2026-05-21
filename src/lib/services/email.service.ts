@@ -4,6 +4,7 @@ import { createEmailProvider } from '$lib/server/email/index';
 import { CloudflareEmailProvider } from '$lib/server/email/cloudflare';
 import {
 	buyerInvitationEmail,
+	orderMessageEmail,
 	adminAlertEmail,
 	type AdminAlertEmailData
 } from '$lib/server/email/templates';
@@ -70,6 +71,40 @@ export async function sendInvitationEmail(
 	} catch (err) {
 		console.error('[email] sendInvitationEmail failed:', err);
 	}
+}
+
+/**
+ * Send a free-form message from the supplier to a buyer, scoped to an order.
+ * Throws on failure so the caller can surface the error to the UI.
+ */
+export async function sendOrderEmail(
+	ctx: ServiceCtx,
+	orderId: string,
+	subject: string,
+	body: string
+): Promise<void> {
+	if (!ctx.env.EMAIL_FROM) throw new Error('EMAIL_FROM is not configured');
+
+	const [orderRow] = await ctx.db
+		.select({
+			email:        schema.users.email,
+			company_name: schema.buyers.company_name
+		})
+		.from(schema.orders)
+		.innerJoin(schema.buyers, eq(schema.buyers.id, schema.orders.buyer_id))
+		.innerJoin(schema.users, eq(schema.users.id, schema.buyers.id))
+		.where(eq(schema.orders.id, orderId))
+		.limit(1);
+
+	if (!orderRow) throw new Error('Order or buyer not found');
+
+	const provider = createEmailProvider(ctx.env);
+	const { subject: sub, html, text } = orderMessageEmail({
+		subject,
+		body,
+		buyerName: orderRow.company_name
+	});
+	await provider.send({ to: orderRow.email, subject: sub, html, text });
 }
 
 function createAlertProvider(env: Env, alertTo: string): ReturnType<typeof createEmailProvider> {

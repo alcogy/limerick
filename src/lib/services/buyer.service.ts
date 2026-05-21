@@ -102,6 +102,7 @@ export async function updateBuyer(
 	ctx: ServiceCtx, // supplier only
 	id: string,
 	input: {
+		email: string;
 		name: string;
 		company_name: string;
 		price_group_id: string | null;
@@ -118,10 +119,16 @@ export async function updateBuyer(
 	const { db, env, user, request } = ctx;
 	if (!id || !input.name || !input.company_name) return fail(400, { error: 'Invalid request' });
 
+	if (input.email) {
+		const conflict = await db.query.users.findFirst({ where: eq(schema.users.email, input.email) });
+		if (conflict && conflict.id !== id) return fail(400, { error: 'Email already in use' });
+	}
+
 	const ts = now();
+	const { email, ...buyerFields } = input;
 	await Promise.all([
-		db.update(schema.users).set({ name: input.name, updated_at: ts }).where(eq(schema.users.id, id)),
-		db.update(schema.buyers).set({ ...input, updated_at: ts }).where(eq(schema.buyers.id, id))
+		db.update(schema.users).set({ name: input.name, email, updated_at: ts }).where(eq(schema.users.id, id)),
+		db.update(schema.buyers).set({ ...buyerFields, updated_at: ts }).where(eq(schema.buyers.id, id))
 	]);
 
 	await writeAuditLog({ db: env.DB, user_id: user?.id ?? null, action: 'update', resource_type: 'buyer', resource_id: id, request });

@@ -99,3 +99,26 @@ export function adminAlertEmail(data: AdminAlertEmailData): { subject: string; h
 
 	return { subject: data.subject, html, text };
 }
+
+export interface OrderMessageEmailData {
+	subject: string;
+	body: string;
+	buyerName: string;
+}
+
+export function orderMessageEmail(data: OrderMessageEmailData): { subject: string; html: string; text: string } {
+	const paragraphs = data.body
+		.split('\n')
+		.map((line) => (line.trim() ? `<p>${escape(line)}</p>` : ''))
+		.join('\n');
+
+	const html = base(
+		data.subject,
+		`<h2>${escape(data.subject)}</h2>
+<p style="color:#71717a;font-size:0.875rem">To: ${escape(data.buyerName)}</p>
+<hr>
+${paragraphs}`
+	);
+
+	return { subject: data.subject, html, text: data.body };
+}

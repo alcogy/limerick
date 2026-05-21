@@ -4,6 +4,12 @@ export const orderIdSchema = z.object({
 	id: z.string().min(1, 'Invalid request')
 });
 
+export const orderEmailSchema = z.object({
+	id:      z.string().min(1, 'Invalid request'),
+	subject: z.string().trim().min(1, 'Subject is required'),
+	body:    z.string().trim().min(1, 'Message is required')
+});
+
 const cartItemSchema = z.object({
 	id: z.string(),
 	qty: z.number().int().min(1),
