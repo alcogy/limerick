@@ -32,7 +32,8 @@ export const buyerCreateSchema = buyerBase.extend({
 });
 
 export const buyerUpdateSchema = buyerBase.extend({
-	id: z.string().min(1, 'Invalid request')
+	id:    z.string().min(1, 'Invalid request'),
+	email: z.string().trim().toLowerCase().email('Invalid email')
 });
 
 export const buyerDeleteSchema = z.object({
