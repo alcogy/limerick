@@ -72,8 +72,28 @@ export const en = {
 		catalog: 'Catalog',
 		cart: 'Cart',
 		profile: 'Profile',
+		auditLog: 'Audit Log',
 		settings: 'Settings',
 		signOut: 'Sign out'
+	},
+	auditLog: {
+		title: 'Audit Log',
+		date: 'Date',
+		user: 'User',
+		action: 'Action',
+		resource: 'Resource',
+		id: 'ID',
+		metadata: 'Metadata',
+		empty: 'No audit log entries.',
+		actions: {
+			create: 'create',
+			update: 'update',
+			delete: 'delete',
+			cancel: 'cancel',
+			login: 'login',
+			logout: 'logout',
+			export: 'export'
+		}
 	},
 	settings: {
 		title: 'Settings',

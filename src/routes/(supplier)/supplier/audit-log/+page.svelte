@@ -11,25 +11,30 @@
 		cancel: 'warning', login: 'info', logout: 'inactive',
 		export: 'info'
 	};
+
+	function actionLabel(action: string): string {
+		const map = t().auditLog.actions as Record<string, string>;
+		return map[action] ?? action;
+	}
 </script>
 
 <svelte:head>
-	<title>Audit Log — {t().app.name}</title>
+	<title>{t().auditLog.title} — {t().app.name}</title>
 </svelte:head>
 
 <div class="page">
-	<h1 class="page-title">Audit Log</h1>
+	<h1 class="page-title">{t().auditLog.title}</h1>
 
 	<div class="log-table-wrap">
 		<table class="log-table">
 			<thead>
 				<tr>
-					<th>Date</th>
-					<th>User</th>
-					<th>Action</th>
-					<th>Resource</th>
-					<th>ID</th>
-					<th>Metadata</th>
+					<th>{t().auditLog.date}</th>
+					<th>{t().auditLog.user}</th>
+					<th>{t().auditLog.action}</th>
+					<th>{t().auditLog.resource}</th>
+					<th>{t().auditLog.id}</th>
+					<th>{t().auditLog.metadata}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -45,7 +50,7 @@
 								<span class="muted">—</span>
 							{/if}
 						</td>
-						<td><span class="badge badge-{ACTION_BADGES[log.action] ?? 'info'}">{log.action}</span></td>
+						<td><span class="badge badge-{ACTION_BADGES[log.action] ?? 'info'}">{actionLabel(log.action)}</span></td>
 						<td class="resource-cell">{log.resource_type}</td>
 						<td class="id-cell"><code>{log.resource_id?.slice(0, 8) ?? '—'}</code></td>
 						<td class="meta-cell">
@@ -56,7 +61,7 @@
 					</tr>
 				{/each}
 				{#if data.logs.length === 0}
-					<tr><td colspan="6" class="empty">No audit log entries.</td></tr>
+					<tr><td colspan="6" class="empty">{t().auditLog.empty}</td></tr>
 				{/if}
 			</tbody>
 		</table>

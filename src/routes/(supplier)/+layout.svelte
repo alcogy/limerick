@@ -33,7 +33,7 @@
 
 	const secondaryNavItems = $derived<NavItem[]>([
 		{ href: '/supplier/profile',   label: t().nav.profile,   icon: CircleUser },
-		{ href: '/supplier/audit-log', label: 'Audit Log',       icon: ClipboardList },
+		{ href: '/supplier/audit-log', label: t().nav.auditLog,   icon: ClipboardList },
 		{ href: '/supplier/settings',  label: t().nav.settings,  icon: Settings },
 		{
 			href: '/logout',
