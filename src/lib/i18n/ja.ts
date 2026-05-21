@@ -74,8 +74,28 @@ export const ja: Translations = {
 		catalog: '商品カタログ',
 		cart: 'カート',
 		profile: 'プロフィール',
+		auditLog: '操作ログ',
 		settings: '設定',
 		signOut: 'サインアウト'
+	},
+	auditLog: {
+		title: '操作ログ',
+		date: '日時',
+		user: 'ユーザー',
+		action: '操作',
+		resource: 'リソース',
+		id: 'ID',
+		metadata: '詳細',
+		empty: '操作ログがありません。',
+		actions: {
+			create: '作成',
+			update: '更新',
+			delete: '削除',
+			cancel: 'キャンセル',
+			login: 'ログイン',
+			logout: 'ログアウト',
+			export: 'エクスポート'
+		}
 	},
 	settings: {
 		title: '設定',
