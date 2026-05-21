@@ -26,5 +26,5 @@ test-results
 
 # CLAUDE CODE
 .claude
-CLAUDE.md.dev.vars
+CLAUDE.md
 .dev.vars
