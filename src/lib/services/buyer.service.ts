@@ -6,6 +6,7 @@ import { now } from '$lib/utils';
 import { INVITATION_EXPIRY_MS } from '$lib/constants';
 import type { ServiceCtx } from './index';
 import { requireSupplier } from './index';
+import { sendInvitationEmail } from './email.service';
 
 export async function listBuyers(ctx: ServiceCtx, opts: { search: string }) {
 	const { db } = ctx;
@@ -157,5 +158,11 @@ export async function createInvitationToken(ctx: ServiceCtx, buyer_id: string, o
 	await db.insert(schema.invitation_tokens).values({ buyer_id, token, expires_at });
 
 	const inviteUrl = `${origin}/auth/setup-password?token=${token}`;
+
+	// Send invitation email (fire-and-forget; UI still shows the URL as fallback)
+	sendInvitationEmail(ctx, buyer_id, inviteUrl).catch((err) => {
+		console.error('[email] sendInvitationEmail failed:', err);
+	});
+
 	return { success: true, inviteUrl };
 }

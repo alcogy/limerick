@@ -2,7 +2,7 @@
 declare global {
 	namespace App {
 		interface Platform {
-			env: Env & { BUCKET: R2Bucket };
+			env: Env;
 			ctx: ExecutionContext;
 			caches: CacheStorage;
 			cf?: IncomingRequestCfProperties;

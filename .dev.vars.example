@@ -1,0 +1,26 @@
+# Copy this file to .dev.vars and fill in your values
+# Wrangler reads .dev.vars automatically when running `bun dev`
+
+# Email provider for buyer notifications: resend | ses | smtp
+EMAIL_PROVIDER=resend
+
+# Sender address (must be verified in your provider)
+EMAIL_FROM=noreply@example.com
+
+# Admin alert recipient (fallback if not set in settings table)
+ALERT_EMAIL_TO=
+
+# Supplier name shown in invitation emails (e.g. "Acme Trading Co.")
+SUPPLIER_NAME=
+
+# Resend API key — https://resend.com
+RESEND_API_KEY=
+
+# AWS SES (only if EMAIL_PROVIDER=ses)
+# AWS_ACCESS_KEY_ID=
+# AWS_SECRET_ACCESS_KEY=
+# AWS_REGION=ap-northeast-1
+
+# SMTP relay (only if EMAIL_PROVIDER=smtp)
+# SMTP_API_URL=
+# SMTP_API_KEY=
