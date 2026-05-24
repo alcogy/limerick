@@ -4,7 +4,7 @@
 	import { Button, Input, Label, Textarea } from '$lib/ui';
 	import { t } from '$lib/i18n';
 	import { Mail } from '@lucide/svelte';
-	import { TEMPLATE_VARIABLES, TEMPLATE_DEFAULTS } from '$lib/services/template.service';
+	import { TEMPLATE_VARIABLES, TEMPLATE_DEFAULTS } from '$lib/services/template.constants';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { ActionData, PageData } from './$types';
 
