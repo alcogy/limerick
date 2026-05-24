@@ -49,8 +49,8 @@
 	let emailSending = $state(false);
 
 	function openEmailDialog() {
-		emailSubject = `${t().order.detail} #${order.id.slice(0, 8).toUpperCase()}`;
-		emailBody    = '';
+		emailSubject = data.emailDefaults.subject;
+		emailBody    = data.emailDefaults.body;
 		emailOpen    = true;
 	}
 

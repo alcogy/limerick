@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
-import { eq, count } from 'drizzle-orm';
+import { and, eq, count, gte, lt } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { verifyPassword, createSession, SESSION_COOKIE_OPTIONS } from '$lib/server/auth/index';
 import { parseFormData } from '$lib/utils/form';
@@ -30,13 +30,15 @@ export const actions = {
 			.toISOString()
 			.replace('T', ' ')
 			.slice(0, 19);
-		void windowStart;
 
 		const [[attemptCount]] = await Promise.all([
 			db
 				.select({ count: count() })
 				.from(schema.login_attempts)
-				.where(eq(schema.login_attempts.identifier, email))
+				.where(and(
+					eq(schema.login_attempts.identifier, email),
+					gte(schema.login_attempts.attempted_at, windowStart)  // within window only
+				))
 		]);
 		if ((attemptCount?.count ?? 0) >= MAX_ATTEMPTS) {
 			sendAdminAlertFromEnv(platform!.env, {

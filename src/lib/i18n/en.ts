@@ -73,6 +73,7 @@ export const en = {
 		cart: 'Cart',
 		profile: 'Profile',
 		auditLog: 'Audit Log',
+		emailTemplates: 'Email Templates',
 		settings: 'Settings',
 		signOut: 'Sign out'
 	},
@@ -329,6 +330,19 @@ export const en = {
 		uploading: 'Uploading...',
 		upload: 'Upload',
 		errorSize: 'File size must be {size} MB or less'
+	},
+	emailTemplate: {
+		title: 'Email Templates',
+		desc: 'Customize the subject and body for automated emails. Use {{variable}} syntax for dynamic content.',
+		invitation: 'Buyer Invitation',
+		invitationDesc: 'Sent when you invite a buyer to the ordering portal.',
+		orderMessage: 'Order Message',
+		orderMessageDesc: 'Pre-filled subject and body for the order email dialog.',
+		variables: 'Available variables',
+		subject: 'Subject',
+		body: 'Body',
+		saved: 'Template saved.',
+		resetDefault: 'Reset to default'
 	},
 	errors: {
 		required: 'This field is required',

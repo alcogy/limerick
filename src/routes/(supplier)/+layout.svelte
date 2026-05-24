@@ -13,6 +13,7 @@
 		FileText,
 		CircleUser,
 		ClipboardList,
+		Mail,
 		Settings,
 		LogOut
 	} from '@lucide/svelte';
@@ -32,9 +33,10 @@
 	]);
 
 	const secondaryNavItems = $derived<NavItem[]>([
-		{ href: '/supplier/profile',   label: t().nav.profile,   icon: CircleUser },
-		{ href: '/supplier/audit-log', label: t().nav.auditLog,   icon: ClipboardList },
-		{ href: '/supplier/settings',  label: t().nav.settings,  icon: Settings },
+		{ href: '/supplier/profile',          label: t().nav.profile,        icon: CircleUser },
+		{ href: '/supplier/audit-log',        label: t().nav.auditLog,        icon: ClipboardList },
+		{ href: '/supplier/email-templates',  label: t().nav.emailTemplates,  icon: Mail },
+		{ href: '/supplier/settings',         label: t().nav.settings,        icon: Settings },
 		{
 			href: '/logout',
 			label: t().nav.signOut,

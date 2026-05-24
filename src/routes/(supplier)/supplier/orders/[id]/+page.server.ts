@@ -6,13 +6,15 @@ import * as schema from '$lib/server/db/schema';
 import { makeCtx } from '$lib/services';
 import { advanceOrderStatus, cancelOrder } from '$lib/services/order.service';
 import { sendOrderEmail } from '$lib/services/email.service';
+import { getTemplate, applyTemplate } from '$lib/services/template.service';
 import { parseFormData } from '$lib/utils/form';
 import { orderIdSchema, orderEmailSchema } from '$lib/schemas';
 
-export const load: PageServerLoad = async ({ params, platform }) => {
+export const load: PageServerLoad = async ({ params, platform, locals }) => {
 	const db = drizzle(platform!.env.DB, { schema });
+	const ctx = makeCtx(platform!, locals);
 
-	const [order, settingsRows] = await Promise.all([
+	const [order, settingsRows, tpl] = await Promise.all([
 		db.query.orders.findFirst({
 			where: eq(schema.orders.id, params.id),
 			with: {
@@ -20,12 +22,18 @@ export const load: PageServerLoad = async ({ params, platform }) => {
 				items: { orderBy: (i, { asc }) => [asc(i.line_no)] }
 			}
 		}),
-		db.select().from(schema.settings)
+		db.select().from(schema.settings),
+		getTemplate(ctx, 'order_message')
 	]);
 
 	if (!order) throw error(404, 'Order not found');
 
 	const s = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
+	const vars = {
+		buyer_name:   order.buyer?.company_name ?? '',
+		order_number: order.id.slice(0, 8).toUpperCase()
+	};
+
 	return {
 		order,
 		supplier: {
@@ -34,6 +42,10 @@ export const load: PageServerLoad = async ({ params, platform }) => {
 			zip:     s['company_zip']     ?? '',
 			tel:     s['company_tel']     ?? '',
 			taxNo:   s['company_tax_no']  ?? ''
+		},
+		emailDefaults: {
+			subject: applyTemplate(tpl.subject, vars),
+			body:    applyTemplate(tpl.body, vars)
 		}
 	};
 };

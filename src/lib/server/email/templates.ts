@@ -1,8 +1,8 @@
-function escape(s: string): string {
+export function escape(s: string): string {
 	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function base(title: string, body: string): string {
+export function base(title: string, body: string): string {
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
