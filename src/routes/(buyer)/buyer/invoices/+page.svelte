@@ -22,7 +22,9 @@
 				<button class="invoice-row" onclick={() => goto(`/buyer/invoices/${invoice.id}`)}>
 					<div class="invoice-main">
 						<span class="invoice-number">{invoice.invoice_number}</span>
-						<span class="invoice-period">{formatDate(invoice.period_from)} – {formatDate(invoice.period_to)}</span>
+						<span class="invoice-period"
+							>{formatDate(invoice.period_from)} – {formatDate(invoice.period_to)}</span
+						>
 					</div>
 					<div class="invoice-right">
 						<span class="invoice-amount">{formatCurrency(invoice.total_amount)}</span>
@@ -36,8 +38,15 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
 	.invoice-list {
 		display: flex;
@@ -64,13 +73,27 @@
 		border-bottom: 1px solid var(--color-border-light);
 		transition: background-color var(--transition-fast);
 
-		&:last-child { border-bottom: none; }
-		&:hover { background-color: var(--color-hover); }
+		&:last-child {
+			border-bottom: none;
+		}
+		&:hover {
+			background-color: var(--color-hover);
+		}
 	}
 
-	.invoice-main { display: flex; flex-direction: column; gap: 2px; }
-	.invoice-number { font-size: 0.875rem; font-weight: 600; }
-	.invoice-period { font-size: 0.75rem; color: var(--color-text-secondary); }
+	.invoice-main {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.invoice-number {
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+	.invoice-period {
+		font-size: 0.75rem;
+		color: var(--color-text-secondary);
+	}
 
 	.invoice-right {
 		display: flex;
@@ -79,8 +102,19 @@
 		flex-shrink: 0;
 	}
 
-	.invoice-amount { font-size: 1rem; font-weight: 700; }
-	.invoice-due { font-size: 0.75rem; color: var(--color-text-tertiary); }
+	.invoice-amount {
+		font-size: 1rem;
+		font-weight: 700;
+	}
+	.invoice-due {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
 
-	.empty { font-size: 0.875rem; color: var(--color-text-tertiary); text-align: center; padding: var(--space-3xl) 0; }
+	.empty {
+		font-size: 0.875rem;
+		color: var(--color-text-tertiary);
+		text-align: center;
+		padding: var(--space-3xl) 0;
+	}
 </style>

@@ -5,9 +5,9 @@ export const orderIdSchema = z.object({
 });
 
 export const orderEmailSchema = z.object({
-	id:      z.string().min(1, 'Invalid request'),
+	id: z.string().min(1, 'Invalid request'),
 	subject: z.string().trim().min(1, 'Subject is required'),
-	body:    z.string().trim().min(1, 'Message is required')
+	body: z.string().trim().min(1, 'Message is required')
 });
 
 const cartItemSchema = z.object({
@@ -32,7 +32,10 @@ export const checkoutSchema = z.object({
 			const parsed = JSON.parse(v);
 			const result = z.array(cartItemSchema).min(1, 'Cart is empty').safeParse(parsed);
 			if (!result.success) {
-				ctx.addIssue({ code: z.ZodIssueCode.custom, message: result.error.issues[0]?.message ?? 'Invalid cart data' });
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: result.error.issues[0]?.message ?? 'Invalid cart data'
+				});
 				return z.NEVER;
 			}
 			return result.data;

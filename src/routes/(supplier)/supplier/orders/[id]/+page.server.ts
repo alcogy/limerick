@@ -30,22 +30,22 @@ export const load: PageServerLoad = async ({ params, platform, locals }) => {
 
 	const s = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
 	const vars = {
-		buyer_name:   order.buyer?.company_name ?? '',
+		buyer_name: order.buyer?.company_name ?? '',
 		order_number: order.id.slice(0, 8).toUpperCase()
 	};
 
 	return {
 		order,
 		supplier: {
-			name:    s['company_name']    ?? '',
+			name: s['company_name'] ?? '',
 			address: s['company_address'] ?? '',
-			zip:     s['company_zip']     ?? '',
-			tel:     s['company_tel']     ?? '',
-			taxNo:   s['company_tax_no']  ?? ''
+			zip: s['company_zip'] ?? '',
+			tel: s['company_tel'] ?? '',
+			taxNo: s['company_tax_no'] ?? ''
 		},
 		emailDefaults: {
 			subject: applyTemplate(tpl.subject, vars),
-			body:    applyTemplate(tpl.body, vars)
+			body: applyTemplate(tpl.body, vars)
 		}
 	};
 };
@@ -54,19 +54,37 @@ export const actions = {
 	confirm: async ({ request, platform, locals }) => {
 		const form = parseFormData(await request.formData(), orderIdSchema);
 		if (!form.ok) return form.fail;
-		return advanceOrderStatus(makeCtx(platform!, locals, request), form.data.id, 'pending', 'confirmed', 'confirmed_at');
+		return advanceOrderStatus(
+			makeCtx(platform!, locals, request),
+			form.data.id,
+			'pending',
+			'confirmed',
+			'confirmed_at'
+		);
 	},
 
 	ship: async ({ request, platform, locals }) => {
 		const form = parseFormData(await request.formData(), orderIdSchema);
 		if (!form.ok) return form.fail;
-		return advanceOrderStatus(makeCtx(platform!, locals, request), form.data.id, 'confirmed', 'shipped', 'shipped_at');
+		return advanceOrderStatus(
+			makeCtx(platform!, locals, request),
+			form.data.id,
+			'confirmed',
+			'shipped',
+			'shipped_at'
+		);
 	},
 
 	complete: async ({ request, platform, locals }) => {
 		const form = parseFormData(await request.formData(), orderIdSchema);
 		if (!form.ok) return form.fail;
-		return advanceOrderStatus(makeCtx(platform!, locals, request), form.data.id, 'shipped', 'completed', 'completed_at');
+		return advanceOrderStatus(
+			makeCtx(platform!, locals, request),
+			form.data.id,
+			'shipped',
+			'completed',
+			'completed_at'
+		);
 	},
 
 	cancel: async ({ request, platform, locals }) => {
@@ -79,7 +97,12 @@ export const actions = {
 		const form = parseFormData(await request.formData(), orderEmailSchema);
 		if (!form.ok) return form.fail;
 		try {
-			await sendOrderEmail(makeCtx(platform!, locals, request), form.data.id, form.data.subject, form.data.body);
+			await sendOrderEmail(
+				makeCtx(platform!, locals, request),
+				form.data.id,
+				form.data.subject,
+				form.data.body
+			);
 			return { emailSent: true };
 		} catch (err) {
 			const msg = err instanceof Error ? err.message : 'Failed to send email';

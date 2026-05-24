@@ -6,6 +6,7 @@ Built with SvelteKit + Cloudflare D1 + DrizzleORM. Part of the Alcogy OSS series
 ## Features
 
 **Supplier (admin)**
+
 - Product & category management with image upload (Cloudflare R2)
 - Buyer (customer) management with email invitation flow
 - Price group management — per-group contract prices or discount rates
@@ -16,12 +17,14 @@ Built with SvelteKit + Cloudflare D1 + DrizzleORM. Part of the Alcogy OSS series
 - SKU auto-numbering
 
 **Buyer (retailer)**
+
 - Product catalog with contract prices, search, and sort
 - Cart & checkout (stock auto-decrement)
 - Order history with one-click reorder
 - Invoice view & PDF print
 
 **System**
+
 - English / Japanese UI
 - Light / Dark / System theme
 - Session auth (PBKDF2 + HttpOnly cookie, 7-day session)
@@ -30,16 +33,16 @@ Built with SvelteKit + Cloudflare D1 + DrizzleORM. Part of the Alcogy OSS series
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend / SSR | SvelteKit 2 (Svelte 5 runes) |
-| Adapter | `@sveltejs/adapter-cloudflare` |
-| ORM | DrizzleORM |
-| Database | Cloudflare D1 (SQLite) |
-| Storage | Cloudflare R2 |
-| Auth | PBKDF2 via WebCrypto API |
-| Email | Adapter pattern (Resend / SES / SMTP / Cloudflare Email) |
-| Package manager | Bun |
+| Layer           | Technology                                               |
+| --------------- | -------------------------------------------------------- |
+| Frontend / SSR  | SvelteKit 2 (Svelte 5 runes)                             |
+| Adapter         | `@sveltejs/adapter-cloudflare`                           |
+| ORM             | DrizzleORM                                               |
+| Database        | Cloudflare D1 (SQLite)                                   |
+| Storage         | Cloudflare R2                                            |
+| Auth            | PBKDF2 via WebCrypto API                                 |
+| Email           | Adapter pattern (Resend / SES / SMTP / Cloudflare Email) |
+| Package manager | Bun                                                      |
 
 ## Prerequisites
 
@@ -176,27 +179,27 @@ Enable Cloudflare Email Routing on your domain. The `send_email` binding is alre
 
 Buyer invitation and order message templates are editable in the supplier UI at **Settings → Email Templates**. Variables use `{{variable_name}}` syntax.
 
-| Template | Variables |
-|---|---|
+| Template         | Variables                                                                |
+| ---------------- | ------------------------------------------------------------------------ |
 | Buyer Invitation | `buyer_name`, `company_name`, `supplier_name`, `setup_url`, `expires_at` |
-| Order Message | `buyer_name`, `order_number` |
+| Order Message    | `buyer_name`, `order_number`                                             |
 
 ## Environment Variables
 
 Declared in `wrangler.jsonc` under `vars` (non-secret) or set via `wrangler secret put` (secret).
 
-| Variable | Type | Description |
-|---|---|---|
-| `EMAIL_PROVIDER` | var | `resend` \| `ses` \| `smtp` |
-| `EMAIL_FROM` | var | Sender address (must be verified) |
-| `ALERT_EMAIL_TO` | var | Fallback admin alert recipient |
-| `SUPPLIER_NAME` | var | Displayed in invitation emails |
-| `RESEND_API_KEY` | secret | Resend API key |
-| `AWS_ACCESS_KEY_ID` | secret | AWS access key (SES) |
-| `AWS_SECRET_ACCESS_KEY` | secret | AWS secret key (SES) |
-| `AWS_REGION` | secret | AWS region, e.g. `ap-northeast-1` (SES) |
-| `SMTP_API_URL` | secret | HTTP relay endpoint (SMTP mode) |
-| `SMTP_API_KEY` | secret | HTTP relay API key (SMTP mode) |
+| Variable                | Type   | Description                             |
+| ----------------------- | ------ | --------------------------------------- |
+| `EMAIL_PROVIDER`        | var    | `resend` \| `ses` \| `smtp`             |
+| `EMAIL_FROM`            | var    | Sender address (must be verified)       |
+| `ALERT_EMAIL_TO`        | var    | Fallback admin alert recipient          |
+| `SUPPLIER_NAME`         | var    | Displayed in invitation emails          |
+| `RESEND_API_KEY`        | secret | Resend API key                          |
+| `AWS_ACCESS_KEY_ID`     | secret | AWS access key (SES)                    |
+| `AWS_SECRET_ACCESS_KEY` | secret | AWS secret key (SES)                    |
+| `AWS_REGION`            | secret | AWS region, e.g. `ap-northeast-1` (SES) |
+| `SMTP_API_URL`          | secret | HTTP relay endpoint (SMTP mode)         |
+| `SMTP_API_KEY`          | secret | HTTP relay API key (SMTP mode)          |
 
 Set a secret:
 

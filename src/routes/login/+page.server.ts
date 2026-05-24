@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
-import { and, eq, count, gte, lt } from 'drizzle-orm';
+import { and, eq, count, gte } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { verifyPassword, createSession, SESSION_COOKIE_OPTIONS } from '$lib/server/auth/index';
 import { parseFormData } from '$lib/utils/form';
@@ -35,10 +35,12 @@ export const actions = {
 			db
 				.select({ count: count() })
 				.from(schema.login_attempts)
-				.where(and(
-					eq(schema.login_attempts.identifier, email),
-					gte(schema.login_attempts.attempted_at, windowStart)  // within window only
-				))
+				.where(
+					and(
+						eq(schema.login_attempts.identifier, email),
+						gte(schema.login_attempts.attempted_at, windowStart) // within window only
+					)
+				)
 		]);
 		if ((attemptCount?.count ?? 0) >= MAX_ATTEMPTS) {
 			sendAdminAlertFromEnv(platform!.env, {
@@ -47,7 +49,9 @@ export const actions = {
 				summary: `Too many failed login attempts for ${email}.`,
 				details: { Email: email, 'Attempts (window)': String(attemptCount?.count ?? 0) }
 			});
-			return fail(429, { error: `Too many login attempts. Please wait ${WINDOW_MINUTES} minutes.` });
+			return fail(429, {
+				error: `Too many login attempts. Please wait ${WINDOW_MINUTES} minutes.`
+			});
 		}
 
 		const user = await db.query.users.findFirst({ where: eq(schema.users.email, email) });

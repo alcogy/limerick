@@ -48,13 +48,7 @@
 
 				<div class="field">
 					<Label for="confirm" required>{t().auth.confirmPassword}</Label>
-					<Input
-						id="confirm"
-						type="password"
-						name="confirm"
-						autocomplete="new-password"
-						required
-					/>
+					<Input id="confirm" type="password" name="confirm" autocomplete="new-password" required />
 				</div>
 
 				<Button type="submit" variant="primary" size="lg" style="width:100%">

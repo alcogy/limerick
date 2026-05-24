@@ -1,4 +1,3 @@
-import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { makeCtx } from '$lib/services';
 import {
@@ -47,6 +46,10 @@ export const actions = {
 	invite: async ({ request, platform, locals, url }) => {
 		const form = parseFormData(await request.formData(), buyerInviteSchema);
 		if (!form.ok) return form.fail;
-		return createInvitationToken(makeCtx(platform!, locals, request), form.data.buyer_id, url.origin);
+		return createInvitationToken(
+			makeCtx(platform!, locals, request),
+			form.data.buyer_id,
+			url.origin
+		);
 	}
 } satisfies Actions;

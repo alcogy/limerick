@@ -29,7 +29,14 @@
 			</div>
 			<div class="field">
 				<Label for="email" required>{t().auth.email}</Label>
-				<Input id="email" name="email" type="email" placeholder="admin@example.com" autocomplete="email" required />
+				<Input
+					id="email"
+					name="email"
+					type="email"
+					placeholder="admin@example.com"
+					autocomplete="email"
+					required
+				/>
 			</div>
 			<div class="field">
 				<Label for="password" required>{t().auth.password}</Label>
@@ -91,8 +98,16 @@
 		margin-top: var(--space-xs);
 	}
 
-	.setup-form { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.setup-form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 
 	.form-error {
 		padding: var(--space-md);

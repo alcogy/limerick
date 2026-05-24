@@ -11,11 +11,11 @@
 	const ORDER_STATUSES = ['', 'pending', 'confirmed', 'shipped', 'completed', 'cancelled'] as const;
 
 	const columns = [
-		{ key: 'id',         label: t().order.orderNumber, width: '160px' },
-		{ key: 'buyer',      label: t().order.buyer },
-		{ key: 'status',     label: t().order.status,      width: '110px' },
-		{ key: 'total',      label: t().order.grandTotal,  width: '130px' },
-		{ key: 'ordered_at', label: t().order.orderedAt,   width: '160px' }
+		{ key: 'id', label: t().order.orderNumber, width: '160px' },
+		{ key: 'buyer', label: t().order.buyer },
+		{ key: 'status', label: t().order.status, width: '110px' },
+		{ key: 'total', label: t().order.grandTotal, width: '130px' },
+		{ key: 'ordered_at', label: t().order.orderedAt, width: '160px' }
 	];
 </script>
 
@@ -79,10 +79,23 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-header { display: flex; align-items: center; justify-content: space-between; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
-	.export-link { text-decoration: none; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+	.export-link {
+		text-decoration: none;
+	}
 
 	.status-tabs {
 		display: flex;
@@ -106,8 +119,15 @@
 		cursor: pointer;
 		font-family: inherit;
 		transition: all var(--transition-fast);
-		&.active { background-color: var(--color-bg-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }
+		&.active {
+			background-color: var(--color-bg-elevated);
+			color: var(--color-text);
+			box-shadow: var(--shadow-sm);
+		}
 	}
 
-	.order-id { font-size: 0.75rem; color: var(--color-text-tertiary); }
+	.order-id {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
 </style>

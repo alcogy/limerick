@@ -59,7 +59,8 @@ export function calcInvoicePeriod(
 	if (toDate > ref) {
 		// closing date is in the future this month → use previous month's closing
 		toDate.setMonth(toDate.getMonth() - 1);
-		if (day === 0) toDate.setDate(new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0).getDate());
+		if (day === 0)
+			toDate.setDate(new Date(toDate.getFullYear(), toDate.getMonth() + 1, 0).getDate());
 	} else if (day === 0) {
 		// last day of current month
 		toDate.setDate(new Date(ref.getFullYear(), ref.getMonth() + 1, 0).getDate());

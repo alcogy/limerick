@@ -28,7 +28,7 @@
 					<th style:width={col.width}>{col.label}</th>
 				{/each}
 				{#if actions}
-					<th class="actions-header" style:width="100px">操作</th>
+					<th class="actions-header" style:width="100px">Actions</th>
 				{/if}
 			</tr>
 		</thead>
@@ -50,19 +50,19 @@
 					{:else}
 						<tr
 							class:clickable={!!onrowclick && !actions}
-							onclick={() => (!actions && onrowclick) ? onrowclick(item) : undefined}
-							role={(!actions && onrowclick) ? 'button' : undefined}
-							tabindex={(!actions && onrowclick) ? 0 : undefined}
+							onclick={() => (!actions && onrowclick ? onrowclick(item) : undefined)}
+							role={!actions && onrowclick ? 'button' : undefined}
+							tabindex={!actions && onrowclick ? 0 : undefined}
 						>
 							{#each columns as col (col.key)}
-							<td>
-								{#if cell}
-									{@render cell(col, item)}
-								{:else}
-									{(item as Record<string, unknown>)[col.key] ?? ''}
-								{/if}
-							</td>
-						{/each}
+								<td>
+									{#if cell}
+										{@render cell(col, item)}
+									{:else}
+										{(item as Record<string, unknown>)[col.key] ?? ''}
+									{/if}
+								</td>
+							{/each}
 							{#if actions}
 								<td class="actions-cell">
 									{@render actions(item)}

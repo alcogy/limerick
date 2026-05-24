@@ -214,7 +214,8 @@ export const en = {
 		notes: 'Notes',
 		closingDayNote: 'Day of month (1–31). Use 31 for end-of-month.',
 		discountRate: 'Discount rate',
-		discountRateNote: 'e.g. 0.80 = 20% off base price. Leave blank if using price group or base price.',
+		discountRateNote:
+			'e.g. 0.80 = 20% off base price. Leave blank if using price group or base price.',
 		emailSent: 'Invitation email sent to buyer.',
 		activated: 'Activated',
 		pending: 'Pending activation',
@@ -320,7 +321,8 @@ export const en = {
 		confirmCheckout: 'Place this order?',
 		reorder: 'Reorder',
 		reorderDesc: 'Adjust quantities before adding to cart.',
-		reorderPriceNote: 'Prices and minimum quantities reflect current values and may differ from your original order.',
+		reorderPriceNote:
+			'Prices and minimum quantities reflect current values and may differ from your original order.',
 		printOrder: 'Print order'
 	},
 	fileUpload: {

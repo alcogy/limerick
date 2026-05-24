@@ -21,14 +21,32 @@
 				</div>
 				<div class="setting-control">
 					<div class="locale-buttons">
-						<button type="button" class="locale-btn" class:active={getTheme() === 'light'} onclick={() => setTheme('light')}>
-							<Sun size={14} /> {t().settings.themeLight}
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={getTheme() === 'light'}
+							onclick={() => setTheme('light')}
+						>
+							<Sun size={14} />
+							{t().settings.themeLight}
 						</button>
-						<button type="button" class="locale-btn" class:active={getTheme() === 'dark'} onclick={() => setTheme('dark')}>
-							<Moon size={14} /> {t().settings.themeDark}
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={getTheme() === 'dark'}
+							onclick={() => setTheme('dark')}
+						>
+							<Moon size={14} />
+							{t().settings.themeDark}
 						</button>
-						<button type="button" class="locale-btn" class:active={getTheme() === 'system'} onclick={() => setTheme('system')}>
-							<Monitor size={14} /> {t().settings.themeSystem}
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={getTheme() === 'system'}
+							onclick={() => setTheme('system')}
+						>
+							<Monitor size={14} />
+							{t().settings.themeSystem}
 						</button>
 					</div>
 				</div>
@@ -64,8 +82,16 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-2xl); max-width: 720px; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2xl);
+		max-width: 720px;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
 	.settings-section {
 		display: flex;
@@ -96,10 +122,23 @@
 		padding: var(--space-lg);
 	}
 
-	.setting-info { flex: 1; }
-	.setting-label { font-weight: 500; font-size: 0.875rem; }
-	.setting-desc { font-size: 0.8125rem; color: var(--color-text-secondary); margin-top: 2px; }
-	.setting-control { display: flex; align-items: center; gap: var(--space-sm); }
+	.setting-info {
+		flex: 1;
+	}
+	.setting-label {
+		font-weight: 500;
+		font-size: 0.875rem;
+	}
+	.setting-desc {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+		margin-top: 2px;
+	}
+	.setting-control {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+	}
 
 	.locale-buttons {
 		display: flex;
@@ -130,6 +169,8 @@
 			box-shadow: var(--shadow-sm);
 		}
 
-		&:hover:not(.active) { color: var(--color-text); }
+		&:hover:not(.active) {
+			color: var(--color-text);
+		}
 	}
 </style>

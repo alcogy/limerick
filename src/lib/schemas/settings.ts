@@ -16,7 +16,10 @@ export const catalogSettingsSchema = z.object({
 });
 
 export const skuRulesSchema = z.object({
-	sku_prefix: z.string().trim().transform((v) => (v || 'PROD').toUpperCase()),
+	sku_prefix: z
+		.string()
+		.trim()
+		.transform((v) => (v || 'PROD').toUpperCase()),
 	sku_digits: z.coerce.number().int().min(1).max(8).catch(4),
 	sku_seq: z.coerce.number().int().min(0).catch(0)
 });

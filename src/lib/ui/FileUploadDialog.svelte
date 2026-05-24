@@ -99,13 +99,7 @@
 <Modal bind:open title={t().fileUpload.title} onclose={handleClose} size="sm">
 	<div class="upload-form">
 		<label class="file-input-label">
-			<input
-				type="file"
-				name="file"
-				class="file-input"
-				{accept}
-				onchange={handleFileChange}
-			/>
+			<input type="file" name="file" class="file-input" {accept} onchange={handleFileChange} />
 			<div
 				class="file-drop-area"
 				class:is-dragging={isDragging}

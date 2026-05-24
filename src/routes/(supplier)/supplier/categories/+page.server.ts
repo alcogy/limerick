@@ -1,4 +1,3 @@
-import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import { asc, count, eq } from 'drizzle-orm';
@@ -42,7 +41,10 @@ export const actions = {
 		const { id, name, sort_order } = form.data;
 
 		const db = drizzle(platform!.env.DB, { schema });
-		await db.update(schema.categories).set({ name, sort_order }).where(eq(schema.categories.id, id));
+		await db
+			.update(schema.categories)
+			.set({ name, sort_order })
+			.where(eq(schema.categories.id, id));
 		return { success: true };
 	},
 

@@ -1,12 +1,18 @@
 <script lang="ts">
-	import { Button, Modal, Input } from '$lib/ui';
+	import { Button, Modal } from '$lib/ui';
 	import { t, formatDateTime } from '$lib/i18n';
 	import { formatCurrency } from '$lib/utils';
 	import type { PageData } from './$types';
 
 	interface ReorderItem {
-		id: string; name: string; sku: string;
-		price: number; tax_rate: number; unit: string; min_qty: number; qty: number;
+		id: string;
+		name: string;
+		sku: string;
+		price: number;
+		tax_rate: number;
+		unit: string;
+		min_qty: number;
+		qty: number;
 	}
 
 	let { data }: { data: PageData } = $props();
@@ -72,11 +78,15 @@
 					<div class="order-footer">
 						<span class="order-total">{formatCurrency(order.total_amount + order.tax_amount)}</span>
 						<div class="order-actions">
-							<Button size="sm" variant="secondary" onclick={() => (viewOrder = order)}>{t().common.details}</Button>
+							<Button size="sm" variant="secondary" onclick={() => (viewOrder = order)}
+								>{t().common.details}</Button
+							>
 							<a href="/buyer/orders/{order.id}" target="_blank" class="print-link">
 								<Button size="sm" variant="ghost">{t().cart.printOrder}</Button>
 							</a>
-							<Button size="sm" variant="ghost" onclick={() => openReorder(order)}>{t().cart.reorder}</Button>
+							<Button size="sm" variant="ghost" onclick={() => openReorder(order)}
+								>{t().cart.reorder}</Button
+							>
 						</div>
 					</div>
 				</div>
@@ -126,9 +136,21 @@
 					{/each}
 				</tbody>
 				<tfoot>
-					<tr><td colspan="3" class="num">{t().order.totalAmount}</td><td class="num">{formatCurrency(viewOrder.total_amount)}</td></tr>
-					<tr><td colspan="3" class="num">{t().order.taxAmount}</td><td class="num">{formatCurrency(viewOrder.tax_amount)}</td></tr>
-					<tr class="grand"><td colspan="3" class="num">{t().order.grandTotal}</td><td class="num">{formatCurrency(viewOrder.total_amount + viewOrder.tax_amount)}</td></tr>
+					<tr
+						><td colspan="3" class="num">{t().order.totalAmount}</td><td class="num"
+							>{formatCurrency(viewOrder.total_amount)}</td
+						></tr
+					>
+					<tr
+						><td colspan="3" class="num">{t().order.taxAmount}</td><td class="num"
+							>{formatCurrency(viewOrder.tax_amount)}</td
+						></tr
+					>
+					<tr class="grand"
+						><td colspan="3" class="num">{t().order.grandTotal}</td><td class="num"
+							>{formatCurrency(viewOrder.total_amount + viewOrder.tax_amount)}</td
+						></tr
+					>
 				</tfoot>
 			</table>
 		</div>
@@ -137,7 +159,12 @@
 
 <!-- Reorder modal -->
 {#if reorderItems.length > 0}
-	<Modal open={reorderItems.length > 0} title={t().cart.reorder} size="md" onclose={() => (reorderItems = [])}>
+	<Modal
+		open={reorderItems.length > 0}
+		title={t().cart.reorder}
+		size="md"
+		onclose={() => (reorderItems = [])}
+	>
 		<div class="reorder-content">
 			<p class="reorder-desc">{t().cart.reorderDesc}</p>
 			<p class="reorder-price-note">{t().cart.reorderPriceNote}</p>
@@ -146,14 +173,25 @@
 					<div class="reorder-row">
 						<div class="reorder-info">
 							<span class="reorder-name">{item.name}</span>
-							<span class="reorder-sku">{item.sku} / {item.unit} — {formatCurrency(item.price)}</span>
+							<span class="reorder-sku"
+								>{item.sku} / {item.unit} — {formatCurrency(item.price)}</span
+							>
 						</div>
 						<div class="reorder-qty">
-							<button class="qty-btn" disabled={item.qty <= item.min_qty}
-								onclick={() => { reorderItems[i] = { ...item, qty: item.qty - 1 }; }}>−</button>
+							<button
+								class="qty-btn"
+								disabled={item.qty <= item.min_qty}
+								onclick={() => {
+									reorderItems[i] = { ...item, qty: item.qty - 1 };
+								}}>−</button
+							>
 							<span class="qty-val">{item.qty}</span>
-							<button class="qty-btn"
-								onclick={() => { reorderItems[i] = { ...item, qty: item.qty + 1 }; }}>+</button>
+							<button
+								class="qty-btn"
+								onclick={() => {
+									reorderItems[i] = { ...item, qty: item.qty + 1 };
+								}}>+</button
+							>
 						</div>
 						<span class="reorder-price">{formatCurrency(item.price * item.qty)}</span>
 					</div>
@@ -168,8 +206,15 @@
 {/if}
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
 	.success-banner {
 		padding: var(--space-md) var(--space-lg);
@@ -179,7 +224,11 @@
 		font-size: 0.875rem;
 	}
 
-	.order-list { display: flex; flex-direction: column; gap: var(--space-md); }
+	.order-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
 
 	.order-card {
 		background-color: var(--color-bg-elevated);
@@ -191,10 +240,24 @@
 		gap: var(--space-md);
 	}
 
-	.order-header { display: flex; align-items: center; justify-content: space-between; }
-	.order-meta { display: flex; align-items: center; gap: var(--space-sm); }
-	.order-id { font-size: 0.75rem; color: var(--color-text-tertiary); }
-	.order-date { font-size: 0.75rem; color: var(--color-text-tertiary); }
+	.order-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.order-meta {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+	}
+	.order-id {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
+	.order-date {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
 
 	.order-items-preview {
 		display: flex;
@@ -209,39 +272,94 @@
 		border-radius: var(--radius-sm);
 	}
 
-	.more-items { font-size: 0.75rem; color: var(--color-text-tertiary); align-self: center; }
+	.more-items {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+		align-self: center;
+	}
 
-	.order-footer { display: flex; align-items: center; justify-content: space-between; }
-	.order-total { font-size: 1rem; font-weight: 700; }
-	.order-actions { display: flex; gap: var(--space-xs); }
-	.print-link { text-decoration: none; }
+	.order-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.order-total {
+		font-size: 1rem;
+		font-weight: 700;
+	}
+	.order-actions {
+		display: flex;
+		gap: var(--space-xs);
+	}
+	.print-link {
+		text-decoration: none;
+	}
 
-	.order-detail { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.detail-rows { display: flex; flex-direction: column; gap: var(--space-sm); }
-	.detail-row { display: flex; gap: var(--space-md); font-size: 0.875rem; }
-	.detail-label { width: 100px; flex-shrink: 0; color: var(--color-text-secondary); }
+	.order-detail {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.detail-rows {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
+	.detail-row {
+		display: flex;
+		gap: var(--space-md);
+		font-size: 0.875rem;
+	}
+	.detail-label {
+		width: 100px;
+		flex-shrink: 0;
+		color: var(--color-text-secondary);
+	}
 
 	.items-table {
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 0.8125rem;
 
-		th, td {
+		th,
+		td {
 			padding: var(--space-sm) var(--space-md);
 			border-bottom: 1px solid var(--color-border-light);
 			text-align: left;
-			&.num { text-align: right; }
+			&.num {
+				text-align: right;
+			}
 		}
 
-		th { font-weight: 600; color: var(--color-text-secondary); background-color: var(--color-bg-sunken); }
+		th {
+			font-weight: 600;
+			color: var(--color-text-secondary);
+			background-color: var(--color-bg-sunken);
+		}
 
-		.grand td { font-weight: 700; font-size: 0.9375rem; border-top: 2px solid var(--color-border); }
+		.grand td {
+			font-weight: 700;
+			font-size: 0.9375rem;
+			border-top: 2px solid var(--color-border);
+		}
 	}
 
-	.empty { font-size: 0.875rem; color: var(--color-text-tertiary); text-align: center; padding: var(--space-3xl) 0; }
+	.empty {
+		font-size: 0.875rem;
+		color: var(--color-text-tertiary);
+		text-align: center;
+		padding: var(--space-3xl) 0;
+	}
 
-	.reorder-content { display: flex; flex-direction: column; gap: var(--space-md); }
-	.reorder-desc { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.reorder-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+	.reorder-desc {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+	}
 	.reorder-price-note {
 		font-size: 0.75rem;
 		color: var(--color-warning, #b45309);
@@ -250,7 +368,11 @@
 		padding: var(--space-sm) var(--space-md);
 	}
 
-	.reorder-list { display: flex; flex-direction: column; gap: 0; }
+	.reorder-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
 
 	.reorder-row {
 		display: flex;
@@ -258,12 +380,25 @@
 		gap: var(--space-md);
 		padding: var(--space-md) 0;
 		border-bottom: 1px solid var(--color-border-light);
-		&:last-child { border-bottom: none; }
+		&:last-child {
+			border-bottom: none;
+		}
 	}
 
-	.reorder-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-	.reorder-name { font-size: 0.875rem; font-weight: 500; }
-	.reorder-sku { font-size: 0.75rem; color: var(--color-text-tertiary); }
+	.reorder-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.reorder-name {
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+	.reorder-sku {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
 
 	.reorder-qty {
 		display: flex;
@@ -272,19 +407,42 @@
 	}
 
 	.qty-btn {
-		width: 26px; height: 26px;
+		width: 26px;
+		height: 26px;
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-sm);
 		background: none;
 		color: var(--color-text);
 		font-size: 0.875rem;
 		cursor: pointer;
-		display: flex; align-items: center; justify-content: center;
-		&:hover:not(:disabled) { background-color: var(--color-hover); }
-		&:disabled { opacity: 0.35; cursor: not-allowed; }
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		&:hover:not(:disabled) {
+			background-color: var(--color-hover);
+		}
+		&:disabled {
+			opacity: 0.35;
+			cursor: not-allowed;
+		}
 	}
 
-	.qty-val { width: 36px; text-align: center; font-size: 0.875rem; font-weight: 600; }
-	.reorder-price { font-size: 0.875rem; font-weight: 600; white-space: nowrap; min-width: 70px; text-align: right; }
-	.reorder-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+	.qty-val {
+		width: 36px;
+		text-align: center;
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+	.reorder-price {
+		font-size: 0.875rem;
+		font-weight: 600;
+		white-space: nowrap;
+		min-width: 70px;
+		text-align: right;
+	}
+	.reorder-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+	}
 </style>

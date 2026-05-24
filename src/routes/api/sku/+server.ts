@@ -17,7 +17,7 @@ export const POST: RequestHandler = async ({ platform, locals }) => {
 
 	const prefix = prefixRow?.value ?? 'PROD';
 	const digits = parseInt(digitsRow?.value ?? '4');
-	const seq    = parseInt(seqRow?.value   ?? '0') + 1;
+	const seq = parseInt(seqRow?.value ?? '0') + 1;
 
 	const sku = `${prefix}-${String(seq).padStart(digits, '0')}`;
 

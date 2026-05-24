@@ -9,10 +9,7 @@ export const load: PageServerLoad = async ({ params, platform, locals }) => {
 
 	const [order, settingsRows] = await Promise.all([
 		db.query.orders.findFirst({
-			where: and(
-				eq(schema.orders.id, params.id),
-				eq(schema.orders.buyer_id, locals.user!.id)
-			),
+			where: and(eq(schema.orders.id, params.id), eq(schema.orders.buyer_id, locals.user!.id)),
 			with: {
 				buyer: { with: { user: true } },
 				items: { orderBy: (i, { asc }) => [asc(i.line_no)] }
@@ -27,11 +24,11 @@ export const load: PageServerLoad = async ({ params, platform, locals }) => {
 	return {
 		order,
 		supplier: {
-			name:    s['company_name']    ?? '',
+			name: s['company_name'] ?? '',
 			address: s['company_address'] ?? '',
-			zip:     s['company_zip']     ?? '',
-			tel:     s['company_tel']     ?? '',
-			taxNo:   s['company_tax_no']  ?? ''
+			zip: s['company_zip'] ?? '',
+			tel: s['company_tel'] ?? '',
+			taxNo: s['company_tax_no'] ?? ''
 		}
 	};
 };

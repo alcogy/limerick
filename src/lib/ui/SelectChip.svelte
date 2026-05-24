@@ -4,7 +4,7 @@
 		name: string;
 		value: string | number;
 		checked?: boolean;
-		onChange?: (v?: any) => void;
+		onChange?: (v: boolean) => void;
 	}
 	let { label, name, value, checked = false, onChange }: Props = $props();
 </script>
@@ -12,10 +12,10 @@
 <label>
 	<input
 		type="checkbox"
-		name={name}
-		value={value}
+		{name}
+		{value}
 		class="select-chip-input"
-		bind:checked={checked}
+		bind:checked
 		onchange={() => onChange?.(checked)}
 	/>
 	{label}

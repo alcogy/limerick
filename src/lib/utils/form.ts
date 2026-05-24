@@ -5,10 +5,7 @@ import { z } from 'zod';
 type ParseOk<T> = { ok: true; data: T };
 type ParseFail = { ok: false; fail: ActionFailure<{ error: string }> };
 
-export function parseFormData<T>(
-	formData: FormData,
-	schema: z.ZodType<T>
-): ParseOk<T> | ParseFail {
+export function parseFormData<T>(formData: FormData, schema: z.ZodType<T>): ParseOk<T> | ParseFail {
 	const raw = Object.fromEntries(formData);
 	const result = schema.safeParse(raw);
 	if (!result.success) {

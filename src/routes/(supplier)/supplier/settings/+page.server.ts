@@ -1,6 +1,11 @@
 import type { Actions, PageServerLoad } from './$types';
 import { makeCtx } from '$lib/services';
-import { loadSettings, saveCatalogSettings, saveCompanyInfo, saveSkuRules } from '$lib/services/settings.service';
+import {
+	loadSettings,
+	saveCatalogSettings,
+	saveCompanyInfo,
+	saveSkuRules
+} from '$lib/services/settings.service';
 import { parseFormData } from '$lib/utils/form';
 import { companyInfoSchema, catalogSettingsSchema, skuRulesSchema } from '$lib/schemas';
 

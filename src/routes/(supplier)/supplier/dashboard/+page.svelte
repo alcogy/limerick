@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Card } from '$lib/ui';
-	import { Package, Users, ShoppingCart, AlertCircle } from '@lucide/svelte';
+	import { Package, Users, AlertCircle } from '@lucide/svelte';
 	import { formatCurrency } from '$lib/utils';
 	import { t, formatDateTime } from '$lib/i18n';
 	import type { PageData } from './$types';
@@ -8,9 +8,19 @@
 	let { data }: { data: PageData } = $props();
 
 	const stats = $derived([
-		{ label: t().dashboard.stats.products,     value: data.stats.products,     icon: Package,       color: 'blue' },
-		{ label: t().dashboard.stats.buyers,        value: data.stats.buyers,        icon: Users,         color: 'green' },
-		{ label: t().dashboard.stats.pendingOrders, value: data.stats.pendingOrders, icon: AlertCircle,   color: 'orange' }
+		{
+			label: t().dashboard.stats.products,
+			value: data.stats.products,
+			icon: Package,
+			color: 'blue'
+		},
+		{ label: t().dashboard.stats.buyers, value: data.stats.buyers, icon: Users, color: 'green' },
+		{
+			label: t().dashboard.stats.pendingOrders,
+			value: data.stats.pendingOrders,
+			icon: AlertCircle,
+			color: 'orange'
+		}
 	]);
 </script>
 
@@ -43,7 +53,9 @@
 							<span class="badge badge-{order.status}">{t().order.statuses[order.status]}</span>
 						</div>
 						<div class="order-meta">
-							<span class="order-amount">{formatCurrency(order.total_amount + order.tax_amount)}</span>
+							<span class="order-amount"
+								>{formatCurrency(order.total_amount + order.tax_amount)}</span
+							>
 							<span class="order-date">{formatDateTime(order.ordered_at)}</span>
 						</div>
 					</a>
@@ -92,16 +104,39 @@
 		border-radius: var(--radius-md);
 		flex-shrink: 0;
 
-		&.blue   { background-color: #dbeafe; color: #1d4ed8; }
-		&.green  { background-color: #dcfce7; color: #15803d; }
-		&.orange { background-color: #ffedd5; color: #c2410c; }
+		&.blue {
+			background-color: #dbeafe;
+			color: #1d4ed8;
+		}
+		&.green {
+			background-color: #dcfce7;
+			color: #15803d;
+		}
+		&.orange {
+			background-color: #ffedd5;
+			color: #c2410c;
+		}
 	}
 
-	.stat-info { display: flex; flex-direction: column; }
-	.stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
-	.stat-label { font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 2px; }
+	.stat-info {
+		display: flex;
+		flex-direction: column;
+	}
+	.stat-value {
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1;
+	}
+	.stat-label {
+		font-size: 0.75rem;
+		color: var(--color-text-secondary);
+		margin-top: 2px;
+	}
 
-	.order-list { display: flex; flex-direction: column; }
+	.order-list {
+		display: flex;
+		flex-direction: column;
+	}
 
 	.order-item {
 		display: flex;
@@ -113,8 +148,12 @@
 		color: var(--color-text);
 		text-decoration: none;
 
-		&:last-child { border-bottom: none; }
-		&:hover { color: var(--color-primary); }
+		&:last-child {
+			border-bottom: none;
+		}
+		&:hover {
+			color: var(--color-primary);
+		}
 	}
 
 	.order-main {

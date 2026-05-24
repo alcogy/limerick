@@ -99,9 +99,9 @@ export const actions = {
 			})
 			.returning();
 
-		await db.insert(schema.order_items).values(
-			orderItems.map((item) => ({ ...item, order_id: order.id }))
-		);
+		await db
+			.insert(schema.order_items)
+			.values(orderItems.map((item) => ({ ...item, order_id: order.id })));
 
 		for (const item of orderItems) {
 			await db

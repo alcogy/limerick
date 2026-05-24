@@ -46,8 +46,8 @@ export async function sendInvitationEmail(
 
 		const [buyer] = await ctx.db
 			.select({
-				name:         schema.users.name,
-				email:        schema.users.email,
+				name: schema.users.name,
+				email: schema.users.email,
 				company_name: schema.buyers.company_name
 			})
 			.from(schema.buyers)
@@ -62,11 +62,11 @@ export async function sendInvitationEmail(
 
 		const tpl = await getTemplate(ctx, 'invitation');
 		const vars = {
-			buyer_name:    buyer.name,
-			company_name:  buyer.company_name,
+			buyer_name: buyer.name,
+			company_name: buyer.company_name,
 			supplier_name: supplierName,
-			setup_url:     setupUrl,
-			expires_at:    expiresAt
+			setup_url: setupUrl,
+			expires_at: expiresAt
 		};
 		const subject = applyTemplate(tpl.subject, vars);
 		const bodyText = applyTemplate(tpl.body, vars);
@@ -97,7 +97,7 @@ export async function sendOrderEmail(
 
 	const [orderRow] = await ctx.db
 		.select({
-			email:        schema.users.email,
+			email: schema.users.email,
 			company_name: schema.buyers.company_name
 		})
 		.from(schema.orders)

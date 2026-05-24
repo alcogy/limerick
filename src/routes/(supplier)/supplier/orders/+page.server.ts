@@ -17,19 +17,37 @@ export const actions = {
 	confirm: async ({ request, platform, locals }) => {
 		const form = parseFormData(await request.formData(), orderIdSchema);
 		if (!form.ok) return form.fail;
-		return advanceOrderStatus(makeCtx(platform!, locals, request), form.data.id, 'pending', 'confirmed', 'confirmed_at');
+		return advanceOrderStatus(
+			makeCtx(platform!, locals, request),
+			form.data.id,
+			'pending',
+			'confirmed',
+			'confirmed_at'
+		);
 	},
 
 	ship: async ({ request, platform, locals }) => {
 		const form = parseFormData(await request.formData(), orderIdSchema);
 		if (!form.ok) return form.fail;
-		return advanceOrderStatus(makeCtx(platform!, locals, request), form.data.id, 'confirmed', 'shipped', 'shipped_at');
+		return advanceOrderStatus(
+			makeCtx(platform!, locals, request),
+			form.data.id,
+			'confirmed',
+			'shipped',
+			'shipped_at'
+		);
 	},
 
 	complete: async ({ request, platform, locals }) => {
 		const form = parseFormData(await request.formData(), orderIdSchema);
 		if (!form.ok) return form.fail;
-		return advanceOrderStatus(makeCtx(platform!, locals, request), form.data.id, 'shipped', 'completed', 'completed_at');
+		return advanceOrderStatus(
+			makeCtx(platform!, locals, request),
+			form.data.id,
+			'shipped',
+			'completed',
+			'completed_at'
+		);
 	},
 
 	cancel: async ({ request, platform, locals }) => {

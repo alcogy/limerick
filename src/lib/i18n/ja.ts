@@ -322,7 +322,8 @@ export const ja: Translations = {
 		confirmCheckout: 'この内容で発注しますか？',
 		reorder: '再発注',
 		reorderDesc: 'カートに追加する前に数量を確認・変更してください。',
-		reorderPriceNote: '価格・最低発注数は現在の設定が反映されており、注文時から変更されている場合があります。',
+		reorderPriceNote:
+			'価格・最低発注数は現在の設定が反映されており、注文時から変更されている場合があります。',
 		printOrder: '注文書を印刷'
 	},
 	fileUpload: {

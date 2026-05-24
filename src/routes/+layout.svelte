@@ -5,13 +5,12 @@
 	import { setLocale, type Locale } from '$lib/i18n';
 	import '../app.scss';
 	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
 
-	let { children, data }: { children: any; data: LayoutData } = $props();
-
-	// Apply server-read locale immediately (eliminates language FOUC)
-	setLocale(data.locale as Locale);
+	let { children, data }: { children: Snippet; data: LayoutData } = $props();
 
 	$effect(() => {
+		setLocale(data.locale as Locale);
 		if (browser) {
 			document.documentElement.setAttribute('data-theme', getTheme());
 		}

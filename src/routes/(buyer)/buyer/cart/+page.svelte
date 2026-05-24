@@ -2,26 +2,36 @@
 	import { Button, ConfirmDialog, Textarea, Label } from '$lib/ui';
 	import { t } from '$lib/i18n';
 	import { enhance } from '$app/forms';
-	import { formatCurrency, calcTaxIncluded } from '$lib/utils';
-	import type { ActionData } from './$types';
+	import { formatCurrency } from '$lib/utils';
 
-	let { form }: { form: ActionData } = $props();
-
-	interface CartItem { id: string; name: string; sku: string; price: number; tax_rate: number; unit: string; min_qty: number; qty: number }
+	interface CartItem {
+		id: string;
+		name: string;
+		sku: string;
+		price: number;
+		tax_rate: number;
+		unit: string;
+		min_qty: number;
+		qty: number;
+	}
 
 	function readCart(): CartItem[] {
 		if (typeof localStorage === 'undefined') return [];
 		try {
 			const raw = localStorage.getItem('limerick_cart');
 			return raw ? JSON.parse(raw) : [];
-		} catch { return []; }
+		} catch {
+			return [];
+		}
 	}
 
 	let cart: CartItem[] = $state(readCart());
 	let notes = $state('');
 	let showConfirm = $state(false);
 
-	function saveCart() { localStorage.setItem('limerick_cart', JSON.stringify(cart)); }
+	function saveCart() {
+		localStorage.setItem('limerick_cart', JSON.stringify(cart));
+	}
 
 	function updateQty(id: string, delta: number) {
 		const item = cart.find((c) => c.id === id);
@@ -37,7 +47,9 @@
 	}
 
 	const subtotal = $derived(cart.reduce((s, c) => s + c.price * c.qty, 0));
-	const taxEstimate = $derived(cart.reduce((s, c) => s + Math.floor(c.price * c.qty * c.tax_rate), 0));
+	const taxEstimate = $derived(
+		cart.reduce((s, c) => s + Math.floor(c.price * c.qty * c.tax_rate), 0)
+	);
 	const grandTotal = $derived(subtotal + taxEstimate);
 </script>
 
@@ -69,12 +81,18 @@
 						</div>
 						<div class="item-price">{formatCurrency(item.price)} / {item.unit}</div>
 						<div class="qty-control">
-							<button class="qty-btn" onclick={() => updateQty(item.id, -1)} disabled={item.qty <= item.min_qty}>−</button>
+							<button
+								class="qty-btn"
+								onclick={() => updateQty(item.id, -1)}
+								disabled={item.qty <= item.min_qty}>−</button
+							>
 							<span class="qty-value">{item.qty}</span>
 							<button class="qty-btn" onclick={() => updateQty(item.id, 1)}>+</button>
 						</div>
 						<div class="item-subtotal">{formatCurrency(item.price * item.qty)}</div>
-						<button class="remove-btn" onclick={() => removeItem(item.id)} aria-label="Remove">✕</button>
+						<button class="remove-btn" onclick={() => removeItem(item.id)} aria-label="Remove"
+							>✕</button
+						>
 					</div>
 				{/each}
 			</div>
@@ -82,17 +100,33 @@
 			<div class="cart-summary">
 				<div class="summary-card">
 					<div class="summary-rows">
-						<div class="summary-row"><span>{t().cart.total}</span><span>{formatCurrency(subtotal)}</span></div>
-						<div class="summary-row"><span>{t().cart.tax}</span><span>{formatCurrency(taxEstimate)}</span></div>
-						<div class="summary-row grand"><span>{t().cart.grandTotal}</span><span>{formatCurrency(grandTotal)}</span></div>
+						<div class="summary-row">
+							<span>{t().cart.total}</span><span>{formatCurrency(subtotal)}</span>
+						</div>
+						<div class="summary-row">
+							<span>{t().cart.tax}</span><span>{formatCurrency(taxEstimate)}</span>
+						</div>
+						<div class="summary-row grand">
+							<span>{t().cart.grandTotal}</span><span>{formatCurrency(grandTotal)}</span>
+						</div>
 					</div>
 
 					<div class="notes-field">
 						<Label for="notes">{t().cart.notes}</Label>
-						<Textarea id="notes" rows={3} placeholder={t().cart.notesPlaceholder} bind:value={notes} />
+						<Textarea
+							id="notes"
+							rows={3}
+							placeholder={t().cart.notesPlaceholder}
+							bind:value={notes}
+						/>
 					</div>
 
-					<Button variant="primary" size="lg" onclick={() => (showConfirm = true)} style="width:100%">
+					<Button
+						variant="primary"
+						size="lg"
+						onclick={() => (showConfirm = true)}
+						style="width:100%"
+					>
 						{t().cart.checkout}
 					</Button>
 				</div>
@@ -100,8 +134,29 @@
 		</div>
 
 		<!-- Hidden form for checkout POST -->
-		<form id="checkout-form" method="POST" action="?/checkout" use:enhance onsubmit={() => { localStorage.removeItem('limerick_cart'); }}>
-			<input type="hidden" name="items" value={JSON.stringify(cart.map((c) => ({ id: c.id, qty: c.qty, price: c.price, tax_rate: c.tax_rate, name: c.name, sku: c.sku })))} />
+		<form
+			id="checkout-form"
+			method="POST"
+			action="?/checkout"
+			use:enhance
+			onsubmit={() => {
+				localStorage.removeItem('limerick_cart');
+			}}
+		>
+			<input
+				type="hidden"
+				name="items"
+				value={JSON.stringify(
+					cart.map((c) => ({
+						id: c.id,
+						qty: c.qty,
+						price: c.price,
+						tax_rate: c.tax_rate,
+						name: c.name,
+						sku: c.sku
+					}))
+				)}
+			/>
 			<input type="hidden" name="notes" value={notes} />
 		</form>
 	{/if}
@@ -118,7 +173,11 @@
 />
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
 
 	.page-header {
 		display: flex;
@@ -126,8 +185,14 @@
 		justify-content: space-between;
 	}
 
-	.page-title { font-size: 1.5rem; font-weight: 700; }
-	.continue-link { font-size: 0.875rem; color: var(--color-primary); }
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+	.continue-link {
+		font-size: 0.875rem;
+		color: var(--color-primary);
+	}
 
 	.empty-cart {
 		display: flex;
@@ -137,7 +202,9 @@
 		padding: var(--space-3xl) 0;
 	}
 
-	.empty-text { color: var(--color-text-secondary); }
+	.empty-text {
+		color: var(--color-text-secondary);
+	}
 
 	.cart-layout {
 		display: grid;
@@ -150,7 +217,11 @@
 		}
 	}
 
-	.cart-items { display: flex; flex-direction: column; gap: 0; }
+	.cart-items {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
 
 	.cart-item {
 		display: flex;
@@ -159,14 +230,29 @@
 		padding: var(--space-md) 0;
 		border-bottom: 1px solid var(--color-border-light);
 
-		&:first-child { border-top: 1px solid var(--color-border-light); }
+		&:first-child {
+			border-top: 1px solid var(--color-border-light);
+		}
 	}
 
-	.item-info { flex: 1; min-width: 0; }
-	.item-name { font-size: 0.875rem; font-weight: 500; }
-	.item-sku { font-size: 0.75rem; color: var(--color-text-tertiary); }
+	.item-info {
+		flex: 1;
+		min-width: 0;
+	}
+	.item-name {
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+	.item-sku {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
 
-	.item-price { font-size: 0.8125rem; color: var(--color-text-secondary); white-space: nowrap; }
+	.item-price {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+		white-space: nowrap;
+	}
 
 	.qty-control {
 		display: flex;
@@ -187,13 +273,29 @@
 		align-items: center;
 		justify-content: center;
 
-		&:hover:not(:disabled) { background-color: var(--color-hover); }
-		&:disabled { opacity: 0.35; cursor: not-allowed; }
+		&:hover:not(:disabled) {
+			background-color: var(--color-hover);
+		}
+		&:disabled {
+			opacity: 0.35;
+			cursor: not-allowed;
+		}
 	}
 
-	.qty-value { width: 40px; text-align: center; font-size: 0.875rem; font-weight: 600; }
+	.qty-value {
+		width: 40px;
+		text-align: center;
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
 
-	.item-subtotal { font-size: 0.875rem; font-weight: 600; white-space: nowrap; min-width: 80px; text-align: right; }
+	.item-subtotal {
+		font-size: 0.875rem;
+		font-weight: 600;
+		white-space: nowrap;
+		min-width: 80px;
+		text-align: right;
+	}
 
 	.remove-btn {
 		width: 24px;
@@ -209,7 +311,10 @@
 		border-radius: var(--radius-sm);
 		flex-shrink: 0;
 
-		&:hover { background-color: var(--color-danger-light); color: var(--color-danger); }
+		&:hover {
+			background-color: var(--color-danger-light);
+			color: var(--color-danger);
+		}
 	}
 
 	.summary-card {
@@ -222,7 +327,11 @@
 		gap: var(--space-lg);
 	}
 
-	.summary-rows { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.summary-rows {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 
 	.summary-row {
 		display: flex;
@@ -238,5 +347,9 @@
 		}
 	}
 
-	.notes-field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.notes-field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 </style>

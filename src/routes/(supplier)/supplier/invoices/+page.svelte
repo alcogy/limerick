@@ -17,8 +17,8 @@
 	let markPaidFormEl = $state<HTMLFormElement | undefined>();
 
 	let genPeriodFrom = $state(data.today);
-	let genPeriodTo   = $state(data.today);
-	let genDueDate    = $state(data.today);
+	let genPeriodTo = $state(data.today);
+	let genDueDate = $state(data.today);
 
 	function onBuyerChange(e: Event) {
 		const buyerId = (e.target as HTMLSelectElement).value;
@@ -26,20 +26,24 @@
 		if (!buyer) return;
 		const { period_from, period_to, due_date } = calcInvoicePeriod(buyer.closing_day);
 		genPeriodFrom = period_from;
-		genPeriodTo   = period_to;
-		genDueDate    = due_date;
+		genPeriodTo = period_to;
+		genDueDate = due_date;
 	}
 
-	const generateEnhance: SubmitFunction = () => async ({ result, update }) => {
-		await update();
-		if (result.type === 'success') showGenerate = false;
-	};
+	const generateEnhance: SubmitFunction =
+		() =>
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') showGenerate = false;
+		};
 
-	const markPaidEnhance: SubmitFunction = () => async ({ update }) => {
-		await update();
-		markPaidId = null;
-		viewInvoice = null;
-	};
+	const markPaidEnhance: SubmitFunction =
+		() =>
+		async ({ update }) => {
+			await update();
+			markPaidId = null;
+			viewInvoice = null;
+		};
 
 	const INVOICE_STATUSES = ['', 'issued', 'paid', 'overdue'] as const;
 </script>
@@ -70,14 +74,18 @@
 		{/each}
 	</div>
 
-	<Table columns={[
-		{ key: 'invoice_number', label: t().invoice.invoiceNumber, width: '160px' },
-		{ key: 'buyer',          label: t().invoice.buyer },
-		{ key: 'period_to',      label: t().invoice.periodTo,      width: '120px' },
-		{ key: 'total_amount',   label: t().invoice.totalAmount,   width: '120px' },
-		{ key: 'status',         label: t().common.status,         width: '100px' },
-		{ key: 'issued_at',      label: t().invoice.issuedAt,      width: '120px' }
-	]} rows={data.invoices} onrowclick={(row) => (viewInvoice = row)}>
+	<Table
+		columns={[
+			{ key: 'invoice_number', label: t().invoice.invoiceNumber, width: '160px' },
+			{ key: 'buyer', label: t().invoice.buyer },
+			{ key: 'period_to', label: t().invoice.periodTo, width: '120px' },
+			{ key: 'total_amount', label: t().invoice.totalAmount, width: '120px' },
+			{ key: 'status', label: t().common.status, width: '100px' },
+			{ key: 'issued_at', label: t().invoice.issuedAt, width: '120px' }
+		]}
+		rows={data.invoices}
+		onrowclick={(row) => (viewInvoice = row)}
+	>
 		{#snippet cell(col, row)}
 			{#if col.key === 'buyer'}
 				{row.buyer?.company_name ?? '—'}
@@ -127,7 +135,13 @@
 		<div class="form-grid">
 			<div class="field">
 				<Label for="period_from" required>{t().invoice.periodFrom}</Label>
-				<Input id="period_from" name="period_from" type="date" bind:value={genPeriodFrom} required />
+				<Input
+					id="period_from"
+					name="period_from"
+					type="date"
+					bind:value={genPeriodFrom}
+					required
+				/>
 			</div>
 			<div class="field">
 				<Label for="period_to" required>{t().invoice.periodTo}</Label>
@@ -139,7 +153,9 @@
 			<Input id="due_date" name="due_date" type="date" bind:value={genDueDate} required />
 		</div>
 		<div class="form-actions">
-			<Button type="button" variant="secondary" onclick={() => (showGenerate = false)}>{t().common.cancel}</Button>
+			<Button type="button" variant="secondary" onclick={() => (showGenerate = false)}
+				>{t().common.cancel}</Button
+			>
 			<Button type="submit">{t().invoice.generate}</Button>
 		</div>
 	</form>
@@ -147,30 +163,69 @@
 
 <!-- Invoice detail modal -->
 {#if viewInvoice}
-	<Modal open={!!viewInvoice} title="{t().invoice.detail}: {viewInvoice.invoice_number}" onclose={() => (viewInvoice = null)}>
+	<Modal
+		open={!!viewInvoice}
+		title="{t().invoice.detail}: {viewInvoice.invoice_number}"
+		onclose={() => (viewInvoice = null)}
+	>
 		<div class="invoice-detail">
 			<div class="detail-rows">
-				<div class="detail-row"><span class="detail-label">{t().invoice.invoiceNumber}</span><span>{viewInvoice.invoice_number}</span></div>
-				<div class="detail-row"><span class="detail-label">{t().invoice.buyer}</span><span>{viewInvoice.buyer?.company_name ?? '—'}</span></div>
-				<div class="detail-row"><span class="detail-label">{t().invoice.periodFrom}</span><span>{formatDate(viewInvoice.period_from)}</span></div>
-				<div class="detail-row"><span class="detail-label">{t().invoice.periodTo}</span><span>{formatDate(viewInvoice.period_to)}</span></div>
-				<div class="detail-row"><span class="detail-label">{t().invoice.dueDate}</span><span>{formatDate(viewInvoice.due_date)}</span></div>
+				<div class="detail-row">
+					<span class="detail-label">{t().invoice.invoiceNumber}</span><span
+						>{viewInvoice.invoice_number}</span
+					>
+				</div>
+				<div class="detail-row">
+					<span class="detail-label">{t().invoice.buyer}</span><span
+						>{viewInvoice.buyer?.company_name ?? '—'}</span
+					>
+				</div>
+				<div class="detail-row">
+					<span class="detail-label">{t().invoice.periodFrom}</span><span
+						>{formatDate(viewInvoice.period_from)}</span
+					>
+				</div>
+				<div class="detail-row">
+					<span class="detail-label">{t().invoice.periodTo}</span><span
+						>{formatDate(viewInvoice.period_to)}</span
+					>
+				</div>
+				<div class="detail-row">
+					<span class="detail-label">{t().invoice.dueDate}</span><span
+						>{formatDate(viewInvoice.due_date)}</span
+					>
+				</div>
 				<div class="detail-row">
 					<span class="detail-label">{t().common.status}</span>
-					<span class="badge badge-{viewInvoice.status}">{t().invoice.statuses[viewInvoice.status]}</span>
+					<span class="badge badge-{viewInvoice.status}"
+						>{t().invoice.statuses[viewInvoice.status]}</span
+					>
 				</div>
 			</div>
 			<div class="amount-rows">
-				<div class="amount-row"><span>{t().invoice.subtotal}</span><span>{formatCurrency(viewInvoice.subtotal)}</span></div>
-				<div class="amount-row"><span>{t().invoice.taxAmount}</span><span>{formatCurrency(viewInvoice.tax_amount)}</span></div>
-				<div class="amount-row total"><span>{t().invoice.totalAmount}</span><span>{formatCurrency(viewInvoice.total_amount)}</span></div>
+				<div class="amount-row">
+					<span>{t().invoice.subtotal}</span><span>{formatCurrency(viewInvoice.subtotal)}</span>
+				</div>
+				<div class="amount-row">
+					<span>{t().invoice.taxAmount}</span><span>{formatCurrency(viewInvoice.tax_amount)}</span>
+				</div>
+				<div class="amount-row total">
+					<span>{t().invoice.totalAmount}</span><span
+						>{formatCurrency(viewInvoice.total_amount)}</span
+					>
+				</div>
 			</div>
 			<div class="invoice-actions">
 				<a href="/supplier/invoices/{viewInvoice.id}" target="_blank" class="print-link">
 					<Button variant="secondary">{t().common.printPdf}</Button>
 				</a>
 				{#if viewInvoice.status === 'issued' || viewInvoice.status === 'overdue'}
-					<Button variant="primary" onclick={() => { markPaidId = viewInvoice!.id; }}>
+					<Button
+						variant="primary"
+						onclick={() => {
+							markPaidId = viewInvoice!.id;
+						}}
+					>
 						{t().invoice.markPaid}
 					</Button>
 				{/if}
@@ -180,7 +235,13 @@
 {/if}
 
 <!-- Hidden markPaid form -->
-<form method="POST" action="?/markPaid" use:enhance={markPaidEnhance} bind:this={markPaidFormEl} style="display:none">
+<form
+	method="POST"
+	action="?/markPaid"
+	use:enhance={markPaidEnhance}
+	bind:this={markPaidFormEl}
+	style="display:none"
+>
 	<input name="id" value={markPaidId ?? ''} />
 </form>
 
@@ -193,9 +254,20 @@
 />
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-header { display: flex; align-items: center; justify-content: space-between; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
 	.status-tabs {
 		display: flex;
@@ -218,12 +290,28 @@
 		cursor: pointer;
 		font-family: inherit;
 		transition: all var(--transition-fast);
-		&.active { background-color: var(--color-bg-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }
+		&.active {
+			background-color: var(--color-bg-elevated);
+			color: var(--color-text);
+			box-shadow: var(--shadow-sm);
+		}
 	}
 
-	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.form-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-md);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 	.select {
 		height: 36px;
 		padding: 0 var(--space-md);
@@ -234,7 +322,10 @@
 		font-family: inherit;
 		font-size: 0.8125rem;
 	}
-	.generate-desc { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.generate-desc {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+	}
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
 		background-color: var(--color-danger-light);
@@ -242,12 +333,32 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
-	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+	}
 
-	.invoice-detail { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.detail-rows { display: flex; flex-direction: column; gap: var(--space-sm); }
-	.detail-row { display: flex; gap: var(--space-md); font-size: 0.875rem; }
-	.detail-label { width: 120px; flex-shrink: 0; color: var(--color-text-secondary); }
+	.invoice-detail {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.detail-rows {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
+	.detail-row {
+		display: flex;
+		gap: var(--space-md);
+		font-size: 0.875rem;
+	}
+	.detail-label {
+		width: 120px;
+		flex-shrink: 0;
+		color: var(--color-text-secondary);
+	}
 
 	.amount-rows {
 		display: flex;
@@ -271,6 +382,12 @@
 		}
 	}
 
-	.invoice-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
-	.print-link { text-decoration: none; }
+	.invoice-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+	}
+	.print-link {
+		text-decoration: none;
+	}
 </style>

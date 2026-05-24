@@ -10,7 +10,7 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	const order    = $derived(data.order);
+	const order = $derived(data.order);
 	const supplier = $derived(data.supplier);
 
 	type OrderAction = 'confirm' | 'ship' | 'complete' | 'cancel';
@@ -18,40 +18,42 @@
 	let pendingAction = $state<OrderAction | null>(null);
 
 	const actionLabels: Record<OrderAction, string> = {
-		confirm:  t().order.confirmAction,
-		ship:     t().order.shipAction,
+		confirm: t().order.confirmAction,
+		ship: t().order.shipAction,
 		complete: t().order.completeAction,
-		cancel:   t().order.cancelAction
+		cancel: t().order.cancelAction
 	};
 
-	let confirmFormEl  = $state<HTMLFormElement | undefined>();
-	let shipFormEl     = $state<HTMLFormElement | undefined>();
+	let confirmFormEl = $state<HTMLFormElement | undefined>();
+	let shipFormEl = $state<HTMLFormElement | undefined>();
 	let completeFormEl = $state<HTMLFormElement | undefined>();
-	let cancelFormEl   = $state<HTMLFormElement | undefined>();
+	let cancelFormEl = $state<HTMLFormElement | undefined>();
 
 	const formEls: Record<OrderAction, () => HTMLFormElement | undefined> = {
-		confirm:  () => confirmFormEl,
-		ship:     () => shipFormEl,
+		confirm: () => confirmFormEl,
+		ship: () => shipFormEl,
 		complete: () => completeFormEl,
-		cancel:   () => cancelFormEl
+		cancel: () => cancelFormEl
 	};
 
-	const actionEnhance: SubmitFunction = () => async ({ update }) => {
-		await update();
-		pendingAction = null;
-		await invalidateAll();
-	};
+	const actionEnhance: SubmitFunction =
+		() =>
+		async ({ update }) => {
+			await update();
+			pendingAction = null;
+			await invalidateAll();
+		};
 
 	// Email dialog state
-	let emailOpen    = $state(false);
+	let emailOpen = $state(false);
 	let emailSubject = $state('');
-	let emailBody    = $state('');
+	let emailBody = $state('');
 	let emailSending = $state(false);
 
 	function openEmailDialog() {
 		emailSubject = data.emailDefaults.subject;
-		emailBody    = data.emailDefaults.body;
-		emailOpen    = true;
+		emailBody = data.emailDefaults.body;
+		emailOpen = true;
 	}
 
 	const emailEnhance: SubmitFunction = () => {
@@ -60,9 +62,9 @@
 			await update();
 			emailSending = false;
 			if (result.type === 'success') {
-				emailOpen    = false;
+				emailOpen = false;
 				emailSubject = '';
-				emailBody    = '';
+				emailBody = '';
 			}
 		};
 	};
@@ -78,10 +80,12 @@
 		<a href="/supplier/orders" class="back-link">← {t().order.supplierTitle}</a>
 		<div class="header-actions">
 			<Button variant="secondary" onclick={openEmailDialog}>
-				<Mail size={15} /> {t().order.sendEmail}
+				<Mail size={15} />
+				{t().order.sendEmail}
 			</Button>
 			<Button variant="secondary" onclick={() => window.print()}>
-				<Printer size={15} /> {t().common.printPdf}
+				<Printer size={15} />
+				{t().common.printPdf}
 			</Button>
 		</div>
 	</div>
@@ -95,16 +99,22 @@
 		</div>
 		<div class="title-actions">
 			{#if order.status === 'pending'}
-				<Button variant="primary" onclick={() => (pendingAction = 'confirm')}>{t().order.confirm}</Button>
+				<Button variant="primary" onclick={() => (pendingAction = 'confirm')}
+					>{t().order.confirm}</Button
+				>
 			{/if}
 			{#if order.status === 'confirmed'}
 				<Button variant="primary" onclick={() => (pendingAction = 'ship')}>{t().order.ship}</Button>
 			{/if}
 			{#if order.status === 'shipped'}
-				<Button variant="primary" onclick={() => (pendingAction = 'complete')}>{t().order.complete}</Button>
+				<Button variant="primary" onclick={() => (pendingAction = 'complete')}
+					>{t().order.complete}</Button
+				>
 			{/if}
 			{#if order.status !== 'completed' && order.status !== 'cancelled'}
-				<Button variant="danger" onclick={() => (pendingAction = 'cancel')}>{t().order.cancel}</Button>
+				<Button variant="danger" onclick={() => (pendingAction = 'cancel')}
+					>{t().order.cancel}</Button
+				>
 			{/if}
 		</div>
 	</div>
@@ -242,7 +252,9 @@
 				</div>
 			{/if}
 			<div class="inv-meta">
-				<div class="meta-row"><span>{t().order.orderedAt}</span><span>{formatDateTime(order.ordered_at)}</span></div>
+				<div class="meta-row">
+					<span>{t().order.orderedAt}</span><span>{formatDateTime(order.ordered_at)}</span>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -271,9 +283,21 @@
 			{/each}
 		</tbody>
 		<tfoot>
-			<tr><td colspan="5" class="num">{t().order.totalAmount}</td><td class="num">{formatCurrency(order.total_amount)}</td></tr>
-			<tr><td colspan="5" class="num">{t().order.taxAmount}</td><td class="num">{formatCurrency(order.tax_amount)}</td></tr>
-			<tr class="grand-row"><td colspan="5" class="num">{t().order.grandTotal}</td><td class="num">{formatCurrency(order.total_amount + order.tax_amount)}</td></tr>
+			<tr
+				><td colspan="5" class="num">{t().order.totalAmount}</td><td class="num"
+					>{formatCurrency(order.total_amount)}</td
+				></tr
+			>
+			<tr
+				><td colspan="5" class="num">{t().order.taxAmount}</td><td class="num"
+					>{formatCurrency(order.tax_amount)}</td
+				></tr
+			>
+			<tr class="grand-row"
+				><td colspan="5" class="num">{t().order.grandTotal}</td><td class="num"
+					>{formatCurrency(order.total_amount + order.tax_amount)}</td
+				></tr
+			>
 		</tfoot>
 	</table>
 
@@ -286,10 +310,42 @@
 </div>
 
 <!-- Hidden action forms -->
-<form method="POST" action="?/confirm"  use:enhance={actionEnhance} bind:this={confirmFormEl}  style="display:none"><input name="id" value={order.id} /></form>
-<form method="POST" action="?/ship"     use:enhance={actionEnhance} bind:this={shipFormEl}     style="display:none"><input name="id" value={order.id} /></form>
-<form method="POST" action="?/complete" use:enhance={actionEnhance} bind:this={completeFormEl} style="display:none"><input name="id" value={order.id} /></form>
-<form method="POST" action="?/cancel"   use:enhance={actionEnhance} bind:this={cancelFormEl}   style="display:none"><input name="id" value={order.id} /></form>
+<form
+	method="POST"
+	action="?/confirm"
+	use:enhance={actionEnhance}
+	bind:this={confirmFormEl}
+	style="display:none"
+>
+	<input name="id" value={order.id} />
+</form>
+<form
+	method="POST"
+	action="?/ship"
+	use:enhance={actionEnhance}
+	bind:this={shipFormEl}
+	style="display:none"
+>
+	<input name="id" value={order.id} />
+</form>
+<form
+	method="POST"
+	action="?/complete"
+	use:enhance={actionEnhance}
+	bind:this={completeFormEl}
+	style="display:none"
+>
+	<input name="id" value={order.id} />
+</form>
+<form
+	method="POST"
+	action="?/cancel"
+	use:enhance={actionEnhance}
+	bind:this={cancelFormEl}
+	style="display:none"
+>
+	<input name="id" value={order.id} />
+</form>
 
 <ConfirmDialog
 	open={!!pendingAction}
@@ -332,7 +388,12 @@
 		{/if}
 
 		<div class="email-actions">
-			<Button type="button" variant="secondary" onclick={() => (emailOpen = false)} disabled={emailSending}>
+			<Button
+				type="button"
+				variant="secondary"
+				onclick={() => (emailOpen = false)}
+				disabled={emailSending}
+			>
 				{t().common.cancel}
 			</Button>
 			<Button type="submit" variant="primary" disabled={emailSending}>
@@ -367,7 +428,9 @@
 		font-size: 0.875rem;
 		color: var(--color-primary);
 		text-decoration: none;
-		&:hover { text-decoration: underline; }
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 
 	.title-row {
@@ -440,7 +503,9 @@
 
 	.card-row {
 		font-size: 0.875rem;
-		&.muted { color: var(--color-text-secondary); }
+		&.muted {
+			color: var(--color-text-secondary);
+		}
 	}
 
 	/* ---- Timeline ---- */
@@ -455,7 +520,9 @@
 		justify-content: space-between;
 		font-size: 0.875rem;
 		gap: var(--space-md);
-		&.cancelled { color: var(--color-danger, #dc2626); }
+		&.cancelled {
+			color: var(--color-danger, #dc2626);
+		}
 	}
 
 	.tl-label {
@@ -487,11 +554,14 @@
 		border-radius: var(--radius-lg);
 		overflow: hidden;
 
-		th, td {
+		th,
+		td {
 			padding: var(--space-sm) var(--space-md);
 			border-bottom: 1px solid var(--color-border-light);
 			text-align: left;
-			&.num { text-align: right; }
+			&.num {
+				text-align: right;
+			}
 		}
 
 		th {
@@ -501,7 +571,9 @@
 			font-size: 0.8125rem;
 		}
 
-		tbody tr:last-child td { border-bottom: none; }
+		tbody tr:last-child td {
+			border-bottom: none;
+		}
 
 		.sku-cell {
 			font-family: var(--font-mono);
@@ -509,7 +581,9 @@
 			color: var(--color-text-tertiary);
 		}
 
-		.tax-col { color: var(--color-text-secondary); }
+		.tax-col {
+			color: var(--color-text-secondary);
+		}
 
 		tfoot td {
 			font-weight: 500;
@@ -540,7 +614,10 @@
 		margin-bottom: var(--space-xs);
 	}
 
-	.notes-body { font-size: 0.875rem; white-space: pre-wrap; }
+	.notes-body {
+		font-size: 0.875rem;
+		white-space: pre-wrap;
+	}
 
 	/* ---- Email dialog ---- */
 	:global(.email-form) {
@@ -569,12 +646,20 @@
 	}
 
 	/* ---- Print ---- */
-	.print-only { display: none; }
+	.print-only {
+		display: none;
+	}
 
 	@media print {
-		.no-print { display: none !important; }
-		.page { display: none !important; }
-		.print-only { display: block !important; }
+		.no-print {
+			display: none !important;
+		}
+		.page {
+			display: none !important;
+		}
+		.print-only {
+			display: block !important;
+		}
 
 		.order-sheet {
 			padding: 0;
@@ -583,39 +668,115 @@
 			gap: 24px;
 		}
 
-		.inv-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
-		.inv-left { display: flex; flex-direction: column; gap: 6px; }
-		.inv-title { font-size: 1.25rem; font-weight: 700; margin: 0; }
-		.inv-id { font-size: 0.8125rem; color: #71717a; font-family: monospace; }
-		.buyer-block { display: flex; flex-direction: column; gap: 2px; padding-top: 8px; }
-		.buyer-block-name { font-size: 0.9375rem; font-weight: 600; }
-		.buyer-block-sub { font-size: 0.8125rem; color: #52525b; }
+		.inv-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 24px;
+		}
+		.inv-left {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+		.inv-title {
+			font-size: 1.25rem;
+			font-weight: 700;
+			margin: 0;
+		}
+		.inv-id {
+			font-size: 0.8125rem;
+			color: #71717a;
+			font-family: monospace;
+		}
+		.buyer-block {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			padding-top: 8px;
+		}
+		.buyer-block-name {
+			font-size: 0.9375rem;
+			font-weight: 600;
+		}
+		.buyer-block-sub {
+			font-size: 0.8125rem;
+			color: #52525b;
+		}
 
-		.inv-right { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; text-align: right; }
-		.supplier-block { display: flex; flex-direction: column; gap: 2px; }
-		.supplier-name { font-size: 0.9375rem; font-weight: 600; }
-		.supplier-sub { font-size: 0.8125rem; color: #52525b; }
-		.supplier-tax { font-size: 0.75rem; font-family: monospace; color: #52525b; margin-top: 2px; }
-		.inv-meta { display: flex; flex-direction: column; gap: 4px; }
-		.meta-row { display: flex; gap: 16px; font-size: 0.875rem; }
-		.meta-row span:first-child { color: #52525b; }
+		.inv-right {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			align-items: flex-end;
+			text-align: right;
+		}
+		.supplier-block {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+		.supplier-name {
+			font-size: 0.9375rem;
+			font-weight: 600;
+		}
+		.supplier-sub {
+			font-size: 0.8125rem;
+			color: #52525b;
+		}
+		.supplier-tax {
+			font-size: 0.75rem;
+			font-family: monospace;
+			color: #52525b;
+			margin-top: 2px;
+		}
+		.inv-meta {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+		.meta-row {
+			display: flex;
+			gap: 16px;
+			font-size: 0.875rem;
+		}
+		.meta-row span:first-child {
+			color: #52525b;
+		}
 
 		.inv-table {
 			width: 100%;
 			border-collapse: collapse;
 			font-size: 0.875rem;
 
-			th, td {
+			th,
+			td {
 				padding: 6px 10px;
 				border-bottom: 1px solid #e4e4e7;
 				text-align: left;
-				&.num { text-align: right; }
+				&.num {
+					text-align: right;
+				}
 			}
 
-			th { font-weight: 600; color: #52525b; background-color: #f4f4f5; }
-			.sku-cell { font-family: monospace; font-size: 0.8125rem; color: #71717a; }
-			tfoot td { font-weight: 500; }
-			.grand-row td { font-size: 1rem; font-weight: 700; border-top: 2px solid #d4d4d8; }
+			th {
+				font-weight: 600;
+				color: #52525b;
+				background-color: #f4f4f5;
+			}
+			.sku-cell {
+				font-family: monospace;
+				font-size: 0.8125rem;
+				color: #71717a;
+			}
+			tfoot td {
+				font-weight: 500;
+			}
+			.grand-row td {
+				font-size: 1rem;
+				font-weight: 700;
+				border-top: 2px solid #d4d4d8;
+			}
 		}
 	}
 </style>

@@ -11,21 +11,25 @@
 
 	let catalogShowImages = $state(data.catalogShowImages);
 
-	let companyName    = $state(data.companyName);
+	let companyName = $state(data.companyName);
 	let companyAddress = $state(data.companyAddress);
-	let companyZip     = $state(data.companyZip);
-	let companyTel     = $state(data.companyTel);
-	let companyTaxNo   = $state(data.companyTaxNo);
+	let companyZip = $state(data.companyZip);
+	let companyTel = $state(data.companyTel);
+	let companyTaxNo = $state(data.companyTaxNo);
 
 	let skuPrefix = $state(data.skuPrefix);
 	let skuDigits = $state(data.skuDigits);
-	let skuSeq    = $state(data.skuSeq);
+	let skuSeq = $state(data.skuSeq);
 
 	const skuPreview = $derived(
 		`${skuPrefix || 'PROD'}-${String(parseInt(skuSeq || '0') + 1).padStart(Math.max(1, parseInt(skuDigits || '4')), '0')}`
 	);
 
-	const saveEnhance: SubmitFunction = () => async ({ update }) => { await update(); };
+	const saveEnhance: SubmitFunction =
+		() =>
+		async ({ update }) => {
+			await update();
+		};
 </script>
 
 <svelte:head>
@@ -45,14 +49,32 @@
 				</div>
 				<div class="setting-control">
 					<div class="locale-buttons">
-						<button type="button" class="locale-btn" class:active={getTheme() === 'light'} onclick={() => setTheme('light')}>
-							<Sun size={14} /> {t().settings.themeLight}
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={getTheme() === 'light'}
+							onclick={() => setTheme('light')}
+						>
+							<Sun size={14} />
+							{t().settings.themeLight}
 						</button>
-						<button type="button" class="locale-btn" class:active={getTheme() === 'dark'} onclick={() => setTheme('dark')}>
-							<Moon size={14} /> {t().settings.themeDark}
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={getTheme() === 'dark'}
+							onclick={() => setTheme('dark')}
+						>
+							<Moon size={14} />
+							{t().settings.themeDark}
 						</button>
-						<button type="button" class="locale-btn" class:active={getTheme() === 'system'} onclick={() => setTheme('system')}>
-							<Monitor size={14} /> {t().settings.themeSystem}
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={getTheme() === 'system'}
+							onclick={() => setTheme('system')}
+						>
+							<Monitor size={14} />
+							{t().settings.themeSystem}
 						</button>
 					</div>
 				</div>
@@ -77,16 +99,16 @@
 								value="1"
 								class="locale-btn"
 								class:active={catalogShowImages}
-								onclick={() => (catalogShowImages = true)}
-							>{t().common.yes}</button>
+								onclick={() => (catalogShowImages = true)}>{t().common.yes}</button
+							>
 							<button
 								type="submit"
 								name="catalog_show_images"
 								value="0"
 								class="locale-btn"
 								class:active={!catalogShowImages}
-								onclick={() => (catalogShowImages = false)}
-							>{t().common.no}</button>
+								onclick={() => (catalogShowImages = false)}>{t().common.no}</button
+							>
 						</div>
 					</form>
 				</div>
@@ -105,8 +127,12 @@
 				<div class="setting-control">
 					<div class="locale-buttons">
 						{#each LOCALES as locale (locale.value)}
-							<button type="button" class="locale-btn" class:active={getLocale() === locale.value}
-								onclick={() => setLocale(locale.value as Locale)}>
+							<button
+								type="button"
+								class="locale-btn"
+								class:active={getLocale() === locale.value}
+								onclick={() => setLocale(locale.value as Locale)}
+							>
 								{locale.nativeLabel}
 							</button>
 						{/each}
@@ -130,7 +156,12 @@
 						<div class="setting-label">{t().settings.companyName}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_name" bind:value={companyName} placeholder="Acme Corp." style="width:240px" />
+						<Input
+							name="company_name"
+							bind:value={companyName}
+							placeholder="Acme Corp."
+							style="width:240px"
+						/>
 					</div>
 				</div>
 
@@ -139,7 +170,12 @@
 						<div class="setting-label">{t().settings.companyZip}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_zip" bind:value={companyZip} placeholder="D01 F5P2" style="width:160px" />
+						<Input
+							name="company_zip"
+							bind:value={companyZip}
+							placeholder="D01 F5P2"
+							style="width:160px"
+						/>
 					</div>
 				</div>
 
@@ -148,7 +184,12 @@
 						<div class="setting-label">{t().settings.companyAddress}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_address" bind:value={companyAddress} placeholder="1 Main St, Dublin" style="width:300px" />
+						<Input
+							name="company_address"
+							bind:value={companyAddress}
+							placeholder="1 Main St, Dublin"
+							style="width:300px"
+						/>
 					</div>
 				</div>
 
@@ -157,7 +198,12 @@
 						<div class="setting-label">{t().settings.companyTel}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_tel" bind:value={companyTel} placeholder="+353 1 234 5678" style="width:200px" />
+						<Input
+							name="company_tel"
+							bind:value={companyTel}
+							placeholder="+353 1 234 5678"
+							style="width:200px"
+						/>
 					</div>
 				</div>
 
@@ -167,7 +213,12 @@
 						<div class="setting-desc">{t().settings.companyTaxNoDesc}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="company_tax_no" bind:value={companyTaxNo} placeholder="IE1234567T" style="width:200px" />
+						<Input
+							name="company_tax_no"
+							bind:value={companyTaxNo}
+							placeholder="IE1234567T"
+							style="width:200px"
+						/>
 					</div>
 				</div>
 
@@ -192,8 +243,12 @@
 						<div class="setting-label">{t().settings.skuPrefix}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="sku_prefix" bind:value={skuPrefix}
-							placeholder={t().settings.skuPrefixPlaceholder} style="width:120px" />
+						<Input
+							name="sku_prefix"
+							bind:value={skuPrefix}
+							placeholder={t().settings.skuPrefixPlaceholder}
+							style="width:120px"
+						/>
 					</div>
 				</div>
 
@@ -203,7 +258,14 @@
 						<div class="setting-desc">{t().settings.skuDigitsNote}</div>
 					</div>
 					<div class="setting-control">
-						<Input name="sku_digits" type="number" bind:value={skuDigits} min="1" max="8" style="width:80px" />
+						<Input
+							name="sku_digits"
+							type="number"
+							bind:value={skuDigits}
+							min="1"
+							max="8"
+							style="width:80px"
+						/>
 					</div>
 				</div>
 
@@ -235,12 +297,28 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-2xl); max-width: 720px; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2xl);
+		max-width: 720px;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
 	.settings-section {
-		display: flex; flex-direction: column; gap: var(--space-md);
-		h2 { display: flex; align-items: center; gap: var(--space-sm); font-size: 1rem; font-weight: 600; }
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		h2 {
+			display: flex;
+			align-items: center;
+			gap: var(--space-sm);
+			font-size: 1rem;
+			font-weight: 600;
+		}
 	}
 
 	.settings-card {
@@ -251,49 +329,98 @@
 	}
 
 	.setting-row {
-		display: flex; align-items: center; justify-content: space-between;
-		gap: var(--space-md); padding: var(--space-lg);
-		&.border-b { border-bottom: 1px solid var(--color-border-light); }
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-md);
+		padding: var(--space-lg);
+		&.border-b {
+			border-bottom: 1px solid var(--color-border-light);
+		}
 	}
 
-	.setting-info { flex: 1; }
-	.setting-label { font-weight: 500; font-size: 0.875rem; }
-	.setting-desc { font-size: 0.8125rem; color: var(--color-text-secondary); margin-top: 2px; }
-	.setting-control { display: flex; align-items: center; gap: var(--space-sm); }
+	.setting-info {
+		flex: 1;
+	}
+	.setting-label {
+		font-weight: 500;
+		font-size: 0.875rem;
+	}
+	.setting-desc {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+		margin-top: 2px;
+	}
+	.setting-control {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+	}
 
 	.locale-buttons {
-		display: flex; gap: 2px;
+		display: flex;
+		gap: 2px;
 		background-color: var(--color-bg-sunken);
-		padding: 3px; border-radius: var(--radius-md);
+		padding: 3px;
+		border-radius: var(--radius-md);
 	}
 
 	.locale-btn {
-		display: flex; align-items: center; padding: var(--space-xs) var(--space-xl);
-		border: none; background: none; border-radius: calc(var(--radius-md) - 2px);
-		font-size: 0.875rem; font-weight: 500; color: var(--color-text-secondary);
-		cursor: pointer; transition: all var(--transition-fast); font-family: inherit;
-		&.active { background-color: var(--color-bg-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }
-		&:hover:not(.active) { color: var(--color-text); }
+		display: flex;
+		align-items: center;
+		padding: var(--space-xs) var(--space-xl);
+		border: none;
+		background: none;
+		border-radius: calc(var(--radius-md) - 2px);
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		transition: all var(--transition-fast);
+		font-family: inherit;
+		&.active {
+			background-color: var(--color-bg-elevated);
+			color: var(--color-text);
+			box-shadow: var(--shadow-sm);
+		}
+		&:hover:not(.active) {
+			color: var(--color-text);
+		}
 	}
 
-	.sku-form { display: flex; flex-direction: column; }
-	.sku-desc { padding: var(--space-lg); font-size: 0.8125rem; color: var(--color-text-secondary); border-bottom: 1px solid var(--color-border-light); }
+	.sku-form {
+		display: flex;
+		flex-direction: column;
+	}
+	.sku-desc {
+		padding: var(--space-lg);
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+		border-bottom: 1px solid var(--color-border-light);
+	}
 
 	.sku-preview {
-		font-family: var(--font-mono); font-size: 0.875rem;
+		font-family: var(--font-mono);
+		font-size: 0.875rem;
 		padding: var(--space-xs) var(--space-md);
-		background-color: var(--color-bg-sunken); border-radius: var(--radius-sm);
-		color: var(--color-primary); font-weight: 600;
+		background-color: var(--color-bg-sunken);
+		border-radius: var(--radius-sm);
+		color: var(--color-primary);
+		font-weight: 600;
 	}
 
 	.save-row {
-		display: flex; justify-content: flex-end;
-		padding: var(--space-lg); border-top: 1px solid var(--color-border-light);
+		display: flex;
+		justify-content: flex-end;
+		padding: var(--space-lg);
+		border-top: 1px solid var(--color-border-light);
 	}
 
 	.save-ok {
 		padding: var(--space-sm) var(--space-lg);
-		background-color: var(--color-success-light); color: var(--color-success);
-		font-size: 0.8125rem; border-bottom: 1px solid var(--color-border-light);
+		background-color: var(--color-success-light);
+		color: var(--color-success);
+		font-size: 0.8125rem;
+		border-bottom: 1px solid var(--color-border-light);
 	}
 </style>

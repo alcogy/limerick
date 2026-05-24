@@ -1,4 +1,3 @@
-import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
 import { asc, count, eq } from 'drizzle-orm';
@@ -86,9 +85,7 @@ export const actions = {
 
 		const db = drizzle(platform!.env.DB, { schema });
 
-		await db
-			.delete(schema.group_prices)
-			.where(eq(schema.group_prices.price_group_id, group_id));
+		await db.delete(schema.group_prices).where(eq(schema.group_prices.price_group_id, group_id));
 
 		const entries: { price_group_id: string; product_id: string; price: number }[] = [];
 		for (const [key, value] of formData.entries()) {

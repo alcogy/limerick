@@ -19,7 +19,7 @@
 	let { open = $bindable(false), profile, onsave }: Props = $props();
 </script>
 
-<Modal bind:open title="プロフィール編集">
+<Modal bind:open title="Edit Profile">
 	<form
 		class="editor-form"
 		method="POST"
@@ -35,7 +35,7 @@
 		}}
 	>
 		<div class="field">
-			<Label for="prof-name" required>名前</Label>
+			<Label for="prof-name" required>Name</Label>
 			<Input
 				id="prof-name"
 				name="name"
@@ -46,7 +46,7 @@
 		</div>
 
 		<div class="field">
-			<Label for="prof-email" required>メールアドレス</Label>
+			<Label for="prof-email" required>Email</Label>
 			<Input
 				id="prof-email"
 				name="email"
@@ -60,7 +60,7 @@
 		<div class="divider"></div>
 
 		<div class="field">
-			<Label for="prof-current-password">現在のパスワード</Label>
+			<Label for="prof-current-password">Current Password</Label>
 			<Input
 				id="prof-current-password"
 				name="currentPassword"
@@ -70,7 +70,7 @@
 		</div>
 
 		<div class="field">
-			<Label for="prof-new-password">新しいパスワード</Label>
+			<Label for="prof-new-password">New Password</Label>
 			<Input
 				id="prof-new-password"
 				name="newPassword"
@@ -80,8 +80,8 @@
 		</div>
 
 		<div class="form-actions">
-			<Button type="button" variant="secondary" onclick={() => (open = false)}>キャンセル</Button>
-			<Button type="submit" variant="primary">保存</Button>
+			<Button type="button" variant="secondary" onclick={() => (open = false)}>Cancel</Button>
+			<Button type="submit" variant="primary">Save</Button>
 		</div>
 	</form>
 </Modal>
