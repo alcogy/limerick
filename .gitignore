@@ -28,3 +28,6 @@ test-results
 .claude
 CLAUDE.md
 .dev.vars
+
+# Local docs (session notes, internal tasks)
+/docs/
