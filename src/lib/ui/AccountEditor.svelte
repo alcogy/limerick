@@ -24,7 +24,7 @@
 	const actionUrl = $derived(isEdit ? '?/update' : '?/create');
 </script>
 
-<Modal bind:open title={isEdit ? 'アカウント編集' : 'アカウント新規作成'}>
+<Modal bind:open title={isEdit ? 'Edit Account' : 'New Account'}>
 	<form
 		class="editor-form"
 		method="POST"
@@ -44,18 +44,18 @@
 		{/if}
 
 		<div class="field">
-			<Label for="acct-name" required>名前</Label>
+			<Label for="acct-name" required>Name</Label>
 			<Input
 				id="acct-name"
 				name="name"
 				value={account?.name || ''}
-				placeholder="氏名を入力"
+				placeholder="Full name"
 				required
 			/>
 		</div>
 
 		<div class="field">
-			<Label for="acct-email" required>メールアドレス</Label>
+			<Label for="acct-email" required>Email</Label>
 			<Input
 				id="acct-email"
 				name="email"
@@ -67,27 +67,27 @@
 		</div>
 
 		<div class="field">
-			<Label for="acct-role" required>権限</Label>
+			<Label for="acct-role" required>Role</Label>
 			<select id="acct-role" name="role" class="select" value={account?.role || 'general'}>
-				<option value="general">一般</option>
-				<option value="admin">管理者</option>
+				<option value="general">General</option>
+				<option value="admin">Admin</option>
 			</select>
 		</div>
 
 		<div class="field">
-			<Label for="acct-password">{isEdit ? '新しいパスワード（任意）' : 'パスワード'}</Label>
+			<Label for="acct-password">{isEdit ? 'New Password (optional)' : 'Password'}</Label>
 			<Input
 				id="acct-password"
 				name="password"
 				type="password"
-				placeholder={isEdit ? '空欄の場合は変更されません' : 'パスワードを設定'}
+				placeholder={isEdit ? 'Leave blank to keep unchanged' : 'Set password'}
 				required={!isEdit}
 			/>
 		</div>
 
 		<div class="form-actions">
-			<Button type="button" variant="secondary" onclick={() => (open = false)}>キャンセル</Button>
-			<Button type="submit" variant="primary">{isEdit ? '保存' : '作成'}</Button>
+			<Button type="button" variant="secondary" onclick={() => (open = false)}>Cancel</Button>
+			<Button type="submit" variant="primary">{isEdit ? 'Save' : 'Create'}</Button>
 		</div>
 	</form>
 </Modal>

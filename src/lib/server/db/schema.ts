@@ -5,17 +5,25 @@ import { relations, sql } from 'drizzle-orm';
 
 export const sessions = sqliteTable('sessions', {
 	id: text('id').primaryKey(), // random token (not user.id)
-	user_id: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-	created_at: text('created_at').notNull().default(sql`(datetime('now'))`),
+	user_id: text('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	created_at: text('created_at')
+		.notNull()
+		.default(sql`(datetime('now'))`),
 	expires_at: text('expires_at').notNull()
 });
 
 // ─── Login Attempts ───────────────────────────────────────────────────────────
 
 export const login_attempts = sqliteTable('login_attempts', {
-	id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
 	identifier: text('identifier').notNull(), // email or IP
-	attempted_at: text('attempted_at').notNull().default(sql`(datetime('now'))`)
+	attempted_at: text('attempted_at')
+		.notNull()
+		.default(sql`(datetime('now'))`)
 });
 
 // ─── Settings ────────────────────────────────────────────────────────────────
@@ -73,7 +81,7 @@ export const buyers = sqliteTable('buyers', {
 	price_group_id: text('price_group_id').references(() => price_groups.id, {
 		onDelete: 'set null'
 	}),
-	discount_rate: real('discount_rate'),  // e.g. 0.80 = 20% off base price (null = no discount)
+	discount_rate: real('discount_rate'), // e.g. 0.80 = 20% off base price (null = no discount)
 	closing_day: integer('closing_day').notNull().default(20),
 	payment_terms: text('payment_terms'),
 	notes: text('notes'),
@@ -140,27 +148,24 @@ export const products = sqliteTable('products', {
 
 // ─── Group Prices ─────────────────────────────────────────────────────────────
 
-export const group_prices = sqliteTable(
-	'group_prices',
-	{
-		id: text('id')
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
-		price_group_id: text('price_group_id')
-			.notNull()
-			.references(() => price_groups.id, { onDelete: 'cascade' }),
-		product_id: text('product_id')
-			.notNull()
-			.references(() => products.id, { onDelete: 'cascade' }),
-		price: integer('price').notNull(),
-		created_at: text('created_at')
-			.notNull()
-			.default(sql`(datetime('now'))`),
-		updated_at: text('updated_at')
-			.notNull()
-			.default(sql`(datetime('now'))`)
-	}
-);
+export const group_prices = sqliteTable('group_prices', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	price_group_id: text('price_group_id')
+		.notNull()
+		.references(() => price_groups.id, { onDelete: 'cascade' }),
+	product_id: text('product_id')
+		.notNull()
+		.references(() => products.id, { onDelete: 'cascade' }),
+	price: integer('price').notNull(),
+	created_at: text('created_at')
+		.notNull()
+		.default(sql`(datetime('now'))`),
+	updated_at: text('updated_at')
+		.notNull()
+		.default(sql`(datetime('now'))`)
+});
 
 // ─── Orders ───────────────────────────────────────────────────────────────────
 
@@ -287,7 +292,9 @@ export const email_templates = sqliteTable('email_templates', {
 	id: text('id').primaryKey(), // 'invitation' | 'order_message'
 	subject: text('subject').notNull().default(''),
 	body: text('body').notNull().default(''),
-	updated_at: text('updated_at').notNull().default(sql`(datetime('now'))`)
+	updated_at: text('updated_at')
+		.notNull()
+		.default(sql`(datetime('now'))`)
 });
 
 // ─── Relations ────────────────────────────────────────────────────────────────

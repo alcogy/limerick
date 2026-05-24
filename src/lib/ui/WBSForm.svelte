@@ -42,9 +42,9 @@
 	let description = $state(untrack(() => initial.description ?? ''));
 	let startDate = $state(untrack(() => initial.startDate ?? ''));
 	let endDate = $state(untrack(() => initial.endDate ?? ''));
-	let members = $state<string[]>(untrack(() => initial.members ? [...initial.members] : []));
+	let members = $state<string[]>(untrack(() => (initial.members ? [...initial.members] : [])));
 	let tasks = $state<TaskRow[]>(
-		untrack(() => initial.tasks?.length ? initial.tasks.map((t) => ({ ...t })) : [makeTask()])
+		untrack(() => (initial.tasks?.length ? initial.tasks.map((t) => ({ ...t })) : [makeTask()]))
 	);
 
 	function makeTask(): TaskRow {
@@ -64,7 +64,7 @@
 	// ── Zoom ───────────────────────────────────────────────────────────────────
 	let zoom = $state(1);
 	const PX_PER_DAY = [4, 8, 16, 32] as const;
-	const ZOOM_LABELS = ['全体', '月', '週', '日'] as const;
+	const ZOOM_LABELS = ['All', 'Month', 'Week', 'Day'] as const;
 	const pxPerDay = $derived(PX_PER_DAY[zoom]);
 
 	// ── Chart geometry ─────────────────────────────────────────────────────────
@@ -106,7 +106,7 @@
 		label: string;
 		leftPx: number;
 		widthPx: number;
-		dow?: number; // 日表示のみ: 0=日, 6=土
+		dow?: number; // day view only: 0=Sun, 6=Sat
 		holiday?: boolean;
 	}
 	const monthHeaders = $derived.by((): Span[] => {
@@ -117,7 +117,7 @@
 			const s = Math.max(new Date(y, mo, 1).getTime(), chartStartMs);
 			const e = Math.min(new Date(y, mo + 1, 1).getTime(), chartEndMs + 86400000);
 			result.push({
-				label: new Date(y, mo, 1).toLocaleDateString('ja-JP', {
+				label: new Date(y, mo, 1).toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'short'
 				}),
@@ -161,8 +161,12 @@
 		return result;
 	});
 
-	// ── Weekend column backgrounds (日表示のみ) ──────────────────────────────
-	interface WeekendCol { leftPx: number; widthPx: number; sat: boolean; }
+	// ── Weekend column backgrounds (day view only) ───────────────────────────
+	interface WeekendCol {
+		leftPx: number;
+		widthPx: number;
+		sat: boolean;
+	}
 	const weekendCols = $derived.by((): WeekendCol[] => {
 		if (zoom !== 3) return [];
 		const result: WeekendCol[] = [];
@@ -170,8 +174,7 @@
 			const date = new Date(chartStartMs + d * 86400000);
 			const dow = date.getDay();
 			const dateStr = msToDateStr(date.getTime());
-			if (dow === 6)
-				result.push({ leftPx: d * pxPerDay, widthPx: pxPerDay, sat: true });
+			if (dow === 6) result.push({ leftPx: d * pxPerDay, widthPx: pxPerDay, sat: true });
 			else if (dow === 0 || holidaySet.has(dateStr))
 				result.push({ leftPx: d * pxPerDay, widthPx: pxPerDay, sat: false });
 		}
@@ -209,7 +212,9 @@
 		return lines.sort((a, b) => a.px - b.px);
 	});
 
-	const todayPx = $derived(Math.max(0, Math.min(chartWidth, toPx(msToDateStr(new Date().getTime())))));
+	const todayPx = $derived(
+		Math.max(0, Math.min(chartWidth, toPx(msToDateStr(new Date().getTime()))))
+	);
 
 	// ── Row heights ────────────────────────────────────────────────────────────
 	const ROW_H = 44;
@@ -293,9 +298,9 @@
 			tasks[idx].plannedEnd = new Date(newStart + dur).toISOString().slice(0, 10);
 		} else if (type === 'resize-left') {
 			const newStartMs = Math.min(origStartMs + deltaMs, origEndMs - 86400000);
-			tasks[idx].plannedStart = new Date(
-				Math.max(chartStartMs, newStartMs)
-			).toISOString().slice(0, 10);
+			tasks[idx].plannedStart = new Date(Math.max(chartStartMs, newStartMs))
+				.toISOString()
+				.slice(0, 10);
 		} else if (type === 'resize-right') {
 			const newEndMs = Math.max(origEndMs + deltaMs, origStartMs + 86400000);
 			tasks[idx].plannedEnd = new Date(Math.min(chartEndMs, newEndMs)).toISOString().slice(0, 10);
@@ -339,11 +344,11 @@
 
 	function validate(): boolean {
 		const next: FormErrors = {};
-		if (!title.trim()) next.title = 'タイトルは必須です';
-		if (!startDate) next.startDate = '開始日は必須です';
-		if (!endDate) next.endDate = '終了日は必須です';
+		if (!title.trim()) next.title = 'Title is required';
+		if (!startDate) next.startDate = 'Start date is required';
+		if (!endDate) next.endDate = 'End date is required';
 		if (startDate && endDate && endDate < startDate)
-			next.endDate = '終了日は開始日以降を指定してください';
+			next.endDate = 'End date must be on or after start date';
 		errors = next;
 		return Object.keys(next).length === 0;
 	}
@@ -371,32 +376,32 @@
 
 <!-- ── Basic info ──────────────────────────────────────────────────────────── -->
 <div class="form-card">
-	<h2 class="card-title">基本情報</h2>
+	<h2 class="card-title">Basic Info</h2>
 	<div class="form-grid">
 		<div class="field full">
-			<label class="label" for="wbs-title">案件タイトル <span class="req">*</span></label>
+			<label class="label" for="wbs-title">Project Title <span class="req">*</span></label>
 			<input
 				id="wbs-title"
 				class="inp"
 				class:inp-error={!!errors.title}
 				type="text"
 				bind:value={title}
-				placeholder="プロジェクト名を入力"
+				placeholder="Enter project name"
 			/>
 			{#if errors.title}<p class="field-error">{errors.title}</p>{/if}
 		</div>
 		<div class="field full">
-			<label class="label" for="wbs-desc">案件概要</label>
+			<label class="label" for="wbs-desc">Description</label>
 			<textarea
 				id="wbs-desc"
 				class="inp textarea"
 				bind:value={description}
 				rows="3"
-				placeholder="プロジェクトの概要・目的を入力"
+				placeholder="Project overview and objectives"
 			></textarea>
 		</div>
 		<div class="field">
-			<label class="label" for="wbs-start">開始日 <span class="req">*</span></label>
+			<label class="label" for="wbs-start">Start Date <span class="req">*</span></label>
 			<input
 				id="wbs-start"
 				class="inp"
@@ -407,7 +412,7 @@
 			{#if errors.startDate}<p class="field-error">{errors.startDate}</p>{/if}
 		</div>
 		<div class="field">
-			<label class="label" for="wbs-end">終了日 <span class="req">*</span></label>
+			<label class="label" for="wbs-end">End Date <span class="req">*</span></label>
 			<input
 				id="wbs-end"
 				class="inp"
@@ -422,9 +427,9 @@
 
 <!-- ── Members ─────────────────────────────────────────────────────────────── -->
 <div class="form-card">
-	<h2 class="card-title">メンバー</h2>
+	<h2 class="card-title">Members</h2>
 	{#if accounts.length === 0}
-		<p class="no-accounts">登録済みアカウントがありません</p>
+		<p class="no-accounts">No accounts registered</p>
 	{:else}
 		<div class="account-list">
 			{#each accounts as account (account.id)}
@@ -464,201 +469,185 @@
 <!-- ── Gantt ──────────────────────────────────────────────────────────────── -->
 <div class="form-card">
 	<div class="card-header">
-		<h2 class="card-title">ガントチャート</h2>
+		<h2 class="card-title">Gantt Chart</h2>
 		<div class="gantt-controls">
 			<!-- Zoom -->
 			<div class="zoom-wrap">
-				<button
-					class="zoom-btn"
-					disabled={zoom === 0}
-					onclick={() => zoom--}
-					aria-label="縮小"
-				>
+				<button class="zoom-btn" disabled={zoom === 0} onclick={() => zoom--} aria-label="Zoom out">
 					<ZoomOut size={14} />
 				</button>
 				<span class="zoom-label">{ZOOM_LABELS[zoom]}</span>
-				<button
-					class="zoom-btn"
-					disabled={zoom === 3}
-					onclick={() => zoom++}
-					aria-label="拡大"
-				>
+				<button class="zoom-btn" disabled={zoom === 3} onclick={() => zoom++} aria-label="Zoom in">
 					<ZoomIn size={14} />
 				</button>
 			</div>
 			<button class="add-btn" onclick={addTask}>
-				<Plus size={14} />タスク追加
+				<Plus size={14} /> Add Task
 			</button>
 		</div>
 	</div>
-	<p class="gantt-hint">ガントチャート上をドラッグして予定期間を設定できます。バーをドラッグして移動・リサイズも可能です。</p>
+	<p class="gantt-hint">
+		Drag on the chart to set planned dates. Drag bars to move or resize them.
+	</p>
 
 	<div class="gantt-outer">
-	<div class="gantt-wrap">
-		<!-- Left: fixed info panel -->
-		<div class="gantt-left">
-			<div class="gl-row gl-hdr" style="height:{HDR_H}px">
-				<div class="col-no">#</div>
-				<div class="col-name">タスク名</div>
-				<div class="col-asgn">担当者</div>
-				<div class="col-dates">予定期間</div>
-				<div class="col-ops"></div>
-			</div>
-			<div class="gl-row gl-sub" style="height:{SUB_H}px"></div>
-			{#each tasks as task, i (task.id)}
-				<div class="gl-row gl-data" style="height:{ROW_H}px">
-					<div class="col-no">
-						<span class="row-num">{i + 1}</span>
-						<div class="reorder-btns">
-							<button
-								class="icon-btn-xs"
-								onclick={() => moveUp(i)}
-								disabled={i === 0}
-								aria-label="上へ"
+		<div class="gantt-wrap">
+			<!-- Left: fixed info panel -->
+			<div class="gantt-left">
+				<div class="gl-row gl-hdr" style="height:{HDR_H}px">
+					<div class="col-no">#</div>
+					<div class="col-name">Task Name</div>
+					<div class="col-asgn">Assignee</div>
+					<div class="col-dates">Planned Dates</div>
+					<div class="col-ops"></div>
+				</div>
+				<div class="gl-row gl-sub" style="height:{SUB_H}px"></div>
+				{#each tasks as task, i (task.id)}
+					<div class="gl-row gl-data" style="height:{ROW_H}px">
+						<div class="col-no">
+							<span class="row-num">{i + 1}</span>
+							<div class="reorder-btns">
+								<button
+									class="icon-btn-xs"
+									onclick={() => moveUp(i)}
+									disabled={i === 0}
+									aria-label="Move up"
+								>
+									<ChevronUp size={11} />
+								</button>
+								<button
+									class="icon-btn-xs"
+									onclick={() => moveDown(i)}
+									disabled={i === tasks.length - 1}
+									aria-label="Move down"
+								>
+									<ChevronDown size={11} />
+								</button>
+							</div>
+						</div>
+						<div class="col-name">
+							<input
+								class="cell-inp"
+								type="text"
+								value={task.name}
+								oninput={(e) => {
+									task.name = (e.currentTarget as HTMLInputElement).value;
+								}}
+								placeholder="Task name"
+							/>
+						</div>
+						<div class="col-asgn">
+							<select
+								class="cell-sel"
+								value={task.assignee}
+								onchange={(e) => {
+									task.assignee = (e.currentTarget as HTMLSelectElement).value;
+								}}
 							>
-								<ChevronUp size={11} />
-							</button>
+								<option value="">Unassigned</option>
+								{#each memberOptions as account (account.id)}
+									<option value={account.id}>{account.name}</option>
+								{/each}
+							</select>
+						</div>
+						<div class="col-dates">
+							<input class="cell-inp cell-date" type="date" bind:value={task.plannedStart} />
+							<input class="cell-inp cell-date" type="date" bind:value={task.plannedEnd} />
+						</div>
+						<div class="col-ops">
 							<button
-								class="icon-btn-xs"
-								onclick={() => moveDown(i)}
-								disabled={i === tasks.length - 1}
-								aria-label="下へ"
+								class="icon-btn danger"
+								onclick={() => removeTask(task.id)}
+								disabled={tasks.length === 1}
+								aria-label="Delete"
 							>
-								<ChevronDown size={11} />
+								<Trash2 size={14} />
 							</button>
 						</div>
 					</div>
-					<div class="col-name">
-						<input
-							class="cell-inp"
-							type="text"
-							value={task.name}
-							oninput={(e) => {
-								task.name = (e.currentTarget as HTMLInputElement).value;
-							}}
-							placeholder="タスク名"
-						/>
-					</div>
-					<div class="col-asgn">
-						<select
-							class="cell-sel"
-							value={task.assignee}
-							onchange={(e) => {
-								task.assignee = (e.currentTarget as HTMLSelectElement).value;
-							}}
-						>
-							<option value="">未選択</option>
-							{#each memberOptions as account (account.id)}
-								<option value={account.id}>{account.name}</option>
-							{/each}
-						</select>
-					</div>
-					<div class="col-dates">
-						<input
-							class="cell-inp cell-date"
-							type="date"
-							bind:value={task.plannedStart}
-						/>
-						<input
-							class="cell-inp cell-date"
-							type="date"
-							bind:value={task.plannedEnd}
-						/>
-					</div>
-					<div class="col-ops">
-						<button
-							class="icon-btn danger"
-							onclick={() => removeTask(task.id)}
-							disabled={tasks.length === 1}
-							aria-label="削除"
-						>
-							<Trash2 size={14} />
-						</button>
-					</div>
-				</div>
-			{/each}
-		</div>
+				{/each}
+			</div>
 
-		<!-- Right: scrollable Gantt timeline -->
-		<div class="gantt-right" bind:this={ganttRightEl}>
-			<!-- Month header -->
-			<div class="gr-hdr" style="height:{HDR_H}px;width:{chartWidth}px">
-				{#each monthHeaders as m (m.label)}
-					<div
-						class="month-cell"
-						style="left:{m.leftPx.toFixed(1)}px;width:{m.widthPx.toFixed(1)}px"
-					>
-						{m.label}
-					</div>
-				{/each}
-			</div>
-			<!-- Sub-unit header -->
-			<div class="gr-sub" style="height:{SUB_H}px;width:{chartWidth}px">
-				{#each subHeaders as s (s.leftPx)}
-					<div
-						class="sub-cell"
-						class:sub-sat={s.dow === 6}
-						class:sub-sun={s.dow === 0 || s.holiday === true}
-						style="left:{s.leftPx.toFixed(1)}px;width:{s.widthPx.toFixed(1)}px"
-					>
-						{s.label}
-					</div>
-				{/each}
-			</div>
-			<!-- Task rows -->
-			{#each tasks as task (task.id)}
-				<div
-					class="gr-row-edit"
-					class:drag-move={dragState?.taskId === task.id && dragState.type === 'move'}
-					class:drag-resize={dragState?.taskId === task.id &&
-						(dragState.type === 'resize-left' || dragState.type === 'resize-right')}
-					style="height:{ROW_H}px;width:{chartWidth}px"
-					role="none"
-					onpointerdown={(e) => onRowPointerDown(e, task)}
-					onpointermove={(e) => onRowPointerMove(e, task.id)}
-					onpointerup={onRowPointerUp}
-				>
-					<!-- Weekend column backgrounds -->
-					{#each weekendCols as col (col.leftPx)}
+			<!-- Right: scrollable Gantt timeline -->
+			<div class="gantt-right" bind:this={ganttRightEl}>
+				<!-- Month header -->
+				<div class="gr-hdr" style="height:{HDR_H}px;width:{chartWidth}px">
+					{#each monthHeaders as m (m.label)}
 						<div
-							class="weekend-col"
-							class:weekend-sat={col.sat}
-							class:weekend-sun={!col.sat}
-							style="left:{col.leftPx.toFixed(1)}px;width:{col.widthPx.toFixed(1)}px"
-						></div>
-					{/each}
-					<!-- Grid lines -->
-					{#each gridLines as line (line.px)}
-						<div
-							class="vline"
-							class:vline-strong={line.strong}
-							style="left:{line.px.toFixed(1)}px"
-						></div>
-					{/each}
-					<!-- Today line -->
-					<div class="today-line" style="left:{todayPx.toFixed(1)}px"></div>
-					<!-- Planned bar -->
-					{#if task.plannedStart && task.plannedEnd}
-						<div
-							class="edit-bar"
-							style="left:{barL(task).toFixed(1)}px;width:{barW(task).toFixed(1)}px"
+							class="month-cell"
+							style="left:{m.leftPx.toFixed(1)}px;width:{m.widthPx.toFixed(1)}px"
 						>
-							<div class="bar-edge bar-edge-l"></div>
-							<div class="bar-edge bar-edge-r"></div>
+							{m.label}
 						</div>
-					{/if}
+					{/each}
 				</div>
-			{/each}
+				<!-- Sub-unit header -->
+				<div class="gr-sub" style="height:{SUB_H}px;width:{chartWidth}px">
+					{#each subHeaders as s (s.leftPx)}
+						<div
+							class="sub-cell"
+							class:sub-sat={s.dow === 6}
+							class:sub-sun={s.dow === 0 || s.holiday === true}
+							style="left:{s.leftPx.toFixed(1)}px;width:{s.widthPx.toFixed(1)}px"
+						>
+							{s.label}
+						</div>
+					{/each}
+				</div>
+				<!-- Task rows -->
+				{#each tasks as task (task.id)}
+					<div
+						class="gr-row-edit"
+						class:drag-move={dragState?.taskId === task.id && dragState.type === 'move'}
+						class:drag-resize={dragState?.taskId === task.id &&
+							(dragState.type === 'resize-left' || dragState.type === 'resize-right')}
+						style="height:{ROW_H}px;width:{chartWidth}px"
+						role="none"
+						onpointerdown={(e) => onRowPointerDown(e, task)}
+						onpointermove={(e) => onRowPointerMove(e, task.id)}
+						onpointerup={onRowPointerUp}
+					>
+						<!-- Weekend column backgrounds -->
+						{#each weekendCols as col (col.leftPx)}
+							<div
+								class="weekend-col"
+								class:weekend-sat={col.sat}
+								class:weekend-sun={!col.sat}
+								style="left:{col.leftPx.toFixed(1)}px;width:{col.widthPx.toFixed(1)}px"
+							></div>
+						{/each}
+						<!-- Grid lines -->
+						{#each gridLines as line (line.px)}
+							<div
+								class="vline"
+								class:vline-strong={line.strong}
+								style="left:{line.px.toFixed(1)}px"
+							></div>
+						{/each}
+						<!-- Today line -->
+						<div class="today-line" style="left:{todayPx.toFixed(1)}px"></div>
+						<!-- Planned bar -->
+						{#if task.plannedStart && task.plannedEnd}
+							<div
+								class="edit-bar"
+								style="left:{barL(task).toFixed(1)}px;width:{barW(task).toFixed(1)}px"
+							>
+								<div class="bar-edge bar-edge-l"></div>
+								<div class="bar-edge bar-edge-r"></div>
+							</div>
+						{/if}
+					</div>
+				{/each}
+			</div>
 		</div>
-	</div>
 	</div>
 </div>
 
 <!-- ── Actions ────────────────────────────────────────────────────────────── -->
 <div class="form-actions">
-	<Button variant="secondary" onclick={onCancel} disabled={saving}>キャンセル</Button>
+	<Button variant="secondary" onclick={onCancel} disabled={saving}>Cancel</Button>
 	<Button variant="primary" onclick={handleSave} disabled={saving}>
-		{#if saving}保存中...{:else}保存{/if}
+		{#if saving}Saving...{:else}Save{/if}
 	</Button>
 </div>
 

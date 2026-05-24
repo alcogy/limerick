@@ -1,5 +1,9 @@
 export function escape(s: string): string {
-	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	return s
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;');
 }
 
 export function base(title: string, body: string): string {
@@ -45,7 +49,11 @@ export interface BuyerInvitationEmailData {
 	expiresAt: string;
 }
 
-export function buyerInvitationEmail(data: BuyerInvitationEmailData): { subject: string; html: string; text: string } {
+export function buyerInvitationEmail(data: BuyerInvitationEmailData): {
+	subject: string;
+	html: string;
+	text: string;
+} {
 	const subject = `You've been invited to ${escape(data.supplierName)}'s ordering portal`;
 	const html = base(
 		subject,
@@ -70,13 +78,20 @@ export interface AdminAlertEmailData {
 	details?: Record<string, string>;
 }
 
-export function adminAlertEmail(data: AdminAlertEmailData): { subject: string; html: string; text: string } {
+export function adminAlertEmail(data: AdminAlertEmailData): {
+	subject: string;
+	html: string;
+	text: string;
+} {
 	const badgeClass = `alert-${data.severity}`;
 	const badgeLabel = data.severity.toUpperCase();
 
 	const detailsHtml = data.details
 		? Object.entries(data.details)
-				.map(([k, v]) => `<tr><td style="padding:4px 8px;font-weight:600;white-space:nowrap">${escape(k)}</td><td style="padding:4px 8px">${escape(v)}</td></tr>`)
+				.map(
+					([k, v]) =>
+						`<tr><td style="padding:4px 8px;font-weight:600;white-space:nowrap">${escape(k)}</td><td style="padding:4px 8px">${escape(v)}</td></tr>`
+				)
 				.join('')
 		: '';
 
@@ -92,7 +107,10 @@ export function adminAlertEmail(data: AdminAlertEmailData): { subject: string; h
 	);
 
 	const detailsText = data.details
-		? '\n\nDetails:\n' + Object.entries(data.details).map(([k, v]) => `  ${k}: ${v}`).join('\n')
+		? '\n\nDetails:\n' +
+			Object.entries(data.details)
+				.map(([k, v]) => `  ${k}: ${v}`)
+				.join('\n')
 		: '';
 
 	const text = `[${badgeLabel}] ${data.subject}\n\n${data.summary}${detailsText}\n`;
@@ -106,7 +124,11 @@ export interface OrderMessageEmailData {
 	buyerName: string;
 }
 
-export function orderMessageEmail(data: OrderMessageEmailData): { subject: string; html: string; text: string } {
+export function orderMessageEmail(data: OrderMessageEmailData): {
+	subject: string;
+	html: string;
+	text: string;
+} {
 	const paragraphs = data.body
 		.split('\n')
 		.map((line) => (line.trim() ? `<p>${escape(line)}</p>` : ''))

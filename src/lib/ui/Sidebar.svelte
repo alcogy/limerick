@@ -18,12 +18,7 @@
 		logo?: Snippet;
 	}
 
-	let {
-		primaryNavItems,
-		secondaryNavItems,
-		role = 'general',
-		logo
-	}: Props = $props();
+	let { primaryNavItems, secondaryNavItems, role = 'general', logo }: Props = $props();
 
 	let collapsed = $state(false);
 	let mobileOpen = $state(false);
@@ -47,7 +42,8 @@
 </button>
 
 {#if mobileOpen}
-	<button class="sidebar-overlay" onclick={closeMobile} aria-label="Close menu" tabindex="-1"></button>
+	<button class="sidebar-overlay" onclick={closeMobile} aria-label="Close menu" tabindex="-1"
+	></button>
 {/if}
 
 <aside class="sidebar" class:collapsed class:mobile-open={mobileOpen}>
@@ -97,7 +93,6 @@
 			{/each}
 		</div>
 	</nav>
-
 </aside>
 
 <style lang="scss">

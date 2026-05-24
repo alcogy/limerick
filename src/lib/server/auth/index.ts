@@ -69,18 +69,28 @@ export async function verifyPassword(password: string, stored: string): Promise<
 
 export function generateSessionToken(): string {
 	const bytes = crypto.getRandomValues(new Uint8Array(32));
-	return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+	return Array.from(bytes)
+		.map((b) => b.toString(16).padStart(2, '0'))
+		.join('');
 }
 
-export async function createSession(db: DrizzleD1Database<typeof schema>, userId: string): Promise<string> {
+export async function createSession(
+	db: DrizzleD1Database<typeof schema>,
+	userId: string
+): Promise<string> {
 	const token = generateSessionToken();
 	const expires_at = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-		.toISOString().replace('T', ' ').slice(0, 19);
+		.toISOString()
+		.replace('T', ' ')
+		.slice(0, 19);
 	await db.insert(schema.sessions).values({ id: token, user_id: userId, expires_at });
 	return token;
 }
 
-export async function deleteSession(db: DrizzleD1Database<typeof schema>, token: string): Promise<void> {
+export async function deleteSession(
+	db: DrizzleD1Database<typeof schema>,
+	token: string
+): Promise<void> {
 	await db.delete(schema.sessions).where(eq(schema.sessions.id, token));
 }
 

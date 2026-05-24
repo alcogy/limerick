@@ -75,10 +75,22 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); max-width: 480px; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+		max-width: 480px;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
-	.info-section { display: flex; flex-direction: column; gap: var(--space-md); }
+	.info-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
 
 	.info-row {
 		display: flex;
@@ -93,10 +105,20 @@
 		color: var(--color-text-secondary);
 	}
 
-	.info-value { font-weight: 500; }
+	.info-value {
+		font-weight: 500;
+	}
 
-	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
@@ -114,5 +136,8 @@
 		font-size: 0.8125rem;
 	}
 
-	.form-actions { display: flex; justify-content: flex-end; }
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+	}
 </style>

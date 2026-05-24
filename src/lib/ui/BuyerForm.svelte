@@ -4,7 +4,10 @@
 	import { t } from '$lib/i18n';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
-	interface PriceGroup { id: string; name: string }
+	interface PriceGroup {
+		id: string;
+		name: string;
+	}
 	interface Buyer {
 		id: string;
 		company_name: string;
@@ -32,10 +35,12 @@
 	const isEdit = $derived(!!buyer);
 	const action = $derived(isEdit ? '?/update' : '?/create');
 
-	const submitEnhance: SubmitFunction = () => async ({ result, update }) => {
-		await update();
-		if (result.type === 'success') onclose();
-	};
+	const submitEnhance: SubmitFunction =
+		() =>
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') onclose();
+		};
 </script>
 
 <form method="POST" {action} use:enhance={submitEnhance} class="form">
@@ -75,16 +80,30 @@
 		</div>
 		<div class="field">
 			<Label for="bf-rate">{t().buyer.discountRate}</Label>
-			<Input id="bf-rate" name="discount_rate" type="number"
-				value={buyer?.discount_rate ?? ''} step="0.01" min="0" max="1"
-				placeholder="e.g. 0.80" />
+			<Input
+				id="bf-rate"
+				name="discount_rate"
+				type="number"
+				value={buyer?.discount_rate ?? ''}
+				step="0.01"
+				min="0"
+				max="1"
+				placeholder="e.g. 0.80"
+			/>
 			<p class="field-note">{t().buyer.discountRateNote}</p>
 		</div>
 	</div>
 
 	<div class="field">
 		<Label for="bf-cd">{t().buyer.closingDay}</Label>
-		<Input id="bf-cd" name="closing_day" type="number" value={buyer?.closing_day ?? 20} min="1" max="31" />
+		<Input
+			id="bf-cd"
+			name="closing_day"
+			type="number"
+			value={buyer?.closing_day ?? 20}
+			min="1"
+			max="31"
+		/>
 		<p class="field-note">{t().buyer.closingDayNote}</p>
 	</div>
 
@@ -95,7 +114,13 @@
 
 	<div class="field">
 		<Label for="bf-zip">{t().buyer.zip}</Label>
-		<Input id="bf-zip" name="zip" value={buyer?.zip ?? ''} placeholder="D01 F5P2" style="width:160px" />
+		<Input
+			id="bf-zip"
+			name="zip"
+			value={buyer?.zip ?? ''}
+			placeholder="D01 F5P2"
+			style="width:160px"
+		/>
 	</div>
 
 	<div class="field">
@@ -120,9 +145,21 @@
 </form>
 
 <style lang="scss">
-	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.form-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-md);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 
 	.select {
 		height: 36px;
@@ -148,5 +185,9 @@
 		font-size: 0.8125rem;
 	}
 
-	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+	}
 </style>

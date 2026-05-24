@@ -15,21 +15,26 @@
 	let inviteUrl = $state<string | null>(null);
 	let searchValue = $state(data.search || '');
 
-	const inviteEnhance: SubmitFunction = () => async ({ result, update }) => {
-		await update();
-		if (result.type === 'success') {
-			const url = (result as { data?: { inviteUrl?: string } }).data?.inviteUrl;
-			if (url) { inviteUrl = url; inviteId = null; }
-		}
-	};
+	const inviteEnhance: SubmitFunction =
+		() =>
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') {
+				const url = (result as { data?: { inviteUrl?: string } }).data?.inviteUrl;
+				if (url) {
+					inviteUrl = url;
+					inviteId = null;
+				}
+			}
+		};
 
 	const columns = [
 		{ key: 'company_name', label: t().buyer.companyName },
-		{ key: 'name',         label: t().buyer.contactName },
-		{ key: 'email',        label: t().buyer.email },
-		{ key: 'closing_day',  label: t().buyer.closingDay,   width: '80px' },
-		{ key: 'status',       label: t().common.status,      width: '100px' },
-		{ key: 'invitation',   label: t().buyer.inviteExpiry, width: '140px' }
+		{ key: 'name', label: t().buyer.contactName },
+		{ key: 'email', label: t().buyer.email },
+		{ key: 'closing_day', label: t().buyer.closingDay, width: '80px' },
+		{ key: 'status', label: t().common.status, width: '100px' },
+		{ key: 'invitation', label: t().buyer.inviteExpiry, width: '140px' }
 	];
 </script>
 
@@ -43,7 +48,10 @@
 		<Button onclick={() => (showCreate = true)}>{t().buyer.new}</Button>
 	</div>
 
-	<SearchBar bind:value={searchValue} onsearch={() => goto(searchValue ? `?search=${searchValue}` : '?')} />
+	<SearchBar
+		bind:value={searchValue}
+		onsearch={() => goto(searchValue ? `?search=${searchValue}` : '?')}
+	/>
 
 	<Table {columns} rows={data.buyers}>
 		{#snippet cell(col, row)}
@@ -71,8 +79,12 @@
 				<Button size="sm" variant="ghost" onclick={() => (inviteId = row.id)}>
 					{row.is_active ? t().buyer.resendInvite : t().buyer.invite}
 				</Button>
-				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}>{t().common.edit}</Button>
-				<Button size="sm" variant="danger"    onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
+				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}
+					>{t().common.edit}</Button
+				>
+				<Button size="sm" variant="danger" onclick={() => (deleteId = row.id)}
+					>{t().common.delete}</Button
+				>
 			</div>
 		{/snippet}
 	</Table>
@@ -105,7 +117,9 @@
 	title={t().buyer.invite}
 	message={t().buyer.invite + '?'}
 	onconfirm={() => {
-		document.getElementById('invite-form')?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+		document
+			.getElementById('invite-form')
+			?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 	}}
 	oncancel={() => (inviteId = null)}
 />
@@ -126,7 +140,11 @@
 		<div class="invite-url-box">
 			<code class="invite-url">{inviteUrl}</code>
 		</div>
-		<Button onclick={() => { navigator.clipboard.writeText(inviteUrl ?? ''); }}>
+		<Button
+			onclick={() => {
+				navigator.clipboard.writeText(inviteUrl ?? '');
+			}}
+		>
 			Copy link
 		</Button>
 	</div>
@@ -140,38 +158,76 @@
 	onconfirm={() => {
 		if (!deleteId) return;
 		const f = document.createElement('form');
-		f.method = 'POST'; f.action = '?/delete';
+		f.method = 'POST';
+		f.action = '?/delete';
 		const i = document.createElement('input');
-		i.name = 'id'; i.value = deleteId!;
-		f.appendChild(i); document.body.appendChild(f); f.submit();
+		i.name = 'id';
+		i.value = deleteId!;
+		f.appendChild(i);
+		document.body.appendChild(f);
+		f.submit();
 	}}
 	oncancel={() => (deleteId = null)}
 />
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-header { display: flex; align-items: center; justify-content: space-between; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
-	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+	.row-actions {
+		display: flex;
+		gap: var(--space-xs);
+		justify-content: flex-end;
+	}
 
-	.invite-result { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.invite-desc { font-size: 0.875rem; }
+	.invite-result {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.invite-desc {
+		font-size: 0.875rem;
+	}
 	.invite-url-box {
 		padding: var(--space-md);
 		background-color: var(--color-bg-sunken);
 		border-radius: var(--radius-md);
 		overflow: auto;
 	}
-	.invite-url { font-size: 0.75rem; word-break: break-all; }
+	.invite-url {
+		font-size: 0.75rem;
+		word-break: break-all;
+	}
 
-	.invite-expiry { font-size: 0.8125rem; display: flex; align-items: center; gap: var(--space-xs); }
-	.invite-expiry.expired { color: var(--color-danger); }
+	.invite-expiry {
+		font-size: 0.8125rem;
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+	}
+	.invite-expiry.expired {
+		color: var(--color-danger);
+	}
 	.expire-badge {
-		font-size: 0.6875rem; font-weight: 600;
+		font-size: 0.6875rem;
+		font-weight: 600;
 		padding: 1px 5px;
 		background-color: var(--color-danger-light);
 		color: var(--color-danger);
 		border-radius: var(--radius-sm);
 	}
-	.no-invite { color: var(--color-text-tertiary); }
+	.no-invite {
+		color: var(--color-text-tertiary);
+	}
 </style>

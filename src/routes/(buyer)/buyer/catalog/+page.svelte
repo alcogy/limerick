@@ -8,14 +8,25 @@
 
 	let { data }: { data: PageData } = $props();
 
-	interface CartItem { id: string; name: string; sku: string; price: number; tax_rate: number; unit: string; min_qty: number; qty: number }
+	interface CartItem {
+		id: string;
+		name: string;
+		sku: string;
+		price: number;
+		tax_rate: number;
+		unit: string;
+		min_qty: number;
+		qty: number;
+	}
 
 	function readCart(): CartItem[] {
 		if (typeof localStorage === 'undefined') return [];
 		try {
 			const raw = localStorage.getItem('limerick_cart');
 			return raw ? JSON.parse(raw) : [];
-		} catch { return []; }
+		} catch {
+			return [];
+		}
 	}
 
 	let cart: CartItem[] = $state(readCart());
@@ -30,16 +41,19 @@
 		if (existing) {
 			existing.qty += 1;
 		} else {
-			cart = [...cart, {
-				id: product.id,
-				name: product.name,
-				sku: product.sku,
-				price: product.contract_price,
-				tax_rate: product.tax_rate,
-				unit: product.unit,
-				min_qty: product.min_order_qty,
-				qty: product.min_order_qty
-			}];
+			cart = [
+				...cart,
+				{
+					id: product.id,
+					name: product.name,
+					sku: product.sku,
+					price: product.contract_price,
+					tax_rate: product.tax_rate,
+					unit: product.unit,
+					min_qty: product.min_order_qty,
+					qty: product.min_order_qty
+				}
+			];
 		}
 		saveCart();
 	}
@@ -78,8 +92,13 @@
 			<button
 				class="cat-tab"
 				class:active={!data.categoryFilter}
-				onclick={() => { const p = new URLSearchParams(window.location.search); p.delete('category'); p.delete('page'); goto(`?${p}`); }}
-			>{t().common.all}</button>
+				onclick={() => {
+					const p = new URLSearchParams(window.location.search);
+					p.delete('category');
+					p.delete('page');
+					goto(`?${p}`);
+				}}>{t().common.all}</button
+			>
 			{#each data.categories as cat (cat.id)}
 				<button
 					class="cat-tab"
@@ -89,8 +108,8 @@
 						p.set('category', cat.id);
 						p.delete('page');
 						goto(`?${p}`);
-					}}
-				>{cat.name}</button>
+					}}>{cat.name}</button
+				>
 			{/each}
 		</div>
 		<div class="controls-right">
@@ -103,7 +122,14 @@
 					onkeydown={(e) => e.key === 'Enter' && submitSearch()}
 				/>
 				<button class="search-btn" onclick={submitSearch} aria-label="Search">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg
+					>
 				</button>
 			</div>
 			<select
@@ -160,11 +186,18 @@
 								</div>
 							{/if}
 							<div class="tax-included">
-								({t().catalog.contractPrice} incl. tax: {formatCurrency(calcTaxIncluded(product.contract_price, product.tax_rate))})
+								({t().catalog.contractPrice} incl. tax: {formatCurrency(
+									calcTaxIncluded(product.contract_price, product.tax_rate)
+								)})
 							</div>
 						</div>
 						<div class="product-meta">
-							<span class="min-qty">{t().catalog.minQty} {product.min_order_qty} {t().catalog.unit} {product.unit}</span>
+							<span class="min-qty"
+								>{t().catalog.minQty}
+								{product.min_order_qty}
+								{t().catalog.unit}
+								{product.unit}</span
+							>
 						</div>
 						{#if product.stock_qty <= 0}
 							<Button variant="secondary" disabled>{t().catalog.outOfStock}</Button>
@@ -196,7 +229,11 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
 
 	.page-header {
 		display: flex;
@@ -204,8 +241,13 @@
 		justify-content: space-between;
 	}
 
-	.page-title { font-size: 1.5rem; font-weight: 700; }
-	.cart-link { text-decoration: none; }
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+	.cart-link {
+		text-decoration: none;
+	}
 
 	.catalog-controls {
 		display: flex;
@@ -249,8 +291,12 @@
 		font-family: inherit;
 		font-size: 0.8125rem;
 		width: 180px;
-		&:focus { outline: none; }
-		&::-webkit-search-cancel-button { cursor: pointer; }
+		&:focus {
+			outline: none;
+		}
+		&::-webkit-search-cancel-button {
+			cursor: pointer;
+		}
 	}
 
 	.search-btn {
@@ -263,7 +309,9 @@
 		background: none;
 		color: var(--color-text-secondary);
 		cursor: pointer;
-		&:hover { color: var(--color-text); }
+		&:hover {
+			color: var(--color-text);
+		}
 	}
 
 	.sort-select {
@@ -290,7 +338,9 @@
 		cursor: pointer;
 		transition: all var(--transition-fast);
 
-		&:hover { background-color: var(--color-hover); }
+		&:hover {
+			background-color: var(--color-hover);
+		}
 		&.active {
 			background-color: var(--color-primary);
 			border-color: var(--color-primary);
@@ -313,7 +363,9 @@
 		overflow: hidden;
 		transition: box-shadow var(--transition-fast);
 
-		&:hover { box-shadow: var(--shadow-md); }
+		&:hover {
+			box-shadow: var(--shadow-md);
+		}
 	}
 
 	.product-image {
@@ -323,7 +375,11 @@
 		background-color: var(--color-bg-sunken);
 		border-bottom: 1px solid var(--color-border-light);
 
-		img { width: 100%; height: 100%; object-fit: cover; }
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
 	}
 
 	.no-image {
@@ -345,10 +401,26 @@
 		gap: var(--space-xs);
 	}
 
-	.product-category { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-tertiary); }
-	.product-name { font-size: 0.9375rem; font-weight: 600; }
-	.product-sku { font-size: 0.75rem; color: var(--color-text-tertiary); }
-	.product-desc { font-size: 0.8125rem; color: var(--color-text-secondary); line-height: 1.4; margin-top: var(--space-xs); }
+	.product-category {
+		font-size: 0.6875rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--color-text-tertiary);
+	}
+	.product-name {
+		font-size: 0.9375rem;
+		font-weight: 600;
+	}
+	.product-sku {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
+	.product-desc {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+		line-height: 1.4;
+		margin-top: var(--space-xs);
+	}
 
 	.product-footer {
 		padding: var(--space-md) var(--space-lg) var(--space-lg);
@@ -358,7 +430,11 @@
 		gap: var(--space-sm);
 	}
 
-	.product-pricing { display: flex; flex-direction: column; gap: 2px; }
+	.product-pricing {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
 
 	.contract-price {
 		font-size: 1.125rem;
@@ -366,7 +442,11 @@
 		color: var(--color-text);
 	}
 
-	.price-unit { font-size: 0.75rem; font-weight: 400; color: var(--color-text-secondary); }
+	.price-unit {
+		font-size: 0.75rem;
+		font-weight: 400;
+		color: var(--color-text-secondary);
+	}
 
 	.base-price-row {
 		display: flex;
@@ -375,13 +455,27 @@
 		font-size: 0.75rem;
 	}
 
-	.price-label { color: var(--color-text-secondary); }
-	.base-price { text-decoration: line-through; color: var(--color-text-tertiary); }
+	.price-label {
+		color: var(--color-text-secondary);
+	}
+	.base-price {
+		text-decoration: line-through;
+		color: var(--color-text-tertiary);
+	}
 
-	.tax-included { font-size: 0.6875rem; color: var(--color-text-tertiary); }
+	.tax-included {
+		font-size: 0.6875rem;
+		color: var(--color-text-tertiary);
+	}
 
-	.product-meta { font-size: 0.75rem; color: var(--color-text-secondary); }
-	.min-qty { }
+	.product-meta {
+		font-size: 0.75rem;
+		color: var(--color-text-secondary);
+	}
+	.min-qty {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
 
 	.add-to-cart {
 		display: flex;
@@ -394,8 +488,15 @@
 		font-size: 0.75rem;
 		font-weight: 500;
 		color: var(--color-text-tertiary);
-		&.has-items { color: var(--color-success); }
+		&.has-items {
+			color: var(--color-success);
+		}
 	}
 
-	.empty { font-size: 0.875rem; color: var(--color-text-tertiary); text-align: center; padding: var(--space-3xl) 0; }
+	.empty {
+		font-size: 0.875rem;
+		color: var(--color-text-tertiary);
+		text-align: center;
+		padding: var(--space-3xl) 0;
+	}
 </style>

@@ -11,20 +11,24 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	let invSubject = $state(untrack(() => data.templates.invitation.subject));
-	let invBody    = $state(untrack(() => data.templates.invitation.body));
+	let invBody = $state(untrack(() => data.templates.invitation.body));
 	let ordSubject = $state(untrack(() => data.templates.order_message.subject));
-	let ordBody    = $state(untrack(() => data.templates.order_message.body));
+	let ordBody = $state(untrack(() => data.templates.order_message.body));
 
-	const saveEnhance: SubmitFunction = () => async ({ update }) => { await update(); };
+	const saveEnhance: SubmitFunction =
+		() =>
+		async ({ update }) => {
+			await update();
+		};
 
 	function resetTemplate(id: 'invitation' | 'order_message') {
 		const defaults = TEMPLATE_DEFAULTS[id];
 		if (id === 'invitation') {
 			invSubject = defaults.subject;
-			invBody    = defaults.body;
+			invBody = defaults.body;
 		} else {
 			ordSubject = defaults.subject;
-			ordBody    = defaults.body;
+			ordBody = defaults.body;
 		}
 	}
 </script>
@@ -153,7 +157,10 @@
 	}
 
 	.tpl-header {
-		h2 { font-size: 1rem; font-weight: 600; }
+		h2 {
+			font-size: 1rem;
+			font-weight: 600;
+		}
 	}
 
 	.tpl-desc {

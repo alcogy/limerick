@@ -2,7 +2,7 @@
 	import { Sidebar, ConfirmDialog } from '$lib/ui';
 	import type { NavItem } from '$lib/ui';
 	import { t } from '$lib/i18n';
-	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
 	import {
 		ShoppingBag,
 		ShoppingCart,
@@ -13,7 +13,7 @@
 		LogOut
 	} from '@lucide/svelte';
 
-	let { children, data }: { children: any; data: LayoutData } = $props();
+	let { children }: { children: Snippet } = $props();
 
 	let showSignOutConfirm = $state(false);
 
@@ -37,10 +37,7 @@
 </script>
 
 <div class="app-shell">
-	<Sidebar
-		{primaryNavItems}
-		{secondaryNavItems}
-	>
+	<Sidebar {primaryNavItems} {secondaryNavItems}>
 		{#snippet logo()}
 			<span class="logo-text">{t().app.name}</span>
 		{/snippet}
@@ -56,12 +53,17 @@
 	title={t().auth.signOut}
 	message={t().auth.signOutConfirm}
 	confirmLabel={t().auth.signOut}
-	onconfirm={() => { window.location.href = '/logout'; }}
+	onconfirm={() => {
+		window.location.href = '/logout';
+	}}
 	oncancel={() => (showSignOutConfirm = false)}
 />
 
 <style lang="scss">
-	.app-shell { display: flex; min-height: 100vh; }
+	.app-shell {
+		display: flex;
+		min-height: 100vh;
+	}
 
 	.main-content {
 		flex: 1;

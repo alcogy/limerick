@@ -7,9 +7,15 @@ export const load: PageServerLoad = async ({ platform }) => {
 	const db = drizzle(platform!.env.DB, { schema });
 
 	const [[productsCount], [buyersCount], [pendingCount], recentOrders] = await Promise.all([
-		db.select({ count: sql<number>`count(*)` }).from(schema.products).where(eq(schema.products.is_active, true)),
+		db
+			.select({ count: sql<number>`count(*)` })
+			.from(schema.products)
+			.where(eq(schema.products.is_active, true)),
 		db.select({ count: sql<number>`count(*)` }).from(schema.buyers),
-		db.select({ count: sql<number>`count(*)` }).from(schema.orders).where(eq(schema.orders.status, 'pending')),
+		db
+			.select({ count: sql<number>`count(*)` })
+			.from(schema.orders)
+			.where(eq(schema.orders.status, 'pending')),
 		db.query.orders.findMany({
 			orderBy: [desc(schema.orders.created_at)],
 			limit: 10,

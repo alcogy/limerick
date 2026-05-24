@@ -14,7 +14,9 @@ export async function listProducts(
 
 	const conditions = [];
 	if (search) {
-		conditions.push(or(like(schema.products.name, `%${search}%`), like(schema.products.sku, `%${search}%`)));
+		conditions.push(
+			or(like(schema.products.name, `%${search}%`), like(schema.products.sku, `%${search}%`))
+		);
 	}
 	if (categoryFilter) {
 		conditions.push(eq(schema.products.category_id, categoryFilter));
@@ -90,7 +92,8 @@ export async function updateProduct(
 	if (!id || !input.name) return fail(400, { error: 'Invalid request' });
 	if (isNaN(input.base_price) || input.base_price < 0) return fail(400, { error: 'Invalid price' });
 
-	await db.update(schema.products)
+	await db
+		.update(schema.products)
 		.set({ ...input, updated_at: now() })
 		.where(eq(schema.products.id, id));
 	return { success: true };

@@ -13,24 +13,30 @@
 
 	let deleteFormEl = $state<HTMLFormElement | undefined>();
 
-	const createEnhance: SubmitFunction = () => async ({ result, update }) => {
-		await update();
-		if (result.type === 'success') showCreate = false;
-	};
+	const createEnhance: SubmitFunction =
+		() =>
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') showCreate = false;
+		};
 
-	const updateEnhance: SubmitFunction = () => async ({ result, update }) => {
-		await update();
-		if (result.type === 'success') editItem = null;
-	};
+	const updateEnhance: SubmitFunction =
+		() =>
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') editItem = null;
+		};
 
-	const deleteEnhance: SubmitFunction = () => async ({ update }) => {
-		await update();
-		deleteId = null;
-	};
+	const deleteEnhance: SubmitFunction =
+		() =>
+		async ({ update }) => {
+			await update();
+			deleteId = null;
+		};
 
 	const columns = [
-		{ key: 'name',          label: t().category.name },
-		{ key: 'sort_order',    label: t().category.sortOrder,    width: '100px' },
+		{ key: 'name', label: t().category.name },
+		{ key: 'sort_order', label: t().category.sortOrder, width: '100px' },
 		{ key: 'product_count', label: t().category.productCount, width: '100px' }
 	];
 </script>
@@ -48,8 +54,12 @@
 	<Table {columns} rows={data.categories}>
 		{#snippet actions(row)}
 			<div class="row-actions">
-				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}>{t().common.edit}</Button>
-				<Button size="sm" variant="danger"    onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
+				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}
+					>{t().common.edit}</Button
+				>
+				<Button size="sm" variant="danger" onclick={() => (deleteId = row.id)}
+					>{t().common.delete}</Button
+				>
 			</div>
 		{/snippet}
 	</Table>
@@ -68,7 +78,9 @@
 			<Input id="sort_order" name="sort_order" type="number" value="0" />
 		</div>
 		<div class="form-actions">
-			<Button type="button" variant="secondary" onclick={() => (showCreate = false)}>{t().common.cancel}</Button>
+			<Button type="button" variant="secondary" onclick={() => (showCreate = false)}
+				>{t().common.cancel}</Button
+			>
 			<Button type="submit">{t().common.save}</Button>
 		</div>
 	</form>
@@ -89,7 +101,9 @@
 				<Input id="edit-sort" name="sort_order" type="number" value={editItem.sort_order} />
 			</div>
 			<div class="form-actions">
-				<Button type="button" variant="secondary" onclick={() => (editItem = null)}>{t().common.cancel}</Button>
+				<Button type="button" variant="secondary" onclick={() => (editItem = null)}
+					>{t().common.cancel}</Button
+				>
 				<Button type="submit">{t().common.save}</Button>
 			</div>
 		</form>
@@ -97,7 +111,13 @@
 {/if}
 
 <!-- Hidden delete form -->
-<form method="POST" action="?/delete" use:enhance={deleteEnhance} bind:this={deleteFormEl} style="display:none">
+<form
+	method="POST"
+	action="?/delete"
+	use:enhance={deleteEnhance}
+	bind:this={deleteFormEl}
+	style="display:none"
+>
 	<input name="id" value={deleteId ?? ''} />
 </form>
 
@@ -110,11 +130,30 @@
 />
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-header { display: flex; align-items: center; justify-content: space-between; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
-	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+	.form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
 		background-color: var(--color-danger-light);
@@ -122,6 +161,14 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
-	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
-	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+	}
+	.row-actions {
+		display: flex;
+		gap: var(--space-xs);
+		justify-content: flex-end;
+	}
 </style>

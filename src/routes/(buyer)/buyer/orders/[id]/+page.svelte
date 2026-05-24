@@ -7,7 +7,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const order    = $derived(data.order);
+	const order = $derived(data.order);
 	const supplier = $derived(data.supplier);
 </script>
 
@@ -19,12 +19,13 @@
 	<div class="page-header no-print">
 		<a href="/buyer/orders" class="back-link">← {t().order.title}</a>
 		<Button onclick={() => window.print()}>
-			<Printer size={15} /> {t().common.printPdf}
+			<Printer size={15} />
+			{t().common.printPdf}
 		</Button>
 	</div>
 
 	<div class="order-sheet">
-		<!-- ヘッダー：左＝注文書タイトル＋ステータス＋発注者、右＝宛先＋発注日 -->
+		<!-- Header: left = order title + status + buyer, right = recipient + order date -->
 		<div class="inv-header">
 			<div class="inv-left">
 				<h1 class="inv-title">{t().order.printTitle}</h1>
@@ -48,7 +49,9 @@
 					</div>
 				{/if}
 				<div class="inv-meta">
-					<div class="meta-row"><span>{t().order.orderedAt}</span><span>{formatDateTime(order.ordered_at)}</span></div>
+					<div class="meta-row">
+						<span>{t().order.orderedAt}</span><span>{formatDateTime(order.ordered_at)}</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -77,9 +80,21 @@
 				{/each}
 			</tbody>
 			<tfoot>
-				<tr><td colspan="5" class="num">{t().order.totalAmount}</td><td class="num">{formatCurrency(order.total_amount)}</td></tr>
-				<tr><td colspan="5" class="num">{t().order.taxAmount}</td><td class="num">{formatCurrency(order.tax_amount)}</td></tr>
-				<tr class="grand-row"><td colspan="5" class="num">{t().order.grandTotal}</td><td class="num">{formatCurrency(order.total_amount + order.tax_amount)}</td></tr>
+				<tr
+					><td colspan="5" class="num">{t().order.totalAmount}</td><td class="num"
+						>{formatCurrency(order.total_amount)}</td
+					></tr
+				>
+				<tr
+					><td colspan="5" class="num">{t().order.taxAmount}</td><td class="num"
+						>{formatCurrency(order.tax_amount)}</td
+					></tr
+				>
+				<tr class="grand-row"
+					><td colspan="5" class="num">{t().order.grandTotal}</td><td class="num"
+						>{formatCurrency(order.total_amount + order.tax_amount)}</td
+					></tr
+				>
 			</tfoot>
 		</table>
 
@@ -93,10 +108,23 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); max-width: 800px; margin: 0 auto; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+		max-width: 800px;
+		margin: 0 auto;
+	}
 
-	.page-header { display: flex; align-items: center; justify-content: space-between; }
-	.back-link { font-size: 0.875rem; color: var(--color-primary); }
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.back-link {
+		font-size: 0.875rem;
+		color: var(--color-primary);
+	}
 
 	.order-sheet {
 		background-color: var(--color-bg-elevated);
@@ -109,26 +137,84 @@
 	}
 
 	/* ── Header ── */
-	.inv-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-xl); }
+	.inv-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: var(--space-xl);
+	}
 
-	.inv-left { display: flex; flex-direction: column; gap: var(--space-sm); }
-	.inv-title { font-size: 1.25rem; font-weight: 700; }
-	.order-id-label { font-size: 0.8125rem; color: var(--color-text-tertiary); font-family: var(--font-mono); }
+	.inv-left {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
+	.inv-title {
+		font-size: 1.25rem;
+		font-weight: 700;
+	}
+	.order-id-label {
+		font-size: 0.8125rem;
+		color: var(--color-text-tertiary);
+		font-family: var(--font-mono);
+	}
 
-	.buyer-block { display: flex; flex-direction: column; gap: 2px; padding-top: var(--space-xs); }
-	.buyer-name { font-size: 0.9375rem; font-weight: 600; }
-	.buyer-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.buyer-block {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		padding-top: var(--space-xs);
+	}
+	.buyer-name {
+		font-size: 0.9375rem;
+		font-weight: 600;
+	}
+	.buyer-sub {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+	}
 
-	.inv-right { display: flex; flex-direction: column; gap: var(--space-md); align-items: flex-end; text-align: right; }
+	.inv-right {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		align-items: flex-end;
+		text-align: right;
+	}
 
-	.supplier-block { display: flex; flex-direction: column; gap: 2px; }
-	.supplier-name { font-size: 0.9375rem; font-weight: 600; }
-	.supplier-sub { font-size: 0.8125rem; color: var(--color-text-secondary); }
-	.supplier-tax { font-size: 0.75rem; font-family: var(--font-mono); color: var(--color-text-secondary); margin-top: 2px; }
+	.supplier-block {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.supplier-name {
+		font-size: 0.9375rem;
+		font-weight: 600;
+	}
+	.supplier-sub {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+	}
+	.supplier-tax {
+		font-size: 0.75rem;
+		font-family: var(--font-mono);
+		color: var(--color-text-secondary);
+		margin-top: 2px;
+	}
 
-	.inv-meta { display: flex; flex-direction: column; gap: var(--space-xs); }
-	.meta-row { display: flex; gap: var(--space-lg); font-size: 0.875rem; }
-	.meta-row span:first-child { color: var(--color-text-secondary); }
+	.inv-meta {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+	}
+	.meta-row {
+		display: flex;
+		gap: var(--space-lg);
+		font-size: 0.875rem;
+	}
+	.meta-row span:first-child {
+		color: var(--color-text-secondary);
+	}
 
 	/* ── Table ── */
 	.inv-table {
@@ -136,17 +222,34 @@
 		border-collapse: collapse;
 		font-size: 0.875rem;
 
-		th, td {
+		th,
+		td {
 			padding: var(--space-sm) var(--space-md);
 			border-bottom: 1px solid var(--color-border-light);
 			text-align: left;
-			&.num { text-align: right; }
+			&.num {
+				text-align: right;
+			}
 		}
 
-		th { font-weight: 600; color: var(--color-text-secondary); background-color: var(--color-bg-sunken); }
-		.sku-cell { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-text-tertiary); }
-		tfoot td { font-weight: 500; }
-		.grand-row td { font-size: 1rem; font-weight: 700; border-top: 2px solid var(--color-border); }
+		th {
+			font-weight: 600;
+			color: var(--color-text-secondary);
+			background-color: var(--color-bg-sunken);
+		}
+		.sku-cell {
+			font-family: var(--font-mono);
+			font-size: 0.8125rem;
+			color: var(--color-text-tertiary);
+		}
+		tfoot td {
+			font-weight: 500;
+		}
+		.grand-row td {
+			font-size: 1rem;
+			font-weight: 700;
+			border-top: 2px solid var(--color-border);
+		}
 	}
 
 	/* ── Notes ── */
@@ -155,11 +258,25 @@
 		background-color: var(--color-bg-sunken);
 		border-radius: var(--radius-md);
 	}
-	.notes-label { font-size: 0.75rem; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-xs); }
-	.notes-body { font-size: 0.875rem; }
+	.notes-label {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: var(--space-xs);
+	}
+	.notes-body {
+		font-size: 0.875rem;
+	}
 
 	@media print {
-		.no-print { display: none !important; }
-		.order-sheet { border: none; box-shadow: none; padding: 0; }
+		.no-print {
+			display: none !important;
+		}
+		.order-sheet {
+			border: none;
+			box-shadow: none;
+			padding: 0;
+		}
 	}
 </style>

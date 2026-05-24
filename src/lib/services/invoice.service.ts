@@ -8,16 +8,14 @@ import { requireSupplier } from './index';
 import type { InvoiceStatus } from '$lib/types';
 import { INVOICE_NUMBER_DIGITS, INVOICE_NUMBER_PREFIX, PAGE_SIZE_LIST } from '$lib/constants';
 
-export async function listInvoices(
-	ctx: ServiceCtx,
-	opts: { statusFilter: string; page: number }
-) {
+export async function listInvoices(ctx: ServiceCtx, opts: { statusFilter: string; page: number }) {
 	const { db } = ctx;
 	const { statusFilter, page } = opts;
 
-	const where = statusFilter && statusFilter !== 'all'
-		? eq(schema.invoices.status, statusFilter as InvoiceStatus)
-		: undefined;
+	const where =
+		statusFilter && statusFilter !== 'all'
+			? eq(schema.invoices.status, statusFilter as InvoiceStatus)
+			: undefined;
 
 	const [[countResult], invoices, buyers] = await Promise.all([
 		db.select({ count: count() }).from(schema.invoices).where(where),
@@ -70,27 +68,43 @@ export async function generateInvoice(
 		return fail(400, { error: 'noOrders' });
 	}
 
-	const subtotal     = orders.reduce((s, o) => s + o.total_amount, 0);
-	const tax_amount   = orders.reduce((s, o) => s + o.tax_amount, 0);
+	const subtotal = orders.reduce((s, o) => s + o.total_amount, 0);
+	const tax_amount = orders.reduce((s, o) => s + o.tax_amount, 0);
 	const total_amount = subtotal + tax_amount;
 
 	const year = new Date().getFullYear();
-	const [[countRow]] = await Promise.all([
-		db.select({ count: count() }).from(schema.invoices)
-	]);
+	const [[countRow]] = await Promise.all([db.select({ count: count() }).from(schema.invoices)]);
 	const invoice_number = `${INVOICE_NUMBER_PREFIX}-${year}-${String((countRow?.count ?? 0) + 1).padStart(INVOICE_NUMBER_DIGITS, '0')}`;
 
 	const ts = now();
-	const [invoice] = await db.insert(schema.invoices).values({
-		buyer_id, invoice_number, period_from, period_to, due_date,
-		subtotal, tax_amount, total_amount, issued_at: ts
-	}).returning();
+	const [invoice] = await db
+		.insert(schema.invoices)
+		.values({
+			buyer_id,
+			invoice_number,
+			period_from,
+			period_to,
+			due_date,
+			subtotal,
+			tax_amount,
+			total_amount,
+			issued_at: ts
+		})
+		.returning();
 
-	await db.insert(schema.invoice_orders).values(
-		orders.map((o) => ({ invoice_id: invoice.id, order_id: o.id }))
-	);
+	await db
+		.insert(schema.invoice_orders)
+		.values(orders.map((o) => ({ invoice_id: invoice.id, order_id: o.id })));
 
-	await writeAuditLog({ db: env.DB, user_id: user?.id ?? null, action: 'create', resource_type: 'invoice', resource_id: invoice.id, metadata: { buyer_id, period_from, period_to }, request });
+	await writeAuditLog({
+		db: env.DB,
+		user_id: user?.id ?? null,
+		action: 'create',
+		resource_type: 'invoice',
+		resource_id: invoice.id,
+		metadata: { buyer_id, period_from, period_to },
+		request
+	});
 	return { success: true };
 }
 
@@ -100,11 +114,20 @@ export async function markInvoicePaid(ctx: ServiceCtx, id: string) {
 	if (!id) return fail(400, { error: 'Invalid request' });
 
 	const ts = now();
-	await db.update(schema.invoices)
+	await db
+		.update(schema.invoices)
 		.set({ status: 'paid', paid_at: ts, updated_at: ts })
 		.where(eq(schema.invoices.id, id));
 
-	await writeAuditLog({ db: env.DB, user_id: user?.id ?? null, action: 'update', resource_type: 'invoice', resource_id: id, metadata: { status: 'paid' }, request });
+	await writeAuditLog({
+		db: env.DB,
+		user_id: user?.id ?? null,
+		action: 'update',
+		resource_type: 'invoice',
+		resource_id: id,
+		metadata: { status: 'paid' },
+		request
+	});
 	return { success: true };
 }
 
@@ -136,11 +159,11 @@ export async function getInvoiceWithSupplierInfo(
 	return {
 		invoice,
 		supplier: {
-			name:    s['company_name']    ?? '',
+			name: s['company_name'] ?? '',
 			address: s['company_address'] ?? '',
-			zip:     s['company_zip']     ?? '',
-			tel:     s['company_tel']     ?? '',
-			taxNo:   s['company_tax_no']  ?? ''
+			zip: s['company_zip'] ?? '',
+			tel: s['company_tel'] ?? '',
+			taxNo: s['company_tax_no'] ?? ''
 		}
 	};
 }

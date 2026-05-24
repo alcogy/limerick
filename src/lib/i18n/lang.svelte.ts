@@ -54,12 +54,18 @@ export function formatDateTime(dateString: string | null | undefined): string {
 	const d = new Date(dateString);
 	if (locale === 'ja') {
 		return d.toLocaleString('ja-JP', {
-			year: 'numeric', month: 'long', day: 'numeric',
-			hour: '2-digit', minute: '2-digit'
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
 		});
 	}
 	return d.toLocaleString('en-US', {
-		year: 'numeric', month: 'short', day: 'numeric',
-		hour: '2-digit', minute: '2-digit'
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit'
 	});
 }

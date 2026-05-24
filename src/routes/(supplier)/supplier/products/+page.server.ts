@@ -1,6 +1,11 @@
 import type { Actions, PageServerLoad } from './$types';
 import { makeCtx } from '$lib/services';
-import { createProduct, deleteProduct, listProducts, updateProduct } from '$lib/services/product.service';
+import {
+	createProduct,
+	deleteProduct,
+	listProducts,
+	updateProduct
+} from '$lib/services/product.service';
 import { parseFormData } from '$lib/utils/form';
 import { productCreateSchema, productUpdateSchema, productDeleteSchema } from '$lib/schemas';
 

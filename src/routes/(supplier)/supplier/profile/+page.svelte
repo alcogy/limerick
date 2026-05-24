@@ -37,7 +37,12 @@
 
 			<div class="field">
 				<Label for="current_password">{t().profile.currentPassword}</Label>
-				<Input id="current_password" name="current_password" type="password" autocomplete="current-password" />
+				<Input
+					id="current_password"
+					name="current_password"
+					type="password"
+					autocomplete="current-password"
+				/>
 			</div>
 			<div class="field">
 				<Label for="new_password">{t().auth.newPassword}</Label>
@@ -52,10 +57,26 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); max-width: 480px; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
-	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+		max-width: 480px;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+	.form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
 		background-color: var(--color-danger-light);
@@ -70,7 +91,16 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
-	.form-actions { display: flex; justify-content: flex-end; }
-	.divider { border: none; border-top: 1px solid var(--color-border-light); }
-	.section-label { font-size: 0.8125rem; color: var(--color-text-secondary); }
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+	}
+	.divider {
+		border: none;
+		border-top: 1px solid var(--color-border-light);
+	}
+	.section-label {
+		font-size: 0.8125rem;
+		color: var(--color-text-secondary);
+	}
 </style>

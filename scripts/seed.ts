@@ -13,7 +13,8 @@ const DB_PATH =
 	'.wrangler/state/v3/d1/miniflare-D1DatabaseObject/9ba2b04bf514d9facfd57ed57d849e77241a7adc99d1c1545d06688b43d84248.sqlite';
 
 const ROLE = (process.env.SEED_ROLE ?? 'supplier') as 'supplier' | 'buyer';
-const EMAIL = process.env.SEED_EMAIL ?? (ROLE === 'buyer' ? 'buyer@example.com' : 'admin@example.com');
+const EMAIL =
+	process.env.SEED_EMAIL ?? (ROLE === 'buyer' ? 'buyer@example.com' : 'admin@example.com');
 const PASSWORD = process.env.SEED_PASSWORD ?? 'password';
 const NAME = process.env.SEED_NAME ?? (ROLE === 'buyer' ? 'Test Buyer' : 'Admin');
 const COMPANY = process.env.SEED_COMPANY ?? 'Test Company';
@@ -59,9 +60,7 @@ db.insert(schema.users)
 	.run();
 
 if (ROLE === 'buyer') {
-	db.insert(schema.buyers)
-		.values({ id: userId, company_name: COMPANY })
-		.run();
+	db.insert(schema.buyers).values({ id: userId, company_name: COMPANY }).run();
 }
 
 console.log(`✅ ${ROLE === 'buyer' ? 'Buyer' : 'Supplier'} account created:`);

@@ -8,24 +8,24 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	const db = drizzle(platform!.env.DB, { schema });
 
 	const categoryFilter = url.searchParams.get('category') || '';
-	const search         = url.searchParams.get('search')   || '';
-	const sortBy         = url.searchParams.get('sort')     || 'sort_order';
-	const page           = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+	const search = url.searchParams.get('search') || '';
+	const sortBy = url.searchParams.get('sort') || 'sort_order';
+	const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
 
 	const orderByMap = {
 		sort_order: [asc(schema.products.sort_order), asc(schema.products.name)],
-		name_asc:   [asc(schema.products.name)],
-		price_asc:  [asc(schema.products.base_price)],
+		name_asc: [asc(schema.products.name)],
+		price_asc: [asc(schema.products.base_price)],
 		price_desc: [desc(schema.products.base_price)]
 	};
 	const orderBy = orderByMap[sortBy as keyof typeof orderByMap] ?? orderByMap.sort_order;
 
 	const conditions = [eq(schema.products.is_active, true)];
 	if (categoryFilter) conditions.push(eq(schema.products.category_id, categoryFilter));
-	if (search) conditions.push(or(
-		like(schema.products.name, `%${search}%`),
-		like(schema.products.sku,  `%${search}%`)
-	)!);
+	if (search)
+		conditions.push(
+			or(like(schema.products.name, `%${search}%`), like(schema.products.sku, `%${search}%`))!
+		);
 	const where = and(...conditions);
 
 	const [[countResult], products, categories, buyer, settingsRows] = await Promise.all([
@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 		db.select().from(schema.settings)
 	]);
 
-	const total      = countResult?.count ?? 0;
+	const total = countResult?.count ?? 0;
 	const totalPages = Math.ceil(total / PAGE_SIZE_CATALOG);
 
 	// Pricing priority: group_price > discount_rate > base_price
@@ -85,5 +85,15 @@ export const load: PageServerLoad = async ({ platform, locals, url }) => {
 	const settingsMap = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
 	const showImages = settingsMap['catalog_show_images'] !== '0';
 
-	return { products: productsWithPrice, categories, categoryFilter, sortBy, search, page, total, totalPages, showImages };
+	return {
+		products: productsWithPrice,
+		categories,
+		categoryFilter,
+		sortBy,
+		search,
+		page,
+		total,
+		totalPages,
+		showImages
+	};
 };

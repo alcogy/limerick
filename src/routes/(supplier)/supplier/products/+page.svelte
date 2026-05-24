@@ -1,5 +1,16 @@
 <script lang="ts">
-	import { Button, ConfirmDialog, FileUploadDialog, Input, Label, Modal, Pagination, SearchBar, Table, Textarea } from '$lib/ui';
+	import {
+		Button,
+		ConfirmDialog,
+		FileUploadDialog,
+		Input,
+		Label,
+		Modal,
+		Pagination,
+		SearchBar,
+		Table,
+		Textarea
+	} from '$lib/ui';
 	import { enhance } from '$app/forms';
 	import { t } from '$lib/i18n';
 	import { goto, invalidateAll } from '$app/navigation';
@@ -23,27 +34,38 @@
 		generatingSku = true;
 		try {
 			const res = await fetch('/api/sku', { method: 'POST' });
-			if (res.ok) { const { sku } = await res.json() as { sku: string }; newSku = sku; }
-		} finally { generatingSku = false; }
+			if (res.ok) {
+				const { sku } = (await res.json()) as { sku: string };
+				newSku = sku;
+			}
+		} finally {
+			generatingSku = false;
+		}
 	}
 
 	let showUploadDialog = $state(false);
 	let deleteFormEl = $state<HTMLFormElement | undefined>();
 
-	const createEnhance: SubmitFunction = () => async ({ result, update }) => {
-		await update();
-		if (result.type === 'success') showCreate = false;
-	};
+	const createEnhance: SubmitFunction =
+		() =>
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') showCreate = false;
+		};
 
-	const updateEnhance: SubmitFunction = () => async ({ result, update }) => {
-		await update();
-		if (result.type === 'success') editItem = null;
-	};
+	const updateEnhance: SubmitFunction =
+		() =>
+		async ({ result, update }) => {
+			await update();
+			if (result.type === 'success') editItem = null;
+		};
 
-	const deleteEnhance: SubmitFunction = () => async ({ update }) => {
-		await update();
-		deleteId = null;
-	};
+	const deleteEnhance: SubmitFunction =
+		() =>
+		async ({ update }) => {
+			await update();
+			deleteId = null;
+		};
 
 	function handleSearch() {
 		const p = new URLSearchParams();
@@ -52,13 +74,13 @@
 	}
 
 	const columns = [
-		{ key: 'sku',        label: t().product.sku,        width: '120px' },
-		{ key: 'name',       label: t().product.name },
-		{ key: 'category',   label: t().product.category,   width: '120px' },
-		{ key: 'base_price', label: t().product.basePrice,  width: '120px' },
-		{ key: 'stock_qty',  label: t().product.stockQty,   width: '80px' },
-		{ key: 'sort_order', label: t().product.sortOrder,  width: '60px' },
-		{ key: 'is_active',  label: t().product.isActive,   width: '80px' }
+		{ key: 'sku', label: t().product.sku, width: '120px' },
+		{ key: 'name', label: t().product.name },
+		{ key: 'category', label: t().product.category, width: '120px' },
+		{ key: 'base_price', label: t().product.basePrice, width: '120px' },
+		{ key: 'stock_qty', label: t().product.stockQty, width: '80px' },
+		{ key: 'sort_order', label: t().product.sortOrder, width: '60px' },
+		{ key: 'is_active', label: t().product.isActive, width: '80px' }
 	];
 </script>
 
@@ -107,8 +129,12 @@
 		{/snippet}
 		{#snippet actions(row)}
 			<div class="row-actions">
-				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}>{t().common.edit}</Button>
-				<Button size="sm" variant="danger"    onclick={() => (deleteId = row.id)}>{t().common.delete}</Button>
+				<Button size="sm" variant="secondary" onclick={() => (editItem = row)}
+					>{t().common.edit}</Button
+				>
+				<Button size="sm" variant="danger" onclick={() => (deleteId = row.id)}
+					>{t().common.delete}</Button
+				>
 			</div>
 		{/snippet}
 	</Table>
@@ -134,8 +160,20 @@
 			<div class="field">
 				<Label for="sku" required>{t().product.sku}</Label>
 				<div class="sku-input-row">
-					<Input id="sku" name="sku" bind:value={newSku} placeholder={t().product.skuPlaceholder} required />
-					<Button type="button" variant="secondary" size="sm" onclick={generateSku} disabled={generatingSku}>
+					<Input
+						id="sku"
+						name="sku"
+						bind:value={newSku}
+						placeholder={t().product.skuPlaceholder}
+						required
+					/>
+					<Button
+						type="button"
+						variant="secondary"
+						size="sm"
+						onclick={generateSku}
+						disabled={generatingSku}
+					>
 						{generatingSku ? '…' : 'Auto'}
 					</Button>
 				</div>
@@ -165,7 +203,15 @@
 			</div>
 			<div class="field">
 				<Label for="tax_rate">{t().product.taxRate}</Label>
-				<Input id="tax_rate" name="tax_rate" type="number" value="0.10" step="0.01" min="0" max="1" />
+				<Input
+					id="tax_rate"
+					name="tax_rate"
+					type="number"
+					value="0.10"
+					step="0.01"
+					min="0"
+					max="1"
+				/>
 			</div>
 			<div class="field">
 				<Label for="unit">{t().product.unit}</Label>
@@ -187,15 +233,25 @@
 				<Label>{t().product.isActive}</Label>
 				<input type="hidden" name="is_active" value={createIsActive ? 'true' : 'false'} />
 				<div class="locale-buttons" style="width:fit-content">
-					<button type="button" class="locale-btn" class:active={createIsActive}
-						onclick={() => (createIsActive = true)}>{t().common.yes}</button>
-					<button type="button" class="locale-btn" class:active={!createIsActive}
-						onclick={() => (createIsActive = false)}>{t().common.no}</button>
+					<button
+						type="button"
+						class="locale-btn"
+						class:active={createIsActive}
+						onclick={() => (createIsActive = true)}>{t().common.yes}</button
+					>
+					<button
+						type="button"
+						class="locale-btn"
+						class:active={!createIsActive}
+						onclick={() => (createIsActive = false)}>{t().common.no}</button
+					>
 				</div>
 			</div>
 		</div>
 		<div class="form-actions">
-			<Button type="button" variant="secondary" onclick={() => (showCreate = false)}>{t().common.cancel}</Button>
+			<Button type="button" variant="secondary" onclick={() => (showCreate = false)}
+				>{t().common.cancel}</Button
+			>
 			<Button type="submit">{t().common.save}</Button>
 		</div>
 	</form>
@@ -233,11 +289,24 @@
 			<div class="form-grid">
 				<div class="field">
 					<Label for="edit-price" required>{t().product.basePrice}</Label>
-					<Input id="edit-price" name="base_price" type="number" value={editItem.base_price} min="0" required />
+					<Input
+						id="edit-price"
+						name="base_price"
+						type="number"
+						value={editItem.base_price}
+						min="0"
+						required
+					/>
 				</div>
 				<div class="field">
 					<Label for="edit-tax">{t().product.taxRate}</Label>
-					<Input id="edit-tax" name="tax_rate" type="number" value={editItem.tax_rate} step="0.01" />
+					<Input
+						id="edit-tax"
+						name="tax_rate"
+						type="number"
+						value={editItem.tax_rate}
+						step="0.01"
+					/>
 				</div>
 				<div class="field">
 					<Label for="edit-unit">{t().product.unit}</Label>
@@ -245,24 +314,52 @@
 				</div>
 				<div class="field">
 					<Label for="edit-moq">{t().product.minOrderQty}</Label>
-					<Input id="edit-moq" name="min_order_qty" type="number" value={editItem.min_order_qty} min="1" />
+					<Input
+						id="edit-moq"
+						name="min_order_qty"
+						type="number"
+						value={editItem.min_order_qty}
+						min="1"
+					/>
 				</div>
 				<div class="field">
 					<Label for="edit-stock">{t().product.stockQty}</Label>
-					<Input id="edit-stock" name="stock_qty" type="number" value={editItem.stock_qty} min="0" />
+					<Input
+						id="edit-stock"
+						name="stock_qty"
+						type="number"
+						value={editItem.stock_qty}
+						min="0"
+					/>
 				</div>
 				<div class="field">
 					<Label for="edit-sort">{t().product.sortOrder}</Label>
-					<Input id="edit-sort" name="sort_order" type="number" value={editItem.sort_order} min="0" />
+					<Input
+						id="edit-sort"
+						name="sort_order"
+						type="number"
+						value={editItem.sort_order}
+						min="0"
+					/>
 				</div>
 				<div class="field">
 					<Label>{t().product.isActive}</Label>
 					<input type="hidden" name="is_active" value={editItem.is_active ? 'true' : 'false'} />
 					<div class="locale-buttons" style="width:fit-content">
-						<button type="button" class="locale-btn" class:active={editItem.is_active}
-							onclick={() => (editItem = { ...editItem!, is_active: true })}>{t().common.yes}</button>
-						<button type="button" class="locale-btn" class:active={!editItem.is_active}
-							onclick={() => (editItem = { ...editItem!, is_active: false })}>{t().common.no}</button>
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={editItem.is_active}
+							onclick={() => (editItem = { ...editItem!, is_active: true })}
+							>{t().common.yes}</button
+						>
+						<button
+							type="button"
+							class="locale-btn"
+							class:active={!editItem.is_active}
+							onclick={() => (editItem = { ...editItem!, is_active: false })}
+							>{t().common.no}</button
+						>
 					</div>
 				</div>
 			</div>
@@ -272,19 +369,33 @@
 				{#if editItem.image_key}
 					<div class="image-preview">
 						<img src="/api/storage/{editItem.image_key}" alt={editItem.name} />
-						<Button type="button" size="sm" variant="danger" onclick={async () => {
-							await fetch(`/api/products/${editItem!.id}/image`, { method: 'DELETE' });
-							editItem = { ...editItem!, image_key: null };
-						}}>{t().common.delete}</Button>
+						<Button
+							type="button"
+							size="sm"
+							variant="danger"
+							onclick={async () => {
+								await fetch(`/api/products/${editItem!.id}/image`, { method: 'DELETE' });
+								editItem = { ...editItem!, image_key: null };
+							}}>{t().common.delete}</Button
+						>
 					</div>
 				{/if}
-				<Button type="button" size="sm" variant="secondary" style="align-self:flex-start" onclick={() => (showUploadDialog = true)}>
-					<ImagePlus size={14} /> {editItem.image_key ? t().product.changeImage : t().product.uploadImage}
+				<Button
+					type="button"
+					size="sm"
+					variant="secondary"
+					style="align-self:flex-start"
+					onclick={() => (showUploadDialog = true)}
+				>
+					<ImagePlus size={14} />
+					{editItem.image_key ? t().product.changeImage : t().product.uploadImage}
 				</Button>
 			</div>
 
 			<div class="form-actions">
-				<Button type="button" variant="secondary" onclick={() => (editItem = null)}>{t().common.cancel}</Button>
+				<Button type="button" variant="secondary" onclick={() => (editItem = null)}
+					>{t().common.cancel}</Button
+				>
 				<Button type="submit">{t().common.save}</Button>
 			</div>
 		</form>
@@ -292,7 +403,13 @@
 {/if}
 
 <!-- Hidden delete form -->
-<form method="POST" action="?/delete" use:enhance={deleteEnhance} bind:this={deleteFormEl} style="display:none">
+<form
+	method="POST"
+	action="?/delete"
+	use:enhance={deleteEnhance}
+	bind:this={deleteFormEl}
+	style="display:none"
+>
 	<input name="id" value={deleteId ?? ''} />
 </form>
 
@@ -321,13 +438,30 @@
 {/if}
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-header { display: flex; align-items: center; justify-content: space-between; }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
-	.filters { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; }
+	.filters {
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
+		flex-wrap: wrap;
+	}
 
-	.select-filter, .select {
+	.select-filter,
+	.select {
 		height: 36px;
 		padding: 0 var(--space-md);
 		background-color: var(--color-input-bg);
@@ -338,9 +472,21 @@
 		font-size: 0.8125rem;
 	}
 
-	.form { display: flex; flex-direction: column; gap: var(--space-lg); }
-	.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-md); }
-	.field { display: flex; flex-direction: column; gap: var(--space-sm); }
+	.form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+	}
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+		gap: var(--space-md);
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+	}
 
 	.form-error {
 		padding: var(--space-sm) var(--space-md);
@@ -349,24 +495,52 @@
 		border-radius: var(--radius-md);
 		font-size: 0.8125rem;
 	}
-	.form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
-	.row-actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+	}
+	.row-actions {
+		display: flex;
+		gap: var(--space-xs);
+		justify-content: flex-end;
+	}
 
-	.sku-input-row { display: flex; align-items: center; gap: var(--space-xs); }
+	.sku-input-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+	}
 
 	.locale-buttons {
-		display: flex; gap: 2px;
+		display: flex;
+		gap: 2px;
 		background-color: var(--color-bg-sunken);
-		padding: 3px; border-radius: var(--radius-md);
+		padding: 3px;
+		border-radius: var(--radius-md);
 	}
 	.locale-btn {
-		display: flex; align-items: center; gap: var(--space-xs);
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
 		padding: var(--space-xs) var(--space-lg);
-		border: none; background: none; border-radius: calc(var(--radius-md) - 2px);
-		font-size: 0.875rem; font-weight: 500; color: var(--color-text-secondary);
-		cursor: pointer; transition: all var(--transition-fast); font-family: inherit;
-		&.active { background-color: var(--color-bg-elevated); color: var(--color-text); box-shadow: var(--shadow-sm); }
-		&:hover:not(.active) { color: var(--color-text); }
+		border: none;
+		background: none;
+		border-radius: calc(var(--radius-md) - 2px);
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--color-text-secondary);
+		cursor: pointer;
+		transition: all var(--transition-fast);
+		font-family: inherit;
+		&.active {
+			background-color: var(--color-bg-elevated);
+			color: var(--color-text);
+			box-shadow: var(--shadow-sm);
+		}
+		&:hover:not(.active) {
+			color: var(--color-text);
+		}
 	}
 
 	.image-preview {
@@ -382,5 +556,4 @@
 			border: 1px solid var(--color-border-light);
 		}
 	}
-
 </style>

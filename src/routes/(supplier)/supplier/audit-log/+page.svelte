@@ -7,8 +7,12 @@
 	let { data }: { data: PageData } = $props();
 
 	const ACTION_BADGES: Record<string, string> = {
-		create: 'active', update: 'info', delete: 'danger',
-		cancel: 'warning', login: 'info', logout: 'inactive',
+		create: 'active',
+		update: 'info',
+		delete: 'danger',
+		cancel: 'warning',
+		login: 'info',
+		logout: 'inactive',
 		export: 'info'
 	};
 
@@ -50,7 +54,11 @@
 								<span class="muted">—</span>
 							{/if}
 						</td>
-						<td><span class="badge badge-{ACTION_BADGES[log.action] ?? 'info'}">{actionLabel(log.action)}</span></td>
+						<td
+							><span class="badge badge-{ACTION_BADGES[log.action] ?? 'info'}"
+								>{actionLabel(log.action)}</span
+							></td
+						>
 						<td class="resource-cell">{log.resource_type}</td>
 						<td class="id-cell"><code>{log.resource_id?.slice(0, 8) ?? '—'}</code></td>
 						<td class="meta-cell">
@@ -81,8 +89,15 @@
 </div>
 
 <style lang="scss">
-	.page { display: flex; flex-direction: column; gap: var(--space-xl); }
-	.page-title { font-size: 1.5rem; font-weight: 700; }
+	.page {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xl);
+	}
+	.page-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
 
 	.log-table-wrap {
 		overflow-x: auto;
@@ -96,29 +111,75 @@
 		border-collapse: collapse;
 		font-size: 0.8125rem;
 
-		th, td {
+		th,
+		td {
 			padding: var(--space-sm) var(--space-md);
 			border-bottom: 1px solid var(--color-border-light);
 			text-align: left;
 			white-space: nowrap;
 		}
 
-		th { font-weight: 600; color: var(--color-text-secondary); background-color: var(--color-bg-sunken); }
-		tr:last-child td { border-bottom: none; }
-		tr:hover td { background-color: var(--color-hover); }
+		th {
+			font-weight: 600;
+			color: var(--color-text-secondary);
+			background-color: var(--color-bg-sunken);
+		}
+		tr:last-child td {
+			border-bottom: none;
+		}
+		tr:hover td {
+			background-color: var(--color-hover);
+		}
 	}
 
-	.date-cell { color: var(--color-text-secondary); font-size: 0.75rem; }
-	.user-cell { display: flex; flex-direction: column; gap: 1px; }
-	.user-name { font-weight: 500; }
-	.user-email { font-size: 0.75rem; color: var(--color-text-tertiary); }
-	.resource-cell { font-family: var(--font-mono); }
-	.id-cell code { font-size: 0.75rem; color: var(--color-text-tertiary); }
-	.meta-cell { max-width: 240px; overflow: hidden; }
-	.meta { font-size: 0.75rem; color: var(--color-text-secondary); word-break: break-all; white-space: normal; }
-	.muted { color: var(--color-text-tertiary); }
-	.empty { text-align: center; color: var(--color-text-tertiary); padding: var(--space-2xl); }
+	.date-cell {
+		color: var(--color-text-secondary);
+		font-size: 0.75rem;
+	}
+	.user-cell {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+	}
+	.user-name {
+		font-weight: 500;
+	}
+	.user-email {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
+	.resource-cell {
+		font-family: var(--font-mono);
+	}
+	.id-cell code {
+		font-size: 0.75rem;
+		color: var(--color-text-tertiary);
+	}
+	.meta-cell {
+		max-width: 240px;
+		overflow: hidden;
+	}
+	.meta {
+		font-size: 0.75rem;
+		color: var(--color-text-secondary);
+		word-break: break-all;
+		white-space: normal;
+	}
+	.muted {
+		color: var(--color-text-tertiary);
+	}
+	.empty {
+		text-align: center;
+		color: var(--color-text-tertiary);
+		padding: var(--space-2xl);
+	}
 
-	.badge-info { background-color: var(--color-primary-light, #dbeafe); color: var(--color-primary); }
-	.badge-warning { background-color: #fef3c7; color: #b45309; }
+	.badge-info {
+		background-color: var(--color-primary-light, #dbeafe);
+		color: var(--color-primary);
+	}
+	.badge-warning {
+		background-color: #fef3c7;
+		color: #b45309;
+	}
 </style>

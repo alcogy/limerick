@@ -14,10 +14,11 @@
 
 /* --- System Font Stack --- */
 :root {
-	--font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+	--font-sans:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
 		'Helvetica Neue', Arial, sans-serif;
-	--font-mono: 'SF Mono', SFMono-Regular, ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas,
-		monospace;
+	--font-mono:
+		'SF Mono', SFMono-Regular, ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace;
 
 	/* --- Spacing Scale --- */
 	--space-xs: 0.25rem;
@@ -213,9 +214,15 @@ h6 {
 	font-weight: 600;
 }
 
-h1 { font-size: 1.5rem; }
-h2 { font-size: 1.25rem; }
-h3 { font-size: 1.125rem; }
+h1 {
+	font-size: 1.5rem;
+}
+h2 {
+	font-size: 1.25rem;
+}
+h3 {
+	font-size: 1.125rem;
+}
 
 code,
 pre {
@@ -303,14 +310,44 @@ select {
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 
-	&.badge-pending   { background-color: var(--color-warning-light); color: var(--color-warning); }
-	&.badge-confirmed { background-color: var(--color-info-light);    color: var(--color-info); }
-	&.badge-shipped   { background-color: var(--color-primary-light); color: var(--color-primary); }
-	&.badge-completed { background-color: var(--color-success-light); color: var(--color-success); }
-	&.badge-cancelled { background-color: var(--color-bg-sunken);     color: var(--color-text-tertiary); }
-	&.badge-issued    { background-color: var(--color-info-light);    color: var(--color-info); }
-	&.badge-paid      { background-color: var(--color-success-light); color: var(--color-success); }
-	&.badge-overdue   { background-color: var(--color-danger-light);  color: var(--color-danger); }
-	&.badge-active    { background-color: var(--color-success-light); color: var(--color-success); }
-	&.badge-inactive  { background-color: var(--color-bg-sunken);     color: var(--color-text-tertiary); }
+	&.badge-pending {
+		background-color: var(--color-warning-light);
+		color: var(--color-warning);
+	}
+	&.badge-confirmed {
+		background-color: var(--color-info-light);
+		color: var(--color-info);
+	}
+	&.badge-shipped {
+		background-color: var(--color-primary-light);
+		color: var(--color-primary);
+	}
+	&.badge-completed {
+		background-color: var(--color-success-light);
+		color: var(--color-success);
+	}
+	&.badge-cancelled {
+		background-color: var(--color-bg-sunken);
+		color: var(--color-text-tertiary);
+	}
+	&.badge-issued {
+		background-color: var(--color-info-light);
+		color: var(--color-info);
+	}
+	&.badge-paid {
+		background-color: var(--color-success-light);
+		color: var(--color-success);
+	}
+	&.badge-overdue {
+		background-color: var(--color-danger-light);
+		color: var(--color-danger);
+	}
+	&.badge-active {
+		background-color: var(--color-success-light);
+		color: var(--color-success);
+	}
+	&.badge-inactive {
+		background-color: var(--color-bg-sunken);
+		color: var(--color-text-tertiary);
+	}
 }

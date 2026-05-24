@@ -26,6 +26,12 @@ export const changePasswordSchema = z.object({
 
 export const updateProfileSchema = z.object({
 	name: z.string().trim().min(1, 'Name is required'),
-	current_password: z.string().optional().transform((v) => v || null),
-	new_password: z.string().optional().transform((v) => v || null)
+	current_password: z
+		.string()
+		.optional()
+		.transform((v) => v || null),
+	new_password: z
+		.string()
+		.optional()
+		.transform((v) => v || null)
 });
