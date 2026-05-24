@@ -5,13 +5,13 @@
 EMAIL_PROVIDER=resend
 
 # Sender address (must be verified in your provider)
-EMAIL_FROM=noreply@example.com
+EMAIL_FROM=email@example.dev
 
 # Admin alert recipient (fallback if not set in settings table)
-ALERT_EMAIL_TO=
+ALERT_EMAIL_TO=alert@example.com
 
 # Supplier name shown in invitation emails (e.g. "Acme Trading Co.")
-SUPPLIER_NAME=
+SUPPLIER_NAME=SUPPLIER Inc.
 
 # Resend API key — https://resend.com
 RESEND_API_KEY=

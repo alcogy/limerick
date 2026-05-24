@@ -6,3 +6,4 @@ export * from './order';
 export * from './price-group';
 export * from './product';
 export * from './settings';
+export * from './template';

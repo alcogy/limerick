@@ -281,6 +281,15 @@ export const audit_logs = sqliteTable('audit_logs', {
 		.default(sql`(datetime('now'))`)
 });
 
+// ─── Email Templates ──────────────────────────────────────────────────────────
+
+export const email_templates = sqliteTable('email_templates', {
+	id: text('id').primaryKey(), // 'invitation' | 'order_message'
+	subject: text('subject').notNull().default(''),
+	body: text('body').notNull().default(''),
+	updated_at: text('updated_at').notNull().default(sql`(datetime('now'))`)
+});
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const userRelations = relations(users, ({ one, many }) => ({

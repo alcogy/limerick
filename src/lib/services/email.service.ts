@@ -3,11 +3,12 @@ import * as schema from '$lib/server/db/schema';
 import { createEmailProvider } from '$lib/server/email/index';
 import { CloudflareEmailProvider } from '$lib/server/email/cloudflare';
 import {
-	buyerInvitationEmail,
-	orderMessageEmail,
+	base,
+	escape,
 	adminAlertEmail,
 	type AdminAlertEmailData
 } from '$lib/server/email/templates';
+import { getTemplate, applyTemplate } from './template.service';
 import type { ServiceCtx } from './index';
 
 const RateLimit = {
@@ -59,15 +60,24 @@ export async function sendInvitationEmail(
 		const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
 		const supplierName = ctx.env.SUPPLIER_NAME || 'Your supplier';
 
+		const tpl = await getTemplate(ctx, 'invitation');
+		const vars = {
+			buyer_name:    buyer.name,
+			company_name:  buyer.company_name,
+			supplier_name: supplierName,
+			setup_url:     setupUrl,
+			expires_at:    expiresAt
+		};
+		const subject = applyTemplate(tpl.subject, vars);
+		const bodyText = applyTemplate(tpl.body, vars);
+		const bodyHtml = bodyText
+			.split('\n')
+			.map((line) => (line.trim() ? `<p>${escape(line)}</p>` : ''))
+			.join('\n');
+		const html = base(subject, bodyHtml);
+
 		const provider = createEmailProvider(ctx.env);
-		const { subject, html, text } = buyerInvitationEmail({
-			buyerName:    buyer.name,
-			companyName:  buyer.company_name,
-			supplierName,
-			setupUrl,
-			expiresAt
-		});
-		await provider.send({ to: buyer.email, subject, html, text });
+		await provider.send({ to: buyer.email, subject, html, text: bodyText });
 	} catch (err) {
 		console.error('[email] sendInvitationEmail failed:', err);
 	}
@@ -98,13 +108,20 @@ export async function sendOrderEmail(
 
 	if (!orderRow) throw new Error('Order or buyer not found');
 
-	const provider = createEmailProvider(ctx.env);
-	const { subject: sub, html, text } = orderMessageEmail({
+	const paragraphs = body
+		.split('\n')
+		.map((line) => (line.trim() ? `<p>${escape(line)}</p>` : ''))
+		.join('\n');
+	const html = base(
 		subject,
-		body,
-		buyerName: orderRow.company_name
-	});
-	await provider.send({ to: orderRow.email, subject: sub, html, text });
+		`<h2>${escape(subject)}</h2>
+<p style="color:#71717a;font-size:0.875rem">To: ${escape(orderRow.company_name)}</p>
+<hr>
+${paragraphs}`
+	);
+
+	const provider = createEmailProvider(ctx.env);
+	await provider.send({ to: orderRow.email, subject, html, text: body });
 }
 
 function createAlertProvider(env: Env, alertTo: string): ReturnType<typeof createEmailProvider> {

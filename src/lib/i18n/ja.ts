@@ -75,6 +75,7 @@ export const ja: Translations = {
 		cart: 'カート',
 		profile: 'プロフィール',
 		auditLog: '操作ログ',
+		emailTemplates: 'メールテンプレート',
 		settings: '設定',
 		signOut: 'サインアウト'
 	},
@@ -331,6 +332,19 @@ export const ja: Translations = {
 		uploading: 'アップロード中...',
 		upload: 'アップロード',
 		errorSize: 'ファイルサイズは {size} MB 以下にしてください'
+	},
+	emailTemplate: {
+		title: 'メールテンプレート',
+		desc: 'メール送信時に使用するテンプレートを編集します。{{変数名}}形式で動的な値を埋め込めます。',
+		invitation: 'バイヤー招待',
+		invitationDesc: 'バイヤーをポータルに招待する際に送信されます。',
+		orderMessage: '注文メッセージ',
+		orderMessageDesc: '受注詳細のメール送信ダイアログのデフォルトテンプレートです。',
+		variables: '使用できる変数',
+		subject: '件名',
+		body: '本文',
+		saved: '保存しました。',
+		resetDefault: 'デフォルトに戻す'
 	},
 	errors: {
 		required: 'この項目は必須です',
