@@ -51,6 +51,7 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
 	const [saltHex, hashHex] = stored.split(':');
+	if (!saltHex || !hashHex) return false;
 	const salt = fromHex(saltHex).buffer as ArrayBuffer;
 	const key = await crypto.subtle.importKey(
 		'raw',
@@ -64,7 +65,13 @@ export async function verifyPassword(password: string, stored: string): Promise<
 		key,
 		KEY_LENGTH * 8
 	);
-	return toHex(derived) === hashHex;
+	// Constant-time XOR comparison to prevent timing attacks
+	const derivedBytes = new Uint8Array(derived);
+	const storedBytes = fromHex(hashHex);
+	if (derivedBytes.length !== storedBytes.length) return false;
+	let diff = 0;
+	for (let i = 0; i < derivedBytes.length; i++) diff |= derivedBytes[i] ^ storedBytes[i];
+	return diff === 0;
 }
 
 export function generateSessionToken(): string {
@@ -128,5 +135,7 @@ export async function getSession(event: RequestEvent) {
 
 export function validatePasswordStrength(password: string): string | null {
 	if (password.length < 8) return 'Password must be at least 8 characters';
+	if (!/[A-Za-z]/.test(password)) return 'Password must contain at least one letter';
+	if (!/[0-9]/.test(password)) return 'Password must contain at least one number';
 	return null;
 }
