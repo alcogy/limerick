@@ -191,7 +191,9 @@ export const en = {
 		setPrices: 'Set prices',
 		contractPrice: 'Contract price',
 		basePrice: 'Base price (default)',
-		noOverride: '— (use base price)'
+		noOverride: '— (use base price)',
+		searchPlaceholder: 'Filter by code or name',
+		noResults: 'No matching products'
 	},
 	buyer: {
 		title: 'Buyers',

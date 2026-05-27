@@ -193,7 +193,9 @@ export const ja: Translations = {
 		setPrices: '契約価格を設定',
 		contractPrice: '契約価格',
 		basePrice: '定価（デフォルト）',
-		noOverride: '— （定価を使用）'
+		noOverride: '— （定価を使用）',
+		searchPlaceholder: '商品コード・商品名で絞り込み',
+		noResults: '一致する商品がありません'
 	},
 	buyer: {
 		title: '得意先管理',

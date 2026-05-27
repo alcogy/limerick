@@ -13,6 +13,16 @@
 	let deleteId = $state<string | null>(null);
 	let pricingGroup = $state<(typeof data.groups)[0] | null>(null);
 	let groupPrices: Record<string, string> = $state({});
+	let priceSearch = $state('');
+
+	const filteredProducts = $derived(
+		priceSearch.trim() === ''
+			? data.products
+			: data.products.filter((p) => {
+					const q = priceSearch.toLowerCase();
+					return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+				})
+	);
 
 	let deleteFormEl = $state<HTMLFormElement | undefined>();
 
@@ -46,8 +56,11 @@
 
 	function openPricing(group: (typeof data.groups)[0]) {
 		pricingGroup = group;
+		priceSearch = '';
 		const existing = data.priceMap[group.id] ?? {};
-		groupPrices = Object.fromEntries(Object.entries(existing).map(([k, v]) => [k, String(v)]));
+		groupPrices = Object.fromEntries(
+			data.products.map((p) => [p.id, existing[p.id] != null ? String(existing[p.id]) : ''])
+		);
 	}
 
 	const columns = [
@@ -141,8 +154,17 @@
 			<input type="hidden" name="group_id" value={pricingGroup.id} />
 			{#if form?.error}<div class="form-error">{form.error}</div>{/if}
 			<p class="pricing-help">{t().priceGroup.basePrice} — {t().priceGroup.noOverride}</p>
+			<Input
+				type="search"
+				bind:value={priceSearch}
+				placeholder={t().priceGroup.searchPlaceholder}
+			/>
+			<!-- Hidden inputs for ALL products so prices are submitted even when filtered out -->
+			{#each data.products as product (product.id)}
+				<input type="hidden" name="price_{product.id}" value={groupPrices[product.id]} />
+			{/each}
 			<div class="pricing-list">
-				{#each data.products as product (product.id)}
+				{#each filteredProducts as product (product.id)}
 					<div class="pricing-row">
 						<div class="pricing-product">
 							<span class="pricing-name">{product.name}</span>
@@ -151,12 +173,13 @@
 						<div class="pricing-base">{formatCurrency(product.base_price)}</div>
 						<Input
 							type="number"
-							name="price_{product.id}"
-							value={groupPrices[product.id] ?? ''}
+							bind:value={groupPrices[product.id]}
 							placeholder={t().priceGroup.noOverride}
 							min="0"
 						/>
 					</div>
+				{:else}
+					<p class="pricing-empty">{t().priceGroup.noResults}</p>
 				{/each}
 			</div>
 			<div class="form-actions">
@@ -274,5 +297,11 @@
 		font-size: 0.8125rem;
 		color: var(--color-text-secondary);
 		white-space: nowrap;
+	}
+	.pricing-empty {
+		padding: var(--space-lg) 0;
+		text-align: center;
+		font-size: 0.875rem;
+		color: var(--color-text-tertiary);
 	}
 </style>
