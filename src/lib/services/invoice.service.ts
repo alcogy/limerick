@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { asc, count, desc, eq, and, gte, lte } from 'drizzle-orm';
+import { asc, count, desc, eq, and, gte, lte, sql } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { writeAuditLog } from '$lib/server/audit';
 import { now, todayISO } from '$lib/utils';
@@ -73,8 +73,15 @@ export async function generateInvoice(
 	const total_amount = subtotal + tax_amount;
 
 	const year = new Date().getFullYear();
-	const [[countRow]] = await Promise.all([db.select({ count: count() }).from(schema.invoices)]);
-	const invoice_number = `${INVOICE_NUMBER_PREFIX}-${year}-${String((countRow?.count ?? 0) + 1).padStart(INVOICE_NUMBER_DIGITS, '0')}`;
+	const [seqRow] = await db
+		.insert(schema.settings)
+		.values({ key: `invoice_seq_${year}`, value: '1' })
+		.onConflictDoUpdate({
+			target: schema.settings.key,
+			set: { value: sql`cast(cast(${schema.settings.value} as integer) + 1 as text)` }
+		})
+		.returning({ value: schema.settings.value });
+	const invoice_number = `${INVOICE_NUMBER_PREFIX}-${year}-${String(parseInt(seqRow.value)).padStart(INVOICE_NUMBER_DIGITS, '0')}`;
 
 	const ts = now();
 	const [invoice] = await db
