@@ -58,7 +58,8 @@ export async function advanceOrderStatus(
 		.where(and(eq(schema.orders.id, id), eq(schema.orders.status, from)))
 		.returning({ id: schema.orders.id });
 
-	if (updated.length === 0) return fail(409, { error: 'Order not found or status has already changed' });
+	if (updated.length === 0)
+		return fail(409, { error: 'Order not found or status has already changed' });
 
 	await writeAuditLog({
 		db: env.DB,
