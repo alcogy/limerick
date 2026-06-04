@@ -5,10 +5,28 @@ import { and, count, eq, gte } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { now } from '$lib/utils';
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 const UPLOAD_LIMIT = 30; // max uploads per hour per user
 const UPLOAD_WINDOW_MS = 60 * 60 * 1000;
+
+function detectMimeType(bytes: Uint8Array): string | null {
+	if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg';
+	if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47)
+		return 'image/png';
+	if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) return 'image/gif';
+	if (
+		bytes[0] === 0x52 &&
+		bytes[1] === 0x49 &&
+		bytes[2] === 0x46 &&
+		bytes[3] === 0x46 &&
+		bytes[8] === 0x57 &&
+		bytes[9] === 0x45 &&
+		bytes[10] === 0x42 &&
+		bytes[11] === 0x50
+	)
+		return 'image/webp';
+	return null;
+}
 
 export const POST: RequestHandler = async ({ params, request, platform, locals }) => {
 	if (!locals.user || locals.user.role !== 'supplier') throw error(403, 'Forbidden');
@@ -41,15 +59,17 @@ export const POST: RequestHandler = async ({ params, request, platform, locals }
 	const file = (formData.get('file') ?? formData.get('image')) as File | null;
 
 	if (!file || file.size === 0) throw error(400, 'No image provided');
-	if (!ALLOWED_TYPES.includes(file.type))
-		throw error(400, 'Invalid file type. Use JPEG, PNG, WebP, or GIF.');
 	if (file.size > MAX_SIZE) throw error(400, 'File too large (max 5 MB)');
 
-	const ext = file.type.split('/')[1].replace('jpeg', 'jpg');
+	const buffer = await file.arrayBuffer();
+	const mimeType = detectMimeType(new Uint8Array(buffer));
+	if (!mimeType) throw error(400, 'Invalid file type. Use JPEG, PNG, WebP, or GIF.');
+
+	const ext = mimeType.split('/')[1].replace('jpeg', 'jpg');
 	const key = `products/${params.id}/${crypto.randomUUID()}.${ext}`;
 
-	await platform!.env.BUCKET.put(key, await file.arrayBuffer(), {
-		httpMetadata: { contentType: file.type }
+	await platform!.env.BUCKET.put(key, buffer, {
+		httpMetadata: { contentType: mimeType }
 	});
 
 	// Delete old image if exists
