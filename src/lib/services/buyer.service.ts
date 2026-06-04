@@ -172,6 +172,7 @@ export async function deleteBuyer(ctx: ServiceCtx, id: string) {
 }
 
 export async function createInvitationToken(ctx: ServiceCtx, buyer_id: string, origin: string) {
+	requireSupplier(ctx);
 	const { db } = ctx;
 	if (!buyer_id) return fail(400, { error: 'Invalid request' });
 
