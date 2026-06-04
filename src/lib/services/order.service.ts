@@ -52,10 +52,13 @@ export async function advanceOrderStatus(
 	if (!id) return fail(400, { error: 'Invalid request' });
 
 	const ts = now();
-	await db
+	const updated = await db
 		.update(schema.orders)
 		.set({ status: to, [timestampField]: ts, updated_at: ts })
-		.where(and(eq(schema.orders.id, id), eq(schema.orders.status, from)));
+		.where(and(eq(schema.orders.id, id), eq(schema.orders.status, from)))
+		.returning({ id: schema.orders.id });
+
+	if (updated.length === 0) return fail(409, { error: 'Order not found or status has already changed' });
 
 	await writeAuditLog({
 		db: env.DB,
