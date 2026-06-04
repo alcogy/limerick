@@ -81,7 +81,6 @@ export async function cancelOrder(ctx: ServiceCtx, id: string) {
 	if (!order) return fail(404, { error: 'Order not found' });
 	if (order.status === 'cancelled') return fail(400, { error: 'Already cancelled' });
 
-	const stockDecremented = order.status !== 'pending';
 	const ts = now();
 
 	await db
@@ -89,7 +88,8 @@ export async function cancelOrder(ctx: ServiceCtx, id: string) {
 		.set({ status: 'cancelled', cancelled_at: ts, updated_at: ts })
 		.where(eq(schema.orders.id, id));
 
-	if (stockDecremented && order.items.length > 0) {
+	// Stock is always decremented at checkout (status=pending), so always restore on cancel
+	if (order.items.length > 0) {
 		await Promise.all(
 			order.items.map((item) =>
 				db
