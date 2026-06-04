@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { drizzle } from 'drizzle-orm/d1';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, gte, sql } from 'drizzle-orm';
 import * as schema from '$lib/server/db/schema';
 import { now } from '$lib/utils';
 import { parseFormData } from '$lib/utils/form';
@@ -52,6 +52,7 @@ export const actions = {
 
 			const quantity = Math.max(1, item.qty);
 
+			// Early validation for friendly error message (before any writes)
 			if (product.stock_qty < quantity) {
 				return fail(400, {
 					error: `Insufficient stock for "${product.name}" (available: ${product.stock_qty})`
@@ -87,6 +88,44 @@ export const actions = {
 		if (!orderItems.length) return fail(400, { error: 'No valid products in cart' });
 
 		const ts = now();
+
+		// Phase 1: Atomically decrement stock with a WHERE guard to prevent overselling.
+		// If another request consumed the last units between our read and this write,
+		// the affected-rows count will be 0 and we roll back any prior decrements.
+		const decremented: Array<{ product_id: string; quantity: number }> = [];
+		for (const item of orderItems) {
+			const result = await db
+				.update(schema.products)
+				.set({ stock_qty: sql`stock_qty - ${item.quantity}`, updated_at: ts })
+				.where(
+					and(
+						eq(schema.products.id, item.product_id),
+						gte(schema.products.stock_qty, item.quantity)
+					)
+				)
+				.returning({ id: schema.products.id });
+
+			if (result.length === 0) {
+				// Race condition: stock was taken by a concurrent request — roll back
+				if (decremented.length > 0) {
+					await Promise.all(
+						decremented.map((d) =>
+							db
+								.update(schema.products)
+								.set({ stock_qty: sql`stock_qty + ${d.quantity}` })
+								.where(eq(schema.products.id, d.product_id))
+						)
+					);
+				}
+				const p = productMap.get(item.product_id);
+				return fail(400, {
+					error: `Insufficient stock for "${p?.name ?? item.sku}". Please update your cart.`
+				});
+			}
+			decremented.push({ product_id: item.product_id, quantity: item.quantity });
+		}
+
+		// Phase 2: Create order now that stock is reserved
 		const [order] = await db
 			.insert(schema.orders)
 			.values({
@@ -102,13 +141,6 @@ export const actions = {
 		await db
 			.insert(schema.order_items)
 			.values(orderItems.map((item) => ({ ...item, order_id: order.id })));
-
-		for (const item of orderItems) {
-			await db
-				.update(schema.products)
-				.set({ stock_qty: sql`stock_qty - ${item.quantity}`, updated_at: ts })
-				.where(eq(schema.products.id, item.product_id));
-		}
 
 		throw redirect(302, '/buyer/orders?placed=1');
 	}
