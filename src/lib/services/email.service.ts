@@ -1,4 +1,5 @@
-import { eq } from 'drizzle-orm';
+import { and, count, eq, gte } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '$lib/server/db/schema';
 import { createEmailProvider } from '$lib/server/email/index';
 import { CloudflareEmailProvider } from '$lib/server/email/cloudflare';
@@ -9,24 +10,31 @@ import {
 	type AdminAlertEmailData
 } from '$lib/server/email/templates';
 import { getTemplate, applyTemplate } from './template.service';
-import type { ServiceCtx } from './index';
+import type { ServiceCtx, DB } from './index';
 
 const RateLimit = {
 	windowMs: 60_000,
 	maxPerWindow: 10
 } as const;
 
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+async function checkRateLimit(db: DB, key: string): Promise<boolean> {
+	const windowStart = new Date(Date.now() - RateLimit.windowMs)
+		.toISOString()
+		.replace('T', ' ')
+		.slice(0, 19);
 
-function checkRateLimit(key: string): boolean {
-	const now = Date.now();
-	const entry = rateLimitStore.get(key);
-	if (!entry || now > entry.resetAt) {
-		rateLimitStore.set(key, { count: 1, resetAt: now + RateLimit.windowMs });
-		return true;
-	}
-	if (entry.count >= RateLimit.maxPerWindow) return false;
-	entry.count++;
+	const [result] = await db
+		.select({ c: count() })
+		.from(schema.login_attempts)
+		.where(
+			and(
+				eq(schema.login_attempts.identifier, key),
+				gte(schema.login_attempts.attempted_at, windowStart)
+			)
+		);
+
+	if ((result?.c ?? 0) >= RateLimit.maxPerWindow) return false;
+	await db.insert(schema.login_attempts).values({ identifier: key });
 	return true;
 }
 
@@ -42,7 +50,7 @@ export async function sendInvitationEmail(
 ): Promise<void> {
 	try {
 		if (!ctx.env.EMAIL_FROM) return;
-		if (!checkRateLimit(`invite:${buyerId}`)) return;
+		if (!(await checkRateLimit(ctx.db, `invite:${buyerId}`))) return;
 
 		const [buyer] = await ctx.db
 			.select({
@@ -155,7 +163,7 @@ export async function sendAdminAlert(ctx: ServiceCtx, data: AdminAlertEmailData)
 		.then((rows) => rows[0]?.value || ctx.env.ALERT_EMAIL_TO);
 
 	if (!alertTo) return;
-	if (!checkRateLimit(`alert:${data.subject}`)) return;
+	if (!(await checkRateLimit(ctx.db, `alert:${data.subject}`))) return;
 
 	const provider = createAlertProvider(ctx.env, alertTo);
 	const { subject, html, text } = adminAlertEmail(data);
@@ -178,14 +186,19 @@ export function sendAdminAlertSilent(ctx: ServiceCtx, data: AdminAlertEmailData)
 export function sendAdminAlertFromEnv(env: Env, data: AdminAlertEmailData): void {
 	const alertTo = env.ALERT_EMAIL_TO;
 	if (!alertTo) return;
-	if (!checkRateLimit(`alert:${data.subject}`)) return;
 
 	try {
+		const db = drizzle(env.DB, { schema });
 		const provider = createAlertProvider(env, alertTo);
 		const { subject, html, text } = adminAlertEmail(data);
-		provider.send({ to: alertTo, subject, html, text }).catch((err) => {
-			console.error('[email] sendAdminAlertFromEnv failed:', err);
-		});
+		checkRateLimit(db, `alert:${data.subject}`)
+			.then((allowed) => {
+				if (!allowed) return;
+				return provider.send({ to: alertTo, subject, html, text });
+			})
+			.catch((err) => {
+				console.error('[email] sendAdminAlertFromEnv failed:', err);
+			});
 	} catch (err) {
 		console.error('[email] sendAdminAlertFromEnv setup failed:', err);
 	}
